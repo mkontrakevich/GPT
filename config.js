@@ -1,6 +1,6 @@
 window.CSUM_CONFIG = Object.freeze({
-  version: "4.0.0",
-  imageApiBase: "",
+  version: "4.0.1",
+  imageApiBase: "https://csum-nn-image-studio.kontrakevich.workers.dev",
   defaultImageModel: "bytedance-seed/seedream-4.5",
   siteTitle: "ЦУМ Нижний Новгород",
   storageKey: "csum_image_overrides_v4",

@@ -73,10 +73,11 @@ jobs:
           CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
         run: printf '%s' "$CSUM_ADMIN_TOKEN" | wrangler secret put ADMIN_TOKEN
 
-      - name: Verify production backend
+      - name: Verify production backend end-to-end
         shell: bash
         env:
           WORKER_URL: https://csum-nn-image-studio.kontrakevich.workers.dev
+          CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
         run: |
           health="$(curl -fsS "$WORKER_URL/health")"
           printf '%s' "$health" | jq -e '.ok == true and .r2 == true and .openrouter == true' >/dev/null
@@ -84,11 +85,32 @@ jobs:
           models="$(curl -fsS "$WORKER_URL/api/models")"
           printf '%s' "$models" | jq -e '.data | type == "array" and length > 0' >/dev/null
 
+          test_id="e2e-smoke"
+          generated="$(curl -fsS -X POST "$WORKER_URL/api/generate" \
+            -H "Content-Type: application/json" \
+            -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" \
+            --data '{"id":"e2e-smoke","prompt":"Minimal neutral architectural material test image, warm limestone surface, soft daylight, no text","aspect_ratio":"1:1","output_format":"webp"}')"
+          candidate_key="$(printf '%s' "$generated" | jq -r '.candidate_key // empty')"
+          [ -n "$candidate_key" ] || { echo "::error::Generation returned no persisted candidate"; printf '%s\n' "$generated"; exit 1; }
+
+          applied="$(curl -fsS -X POST "$WORKER_URL/api/apply" \
+            -H "Content-Type: application/json" \
+            -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" \
+            --data "$(jq -nc --arg id "$test_id" --arg key "$candidate_key" '{id:$id,candidate_key:$key,prompt:"E2E smoke test",model:"production"}')")"
+          image_url="$(printf '%s' "$applied" | jq -r '.url // empty')"
+          [ -n "$image_url" ] || { echo "::error::Apply returned no image URL"; exit 1; }
+          curl -fsS -o /dev/null "$image_url"
+          content="$(curl -fsS "$WORKER_URL/api/content")"
+          printf '%s' "$content" | jq -e '.images["e2e-smoke"].url | type == "string" and length > 0' >/dev/null
+
           {
             echo "### CSUM Image API"
             echo ""
             echo "- Worker: $WORKER_URL"
             echo "- /health: OK"
             echo "- OpenRouter image models: OK"
-            echo "- R2: OK"
+            echo "- Generate: OK"
+            echo "- R2 candidate: OK"
+            echo "- Apply manifest: OK"
+            echo "- Generated asset GET: OK"
           } >> "$GITHUB_STEP_SUMMARY"

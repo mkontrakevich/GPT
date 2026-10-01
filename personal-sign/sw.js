@@ -1,6 +1,6 @@
 const CACHE="personal-sign-1.7.0";
 const APP=[
-"./","./index.html","./manifest.webmanifest","./icon.svg",
+"./","./index.html","./app.js","./manifest.webmanifest","./icon.svg",
 "./vendor/jszip-3.10.1.min.js",
 "./vendor/docx-preview-0.4.1.min.js",
 "./vendor/html2canvas-1.4.1.min.js",

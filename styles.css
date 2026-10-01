@@ -145,3 +145,8 @@ img.media-failed{visibility:hidden!important}
   .editorial-nav{top:var(--header-h);min-height:var(--subnav-h)}
   .hero{min-height:calc(100svh - var(--header-h) - var(--subnav-h));min-height:calc(100dvh - var(--header-h) - var(--subnav-h))}
 }
+
+/* OFFICIAL CSUM BRAND */
+.brand{display:flex;align-items:center;justify-content:flex-start;width:132px;height:var(--header-h);line-height:1}
+.brand .brand-logo{display:block;width:auto;height:48px;max-width:132px;object-fit:contain;object-position:left center}
+@media(max-width:740px){.brand{width:112px;height:var(--header-h)}.brand .brand-logo{height:40px;max-width:112px}}

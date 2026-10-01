@@ -1,0 +1,87 @@
+name: Generate CSUM editorial images
+
+on:
+  push:
+    branches:
+      - csum-nn-site
+    paths:
+      - "articles/**.html"
+      - "tools/generate_csum_images.py"
+      - "skills/csum-editorial-writer/SKILL.md"
+      - ".github/workflows/generate-csum-images.yml"
+  workflow_dispatch:
+    inputs:
+      force_regenerate:
+        description: "Regenerate every editorial image even if article text is unchanged"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: csum-openrouter-images
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout CSUM branch
+        uses: actions/checkout@v4
+        with:
+          ref: csum-nn-site
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install image runtime
+        run: python -m pip install --quiet pillow
+
+      - name: Generate editorial images through OpenRouter
+        env:
+          OPENROUTER_API_KEY: \${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_IMAGE_MODEL: \${{ vars.OPENROUTER_IMAGE_MODEL || 'bytedance-seed/seedream-4.5' }}
+          FORCE_REGENERATE: \${{ inputs.force_regenerate && '1' || '0' }}
+        run: python tools/generate_csum_images.py
+
+      - name: Validate generated image package
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f assets/generated/hero-csum.webp
+          test -f assets/generated/manifest.json
+          test "$(find assets/generated -maxdepth 1 -name '*.webp' | wc -l)" -ge 10
+          if grep -RIE '<img[^>]+src=["'"'"'](https?:|../https?:)' index.html magazine.html articles/*.html; then
+            echo "Remote editorial image source detected"
+            exit 1
+          fi
+
+      - name: Commit generated assets and rewired pages
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- assets/generated index.html magazine.html articles)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No image changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/generated index.html magazine.html articles
+          git commit -m "Generate CSUM editorial imagery via OpenRouter"
+          git push origin HEAD:csum-nn-site
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Publish refreshed CSUM site
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: \${{ github.token }}
+        run: gh workflow run csum-pages.yml --ref main

@@ -1,6 +1,6 @@
 # Personal Sign — Privacy & Local Data Model
 
-Version: 1.5
+Version: 1.7
 
 ## Principle
 

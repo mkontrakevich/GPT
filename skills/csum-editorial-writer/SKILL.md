@@ -99,3 +99,41 @@ Before publishing, verify:
 - no generic mall copy (“уютная атмосфера”, “широкий ассортимент”, “для всей семьи”) unless factually necessary;
 - paragraphs are concise and journalistic;
 - commercial CTA is one step, not a banner stack.
+
+## AI image generation contract
+Every editorial cover image is generated automatically through OpenRouter from the article itself.
+
+### Source of visual meaning
+- Every article MUST contain a meaningful `<meta name="description">`; this is the primary visual description.
+- The generator combines the article `<h1>`, meta description and the first substantive paragraphs.
+- Do not hand-pick an unrelated stock image after writing the article.
+- The text must be sufficient to produce one clear photographic scene.
+
+### Generation pipeline
+- Generator: `tools/generate_csum_images.py`.
+- OpenRouter Image API is called only in GitHub Actions; never from public browser JavaScript.
+- API credential: GitHub Actions secret `OPENROUTER_API_KEY`.
+- Model is configurable with repository variable `OPENROUTER_IMAGE_MODEL`; default is `bytedance-seed/seedream-4.5`.
+- Generated files are committed to `assets/generated/`.
+- The generator stores a prompt/source hash in `assets/generated/manifest.json` and regenerates only when the article text, model or visual policy changes.
+- Production HTML must reference local generated files only. Third-party editorial image hotlinks are prohibited.
+- If generation fails, do not replace the image with a random external photo and do not publish a broken image.
+
+### Visual rules for generated article images
+- premium editorial photography, realistic rather than illustrative;
+- horizontal cover composition; current pipeline requests 16:9;
+- no text, typography, labels, UI, webpage mockups, collages or watermarks inside the image;
+- no fake tenant logos or invented signage;
+- scene derives from the editorial thesis, not from a literal product packshot;
+- restrained contemporary styling and believable human scale;
+- the exterior facade of ЦУМ is prohibited in article covers.
+
+### Hero exception
+- Only the site hero may show the ЦУМ facade.
+- Hero generation uses a real facade reference at generation time when the selected OpenRouter image model supports `input_references`.
+- Preserve building identity, proportions, window rhythm, central entrance, cornice, verticals and architecture.
+- Do not redesign, add floors or invent signage.
+- The reference is generation input, not the production hero image; production displays the generated result.
+
+### Publishing rule
+Article text change → OpenRouter generation → local generated asset → HTML rewiring → validation that no remote editorial image sources remain → GitHub Pages deploy.

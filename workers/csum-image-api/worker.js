@@ -1,0 +1,119 @@
+const json = (data,status=200,headers={}) => new Response(JSON.stringify(data),{status,headers:{"content-type":"application/json; charset=utf-8",...headers}});
+const cors = env => ({
+  "access-control-allow-origin": env.ALLOWED_ORIGIN || "*",
+  "access-control-allow-headers": "content-type,x-csum-admin-token",
+  "access-control-allow-methods": "GET,POST,OPTIONS",
+  "cache-control":"no-store"
+});
+const unauthorized = env => json({error:"UNAUTHORIZED"},401,cors(env));
+const requireAdmin = (req,env) => env.ADMIN_TOKEN && req.headers.get("X-CSUM-Admin-Token") === env.ADMIN_TOKEN;
+const bytesFromBase64 = b64 => Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+const extFor = media => media?.includes("png")?"png":media?.includes("jpeg")?"jpg":"webp";
+
+async function openRouter(env,path,init={}){
+  if(!env.OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not configured");
+  const res=await fetch("https://openrouter.ai"+path,{
+    ...init,
+    headers:{
+      "Authorization":"Bearer "+env.OPENROUTER_API_KEY,
+      "Content-Type":"application/json",
+      "HTTP-Referer":env.SITE_URL || "https://mkontrakevich.github.io/GPT/",
+      "X-Title":"CSUM Nizhny Novgorod Image Studio",
+      ...(init.headers||{})
+    }
+  });
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data?.error?.message || data?.message || ("OpenRouter HTTP "+res.status));
+  return data;
+}
+
+async function contentMap(env){
+  if(!env.CSUM_CONTENT) return {};
+  const listed=await env.CSUM_CONTENT.list({prefix:"image:",limit:100});
+  const pairs=await Promise.all(listed.keys.map(async k=>[k.name.slice(6),await env.CSUM_CONTENT.get(k.name,"json")]));
+  return Object.fromEntries(pairs.filter(([,v])=>v));
+}
+
+export default {
+  async fetch(req,env){
+    const url=new URL(req.url);
+    if(req.method==="OPTIONS") return new Response(null,{status:204,headers:cors(env)});
+    try{
+      if(url.pathname==="/health") return json({ok:true,service:"csum-image-api",r2:!!env.CSUM_IMAGES,kv:!!env.CSUM_CONTENT},200,cors(env));
+
+      if(url.pathname==="/api/models" && req.method==="GET"){
+        const data=await openRouter(env,"/api/v1/images/models",{method:"GET"});
+        return json(data,200,cors(env));
+      }
+
+      if(url.pathname==="/api/content" && req.method==="GET"){
+        return json({images:await contentMap(env)},200,cors(env));
+      }
+
+      if(url.pathname.startsWith("/generated/") && req.method==="GET"){
+        if(!env.CSUM_IMAGES) return new Response("R2 not configured",{status:404,headers:cors(env)});
+        const key=decodeURIComponent(url.pathname.slice("/generated/".length));
+        const obj=await env.CSUM_IMAGES.get(key);
+        if(!obj) return new Response("Not found",{status:404,headers:cors(env)});
+        return new Response(obj.body,{headers:{...cors(env),"content-type":obj.httpMetadata?.contentType||"image/webp","cache-control":"public,max-age=31536000,immutable"}});
+      }
+
+      if(url.pathname==="/api/generate" && req.method==="POST"){
+        if(!requireAdmin(req,env)) return unauthorized(env);
+        const body=await req.json();
+        if(!body.id || !body.prompt) return json({error:"id and prompt are required"},400,cors(env));
+        const payload={
+          model:body.model || "bytedance-seed/seedream-4.5",
+          prompt:body.prompt,
+          aspect_ratio:body.aspect_ratio || "16:9",
+          quality:body.quality || "high",
+          output_format:body.output_format || "webp",
+          n:1
+        };
+        const ref=body.reference_data_url || body.reference_url;
+        if(ref) payload.input_references=[{type:"image_url",image_url:{url:ref}}];
+
+        const result=await openRouter(env,"/api/v1/images",{method:"POST",body:JSON.stringify(payload)});
+        const first=result?.data?.[0];
+        if(!first?.b64_json) return json({error:"OpenRouter returned no image"},502,cors(env));
+        const media=first.media_type || "image/webp";
+        const ext=extFor(media);
+        const candidateKey="candidates/"+body.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+        let imageUrl="data:"+media+";base64,"+first.b64_json;
+        let persisted=false;
+        if(env.CSUM_IMAGES){
+          await env.CSUM_IMAGES.put(candidateKey,bytesFromBase64(first.b64_json),{httpMetadata:{contentType:media}});
+          imageUrl=new URL("/generated/"+encodeURIComponent(candidateKey),url.origin).toString();
+          persisted=true;
+        }
+        return json({
+          ok:true,id:body.id,url:imageUrl,candidate_key:persisted?candidateKey:null,
+          persistent_candidate:persisted,prompt:body.prompt,model:payload.model,media_type:media,usage:result.usage||null
+        },200,cors(env));
+      }
+
+      if(url.pathname==="/api/apply" && req.method==="POST"){
+        if(!requireAdmin(req,env)) return unauthorized(env);
+        if(!env.CSUM_CONTENT || !env.CSUM_IMAGES) return json({error:"Persistent publishing requires CSUM_CONTENT KV and CSUM_IMAGES R2 bindings"},409,cors(env));
+        const body=await req.json();
+        if(!body.id || !body.candidate_key) return json({error:"id and candidate_key are required"},400,cors(env));
+        const obj=await env.CSUM_IMAGES.head(body.candidate_key);
+        if(!obj) return json({error:"Candidate not found"},404,cors(env));
+        const record={
+          id:body.id,
+          url:new URL("/generated/"+encodeURIComponent(body.candidate_key),url.origin).toString(),
+          prompt:body.prompt||"",
+          model:body.model||"",
+          candidate_key:body.candidate_key,
+          updated_at:new Date().toISOString()
+        };
+        await env.CSUM_CONTENT.put("image:"+body.id,JSON.stringify(record));
+        return json(record,200,cors(env));
+      }
+
+      return json({error:"NOT_FOUND"},404,cors(env));
+    }catch(err){
+      return json({error:err?.message||String(err)},500,cors(env));
+    }
+  }
+};

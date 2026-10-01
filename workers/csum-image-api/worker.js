@@ -6,7 +6,7 @@ const cors = env => ({
   "cache-control":"no-store"
 });
 const unauthorized = env => json({error:"UNAUTHORIZED"},401,cors(env));
-const requireAdmin = (req,env) => env.ADMIN_TOKEN && req.headers.get("X-CSUM-Admin-Token") === env.ADMIN_TOKEN;
+const requireAdmin = (req,env) => !!env.ADMIN_TOKEN && req.headers.get("X-CSUM-Admin-Token") === env.ADMIN_TOKEN;
 const bytesFromBase64 = b64 => Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
 const extFor = media => media?.includes("png")?"png":media?.includes("jpeg")?"jpg":"webp";
 
@@ -27,11 +27,14 @@ async function openRouter(env,path,init={}){
   return data;
 }
 
-async function contentMap(env){
-  if(!env.CSUM_CONTENT) return {};
-  const listed=await env.CSUM_CONTENT.list({prefix:"image:",limit:100});
-  const pairs=await Promise.all(listed.keys.map(async k=>[k.name.slice(6),await env.CSUM_CONTENT.get(k.name,"json")]));
-  return Object.fromEntries(pairs.filter(([,v])=>v));
+async function loadManifest(env){
+  if(!env.CSUM_IMAGES) return {};
+  const obj=await env.CSUM_IMAGES.get("_content/active-images.json");
+  if(!obj) return {};
+  try{return await obj.json();}catch{return {};}
+}
+async function saveManifest(env,images){
+  await env.CSUM_IMAGES.put("_content/active-images.json",JSON.stringify(images),{httpMetadata:{contentType:"application/json"}});
 }
 
 export default {
@@ -39,7 +42,7 @@ export default {
     const url=new URL(req.url);
     if(req.method==="OPTIONS") return new Response(null,{status:204,headers:cors(env)});
     try{
-      if(url.pathname==="/health") return json({ok:true,service:"csum-image-api",r2:!!env.CSUM_IMAGES,kv:!!env.CSUM_CONTENT},200,cors(env));
+      if(url.pathname==="/health") return json({ok:true,service:"csum-image-api",r2:!!env.CSUM_IMAGES,openrouter:!!env.OPENROUTER_API_KEY},200,cors(env));
 
       if(url.pathname==="/api/models" && req.method==="GET"){
         const data=await openRouter(env,"/api/v1/images/models",{method:"GET"});
@@ -47,7 +50,7 @@ export default {
       }
 
       if(url.pathname==="/api/content" && req.method==="GET"){
-        return json({images:await contentMap(env)},200,cors(env));
+        return json({images:await loadManifest(env)},200,cors(env));
       }
 
       if(url.pathname.startsWith("/generated/") && req.method==="GET"){
@@ -62,18 +65,26 @@ export default {
         if(!requireAdmin(req,env)) return unauthorized(env);
         const body=await req.json();
         if(!body.id || !body.prompt) return json({error:"id and prompt are required"},400,cors(env));
+
+        const ref=body.reference_data_url || body.reference_url;
         const payload={
           model:body.model || "bytedance-seed/seedream-4.5",
           prompt:body.prompt,
           aspect_ratio:body.aspect_ratio || "16:9",
-          quality:body.quality || "high",
           output_format:body.output_format || "webp",
           n:1
         };
-        const ref=body.reference_data_url || body.reference_url;
         if(ref) payload.input_references=[{type:"image_url",image_url:{url:ref}}];
 
-        const result=await openRouter(env,"/api/v1/images",{method:"POST",body:JSON.stringify(payload)});
+        let result;
+        try{
+          result=await openRouter(env,"/api/v1/images",{method:"POST",body:JSON.stringify(payload)});
+        }catch(firstError){
+          const fallback={model:payload.model,prompt:payload.prompt};
+          if(ref) fallback.input_references=payload.input_references;
+          result=await openRouter(env,"/api/v1/images",{method:"POST",body:JSON.stringify(fallback)});
+        }
+
         const first=result?.data?.[0];
         if(!first?.b64_json) return json({error:"OpenRouter returned no image"},502,cors(env));
         const media=first.media_type || "image/webp";
@@ -94,7 +105,7 @@ export default {
 
       if(url.pathname==="/api/apply" && req.method==="POST"){
         if(!requireAdmin(req,env)) return unauthorized(env);
-        if(!env.CSUM_CONTENT || !env.CSUM_IMAGES) return json({error:"Persistent publishing requires CSUM_CONTENT KV and CSUM_IMAGES R2 bindings"},409,cors(env));
+        if(!env.CSUM_IMAGES) return json({error:"Persistent publishing requires the CSUM_IMAGES R2 binding"},409,cors(env));
         const body=await req.json();
         if(!body.id || !body.candidate_key) return json({error:"id and candidate_key are required"},400,cors(env));
         const obj=await env.CSUM_IMAGES.head(body.candidate_key);
@@ -107,7 +118,9 @@ export default {
           candidate_key:body.candidate_key,
           updated_at:new Date().toISOString()
         };
-        await env.CSUM_CONTENT.put("image:"+body.id,JSON.stringify(record));
+        const images=await loadManifest(env);
+        images[body.id]=record;
+        await saveManifest(env,images);
         return json(record,200,cors(env));
       }
 

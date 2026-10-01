@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#f5f5f4">
+<title>Personal Sign 1.3</title>
+<style>
+:root{--bg:#f5f5f4;--card:#fff;--ink:#18181b;--muted:#71717a;--line:#e4e4e7;--bad:#b91c1c}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+body{overscroll-behavior:none}.wrap{max-width:760px;margin:auto;padding:max(16px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom))}
+h1{font-size:26px;line-height:1.05;margin:10px 0}p{color:var(--muted);line-height:1.45}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px}
+.btn{appearance:none;border:0;border-radius:15px;min-height:52px;padding:0 16px;font-size:16px;font-weight:650;background:#ececef;color:var(--ink)}
+.btn.primary{background:#18181b;color:white}.btn.block{width:100%}.stack{display:grid;gap:10px}.small{font-size:12px;color:var(--muted)}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}.back{width:44px;height:44px;padding:0}.screen{display:none}.screen.on{display:block}
+#picker{display:none}.drop{display:flex;min-height:150px;align-items:center;justify-content:center;text-align:center;border:1px dashed #c7c7cc;border-radius:18px;background:white;padding:18px;cursor:pointer}
+.viewer{overflow:auto;background:#ddd;border-radius:14px;padding:8px;max-height:62vh}.page{position:relative;margin:auto;background:white;box-shadow:0 1px 6px #0002;touch-action:none}
+#pdfc{display:block;max-width:100%;height:auto}.sig{position:absolute;border:1px dashed #777;border-radius:6px;touch-action:none;user-select:none}
+.sig img{width:100%;height:100%;display:block;pointer-events:none}.handle{position:absolute;right:-10px;bottom:-10px;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #222}
+.nav{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0}.nav span{min-width:90px;text-align:center;color:var(--muted);font-size:13px}
+.notice{padding:10px 12px;border-radius:12px;background:#f0f0f2;color:#52525b;font-size:13px;margin-bottom:10px}
+.err{background:#fff1f2;color:#9f1239}.ok{background:#ecfdf5;color:#166534}
+.modal{position:fixed;inset:0;background:#111;z-index:50;display:none;flex-direction:column;padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+.modal.on{display:flex}.rotate{display:none;background:#222;color:white;border-radius:14px;padding:10px 12px;margin-bottom:8px;font-size:13px}.padbar{display:flex;gap:8px;margin-top:8px}
+#pad{flex:1;width:100%;background:white;border-radius:16px;touch-action:none;display:block}.padtitle{color:white;text-align:center;padding:4px 0 8px}.penctl{display:flex;align-items:center;gap:12px;color:#fff;background:#1b1b1d;border-radius:14px;padding:10px 12px;margin-bottom:8px}.penctl label{font-size:13px;white-space:nowrap}.penctl input[type=range]{flex:1;min-width:90px}.penctl .val{font-variant-numeric:tabular-nums;min-width:32px;text-align:right}.penmode{display:flex;align-items:center;gap:7px;font-size:13px;white-space:nowrap}.penmode input{width:18px;height:18px}
+@media(orientation:portrait){.rotate{display:block}}.sandbox{position:fixed;left:-20000px;top:0;width:794px;background:#fff}
+.legacy{width:794px;min-height:1123px;padding:72px 74px;background:#fff;color:#111;font-family:"Times New Roman",serif;font-size:16px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
+.progress{position:fixed;inset:0;background:#0008;z-index:80;display:none;place-items:center;padding:20px}.progress.on{display:grid}.progress>div{background:white;border-radius:18px;padding:20px;max-width:320px;text-align:center}
+code{font-size:11px;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen on">
+  <div class="small">PERSONAL SIGN 1.3</div>
+  <h1>Подпись на документе.<br>Прямо на телефоне.</h1>
+  <p>PDF, DOCX и старый DOC. Документ и рукописная подпись обрабатываются в браузере на вашем устройстве.</p>
+  <div class="stack">
+    <button class="btn primary block" id="start">Подписать документ</button>
+    <button class="btn block" id="verifyOpen">Проверить PDF + .PSIG</button>
+  </div>
+  <p class="small">Для DOC/DOCX при первом запуске загружаются библиотеки преобразования. Сам файл на сервер приложения не отправляется.</p>
+</section>
+
+<input id="picker" type="file" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/msword,.doc">
+
+<section id="sign" class="screen">
+  <div class="top"><button class="btn back" id="homeBtn">←</button><div><b id="fname">Документ</b><div class="small" id="pages">Страница</div></div></div>
+  <div id="banner" class="notice">Коснитесь места, где должна стоять подпись.</div>
+  <div class="viewer"><div id="stage" class="page"><canvas id="pdfc"></canvas><div id="sig" class="sig" hidden><img id="sigimg"><div class="handle" id="handle"></div></div></div></div>
+  <div class="nav"><button class="btn" id="prev">←</button><span id="counter"></span><button class="btn" id="next">→</button></div>
+  <div class="stack">
+    <button class="btn" id="redraw" disabled>Нарисовать заново</button>
+    <button class="btn primary" id="finish" disabled>Зафиксировать PDF</button>
+  </div>
+</section>
+
+<section id="done" class="screen">
+  <div class="top"><button class="btn back" id="doneHome">←</button><b>Готово</b></div>
+  <div class="card">
+    <div>✓ Подпись встроена</div><div>✓ PDF зафиксирован</div><div>✓ Контроль SHA-256 создан</div>
+    <p class="small">SHA-256</p><code id="hash"></code>
+  </div>
+  <div class="stack" style="margin-top:12px">
+    <button class="btn primary" id="getPdf">Скачать PDF</button>
+    <button class="btn" id="getPsig">Скачать .PSIG</button>
+  </div>
+</section>
+
+<section id="verify" class="screen">
+ <div class="top"><button class="btn back" id="verifyBack">←</button><b>Проверка</b></div>
+ <div class="stack">
+  <label class="drop">Выбрать подписанный PDF<input hidden id="vpdf" type="file" accept="application/pdf,.pdf"></label>
+  <label class="drop">Выбрать .PSIG<input hidden id="vpsig" type="file" accept=".psig,application/json"></label>
+  <button class="btn primary" id="verifyBtn" disabled>Проверить</button>
+  <div id="vresult" class="notice" hidden></div>
+ </div>
+</section>
+</div>
+
+<div class="modal" id="modal">
+ <div class="rotate">↻ Поверните телефон горизонтально — так удобнее расписаться.</div>
+ <div class="padtitle">Ваша подпись</div>
+ <div class="penctl"><label for="penWidth">Толщина</label><input id="penWidth" type="range" min="1" max="5" step="0.2" value="2.6"><span class="val" id="penWidthVal">2.6</span><label class="penmode"><input id="ballpoint" type="checkbox" checked>Шариковая ручка</label></div>
+ <canvas id="pad"></canvas>
+ <div class="padbar"><button class="btn" id="cancelPad">Отмена</button><button class="btn" id="clearPad">Очистить</button><button class="btn primary" id="okPad" disabled>Готово</button></div>
+</div>
+
+<div class="progress" id="progress"><div><b id="ptitle">Обработка</b><p id="pdetail">Локально на устройстве</p></div></div>
+<div id="sandbox" class="sandbox"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://unpkg.com/docx-preview@0.3.7/dist/docx-preview.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Alpaq92/JSDoc@main/src/docToText.js"></script>
+<script>
+(function(){
+"use strict";
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const $=id=>document.getElementById(id), screens=[...document.querySelectorAll(".screen")];
+const S={file:null,format:null,bytes:null,pdf:null,page:1,count:1,place:null,tap:null,final:null,psig:null,base:null};
+function screen(id){screens.forEach(x=>x.classList.toggle("on",x.id===id));scrollTo(0,0)}
+function msg(t,bad){const e=$("banner");e.textContent=t;e.className="notice"+(bad?" err":"")}
+function prog(on,title,detail){$("progress").classList.toggle("on",on);if(title)$("ptitle").textContent=title;if(detail)$("pdetail").textContent=detail}
+function base(n){return n.replace(/\.(pdf|docx|doc)$/i,"")}
+function hex(a){return [...a].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function sha(b){return new Uint8Array(await crypto.subtle.digest("SHA-256",b instanceof Uint8Array?b:new Uint8Array(b)))}
+function b64u(a){let s="";a.forEach(x=>s+=String.fromCharCode(x));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function unb64(s){s=s.replace(/-/g,"+").replace(/_/g,"/");s=s.padEnd(Math.ceil(s.length/4)*4,"=");return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
+function db(){return new Promise((ok,no)=>{const r=indexedDB.open("personal-sign",1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains("keys"))r.result.createObjectStore("keys")};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+async function key(){const d=await db();const old=await new Promise((ok,no)=>{const r=d.transaction("keys","readonly").objectStore("keys").get("k");r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});if(old)return old;const p=await crypto.subtle.generateKey({name:"ECDSA",namedCurve:"P-256"},false,["sign","verify"]);const jwk=await crypto.subtle.exportKey("jwk",p.publicKey);const rec={privateKey:p.privateKey,publicKeyJwk:jwk};await new Promise((ok,no)=>{const r=d.transaction("keys","readwrite").objectStore("keys").put(rec,"k");r.onsuccess=ok;r.onerror=()=>no(r.error)});return rec}
+async function mkpsig(bytes,name){const h=hex(await sha(bytes)),k=await key(),m=new TextEncoder().encode("PERSONAL-SIGN-1\n"+h),sg=new Uint8Array(await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},k.privateKey,m));return{format:"PERSONAL-SIGN-1",documentSha256:h,signedAt:new Date().toISOString(),algorithm:"ECDSA-P256-SHA256",publicKeyJwk:k.publicKeyJwk,signatureBase64Url:b64u(sg),originalFileName:name,sourceFormat:S.format,appVersion:"1.3.0"}}
+function dl(data,name,type){const blob=data instanceof Blob?data:new Blob([data],{type}),u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1200)}
+async function htmlCanvasToPdf(node,title){
+ if(document.fonts&&document.fonts.ready)try{await document.fonts.ready}catch(e){}
+ await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+ const c=await html2canvas(node,{scale:Math.min(devicePixelRatio||1,2),backgroundColor:"#fff",logging:false,useCORS:true});
+ const cssW=794,cssH=1123,ratio=c.width/cssW,slice=Math.round(cssH*ratio),n=Math.max(1,Math.ceil(c.height/slice)),out=await PDFLib.PDFDocument.create();
+ for(let i=0;i<n;i++){ $("pdetail").textContent=title+" — страница "+(i+1)+" из "+n; const cc=document.createElement("canvas");cc.width=c.width;cc.height=slice;const x=cc.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,cc.width,cc.height);x.drawImage(c,0,i*slice,c.width,Math.min(slice,c.height-i*slice),0,0,c.width,Math.min(slice,c.height-i*slice));const png=await out.embedPng(cc.toDataURL("image/png"));const p=out.addPage([595.28,841.89]);p.drawImage(png,{x:0,y:0,width:595.28,height:841.89});}
+ return new Uint8Array(await out.save());
+}
+async function docxToPdf(f){
+ if(!window.docx)throw Error("Модуль DOCX не загрузился.");
+ const sb=$("sandbox");sb.innerHTML="";prog(true,"Преобразую DOCX","Файл остаётся на устройстве");
+ try{await docx.renderAsync(await f.arrayBuffer(),sb,sb,{className:"docx",inWrapper:true,breakPages:true,useBase64URL:true});
+ const secs=[...sb.querySelectorAll("section.docx")];if(!secs.length)throw Error("Не удалось отрисовать DOCX.");
+ const out=await PDFLib.PDFDocument.create();
+ for(let i=0;i<secs.length;i++){ $("pdetail").textContent="DOCX — страница "+(i+1)+" из "+secs.length;const c=await html2canvas(secs[i],{scale:Math.min(devicePixelRatio||1,2),backgroundColor:"#fff",logging:false,useCORS:true});const png=await out.embedPng(c.toDataURL("image/png"));const w=secs[i].scrollWidth*72/96,h=secs[i].scrollHeight*72/96,p=out.addPage([w,h]);p.drawImage(png,{x:0,y:0,width:w,height:h})}return new Uint8Array(await out.save())}finally{sb.innerHTML="";prog(false)}
+}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+async function docToPdf(f){
+ if(!window.docToText)throw Error("Модуль DOC не загрузился.");
+ prog(true,"Преобразую DOC","Файл остаётся на устройстве");
+ const sb=$("sandbox");sb.innerHTML="";
+ try{const ab=await f.arrayBuffer(),rich=docToText.html(ab),plain=docToText(ab);if(!rich&&!plain)throw Error("Этот DOC не удалось прочитать. Возможно, файл защищён или повреждён.");
+ const d=document.createElement("div");d.className="legacy";d.innerHTML=(rich&&rich.body?rich.body:esc(plain||"")).replace(/\t/g,"    ");sb.appendChild(d);return await htmlCanvasToPdf(d,"DOC")}finally{sb.innerHTML="";prog(false)}
+}
+async function openPdf(bytes,file,format){
+ const p=await pdfjsLib.getDocument({data:bytes.slice()}).promise;if(S.pdf)try{await S.pdf.destroy()}catch(e){}
+ S.file=file;S.format=format;S.bytes=bytes;S.pdf=p;S.page=1;S.count=p.numPages;S.place=null;$("fname").textContent=file.name+(format==="pdf"?"":" → PDF");screen("sign");
+ msg(format==="pdf"?"Коснитесь места, где должна стоять подпись.":format.toUpperCase()+" преобразован локально в PDF. Проверьте страницы и коснитесь места подписи.");await render()
+}
+async function choose(f){
+ if(!f)return;try{
+ if(/\.pdf$/i.test(f.name)||f.type==="application/pdf")return openPdf(new Uint8Array(await f.arrayBuffer()),f,"pdf");
+ if(/\.docx$/i.test(f.name)||f.type.indexOf("wordprocessingml")>=0)return openPdf(await docxToPdf(f),f,"docx");
+ if(/\.doc$/i.test(f.name)||f.type==="application/msword")return openPdf(await docToPdf(f),f,"doc");
+ throw Error("Нужен PDF, DOCX или DOC.");
+ }catch(e){prog(false);alert(e.message||"Не удалось открыть документ.")}
+}
+async function render(){
+ const p=await S.pdf.getPage(S.page),basev=p.getViewport({scale:1}),viewer=document.querySelector(".viewer"),w=Math.max(280,Math.min(720,viewer.clientWidth-16)),v=p.getViewport({scale:w/basev.width}),d=Math.min(devicePixelRatio||1,2),c=$("pdfc");c.width=Math.round(v.width*d);c.height=Math.round(v.height*d);c.style.width=v.width+"px";c.style.height=v.height+"px";$("stage").style.width=v.width+"px";$("stage").style.height=v.height+"px";await p.render({canvasContext:c.getContext("2d"),viewport:v,transform:[d,0,0,d,0,0]}).promise;$("pages").textContent="Страница "+S.page+" из "+S.count;$("counter").textContent=S.page+" / "+S.count;$("prev").disabled=S.page<=1;$("next").disabled=S.page>=S.count;draw()
+}
+function draw(){const e=$("sig"),p=S.place;if(!p||p.page!==S.page){e.hidden=true;return}e.hidden=false;e.style.left=(p.x*100)+"%";e.style.top=(p.y*100)+"%";e.style.width=(p.w*100)+"%";e.style.height=(p.h*100)+"%";$("sigimg").src=p.url;$("finish").disabled=false;$("redraw").disabled=false}
+const pad=$("pad"),penWidth=$("penWidth"),ballpoint=$("ballpoint");let strokes=[],cur=null,down=false;
+try{const w=localStorage.getItem("personal-sign-pen-width"),b=localStorage.getItem("personal-sign-ballpoint");if(w)penWidth.value=w;if(b!==null)ballpoint.checked=b==="1"}catch(e){}
+function syncPen(){ $("penWidthVal").textContent=Number(penWidth.value).toFixed(1);try{localStorage.setItem("personal-sign-pen-width",penWidth.value);localStorage.setItem("personal-sign-ballpoint",ballpoint.checked?"1":"0")}catch(e){} predraw() }
+penWidth.oninput=syncPen;ballpoint.onchange=syncPen;syncPen();
+function psize(){const r=pad.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,3);pad.width=Math.max(1,Math.round(r.width*d));pad.height=Math.max(1,Math.round(r.height*d));predraw()}
+function pt(e){const r=pad.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height,t:performance.now(),p:(e.pressure&&e.pressure>0)?e.pressure:.5}}
+function clamp(a,b,v){return Math.max(a,Math.min(b,v))}
+function predraw(){const r=pad.getBoundingClientRect();if(!r.width)return;const d=pad.width/r.width,x=pad.getContext("2d"),bw=Number(penWidth.value)||2.6,ball=ballpoint.checked;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,r.width,r.height);x.strokeStyle="#1f4e9e";x.lineCap="round";x.lineJoin="round";for(const st of (cur?[...strokes,cur]:strokes)){if(!st.length)continue;if(st.length===1){x.globalAlpha=.92;x.beginPath();x.arc(st[0].x*r.width,st[0].y*r.height,bw/2,0,Math.PI*2);x.fillStyle="#1f4e9e";x.fill();continue}for(let i=1;i<st.length;i++){const a=st[i-1],b=st[i],dx=(b.x-a.x)*r.width,dy=(b.y-a.y)*r.height,dist=Math.hypot(dx,dy),dt=Math.max(1,b.t-a.t),speed=dist/dt;let mult=1,alpha=.96;if(ball){const pressure=clamp(.72,1.15,.82+(b.p||.5)*.42);const speedFactor=clamp(.72,1.08,1.06-speed*.34);mult=pressure*speedFactor;alpha=clamp(.72,.96,.94-speed*.12)}x.globalAlpha=alpha;x.lineWidth=bw*mult;x.beginPath();x.moveTo(a.x*r.width,a.y*r.height);x.lineTo(b.x*r.width,b.y*r.height);x.stroke()}}x.globalAlpha=1;$("okPad").disabled=!(strokes.length||cur)}
+function openPad(){strokes=[];cur=null;$("modal").classList.add("on");requestAnimationFrame(psize)}
+function closePad(){$("modal").classList.remove("on")}
+pad.onpointerdown=e=>{e.preventDefault();down=true;cur=[pt(e)];pad.setPointerCapture?.(e.pointerId);predraw()};
+pad.onpointermove=e=>{if(!down)return;e.preventDefault();cur.push(pt(e));predraw()};
+pad.onpointerup=e=>{if(!down)return;down=false;if(cur&&cur.length)strokes.push(cur);cur=null;predraw()};
+function crop(){let minx=1,miny=1,maxx=0,maxy=0;strokes.flat().forEach(p=>{minx=Math.min(minx,p.x);miny=Math.min(miny,p.y);maxx=Math.max(maxx,p.x);maxy=Math.max(maxy,p.y)});const r=pad.getBoundingClientRect(),d=pad.width/r.width,padn=10*d,sx=Math.max(0,minx*pad.width-padn),sy=Math.max(0,miny*pad.height-padn),ex=Math.min(pad.width,maxx*pad.width+padn),ey=Math.min(pad.height,maxy*pad.height+padn),o=document.createElement("canvas");o.width=Math.max(1,ex-sx);o.height=Math.max(1,ey-sy);o.getContext("2d").drawImage(pad,sx,sy,o.width,o.height,0,0,o.width,o.height);return{url:o.toDataURL("image/png"),aspect:o.width/o.height}}
+$("stage").addEventListener("pointerup",e=>{if(S.place||e.target.closest(".sig"))return;const r=$("stage").getBoundingClientRect();S.tap={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};openPad()});
+$("clearPad").onclick=()=>{strokes=[];cur=null;predraw()};$("cancelPad").onclick=()=>{closePad();S.tap=null};
+$("okPad").onclick=()=>{const z=crop(),r=$("stage").getBoundingClientRect(),w=.32,h=Math.min(.20,(w*r.width)/(z.aspect*r.height)),t=S.tap||{x:.65,y:.72};S.place={page:S.page,x:Math.max(0,Math.min(1-w,t.x-w/2)),y:Math.max(0,Math.min(1-h,t.y-h/2)),w,h,url:z.url,aspect:z.aspect};closePad();draw()};
+let move=null;$("sig").onpointerdown=e=>{if(e.target===$("handle"))return;const r=$("stage").getBoundingClientRect();move={type:"m",sx:e.clientX,sy:e.clientY,x:S.place.x,y:S.place.y,r};e.currentTarget.setPointerCapture?.(e.pointerId)};
+$("handle").onpointerdown=e=>{e.stopPropagation();const r=$("stage").getBoundingClientRect();move={type:"r",sx:e.clientX,w:S.place.w,r};e.currentTarget.setPointerCapture?.(e.pointerId)};
+window.onpointermove=e=>{if(!move||!S.place)return;if(move.type==="m"){S.place.x=Math.max(0,Math.min(1-S.place.w,move.x+(e.clientX-move.sx)/move.r.width));S.place.y=Math.max(0,Math.min(1-S.place.h,move.y+(e.clientY-move.sy)/move.r.height))}else{const w=Math.max(.10,Math.min(.75,move.w+(e.clientX-move.sx)/move.r.width));S.place.w=w;S.place.h=Math.min(.30,(w*move.r.width)/(S.place.aspect*move.r.height))}draw()};window.onpointerup=()=>move=null;
+async function finalize(){
+ if(!S.place)return;prog(true,"Фиксирую PDF","Подпись встраивается в документ");
+ try{const d=await PDFLib.PDFDocument.load(S.bytes.slice()),p=d.getPages()[S.place.page-1],img=await d.embedPng(S.place.url),sz=p.getSize();p.drawImage(img,{x:S.place.x*sz.width,y:sz.height-(S.place.y+S.place.h)*sz.height,width:S.place.w*sz.width,height:S.place.h*sz.height});S.final=new Uint8Array(await d.save());S.psig=await mkpsig(S.final,S.file.name);S.base=base(S.file.name)+"_signed";$("hash").textContent=S.psig.documentSha256;screen("done")}catch(e){alert(e.message||"Не удалось сформировать PDF")}finally{prog(false)}
+}
+async function verify(){
+ try{const f=$("vpdf").files[0],s=$("vpsig").files[0];if(!f||!s)return;const bytes=new Uint8Array(await f.arrayBuffer()),o=JSON.parse(await s.text()),h=hex(await sha(bytes)),pub=await crypto.subtle.importKey("jwk",o.publicKeyJwk,{name:"ECDSA",namedCurve:"P-256"},true,["verify"]),m=new TextEncoder().encode("PERSONAL-SIGN-1\n"+o.documentSha256),ok=await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},pub,unb64(o.signatureBase64Url),m),r=$("vresult");r.hidden=false;if(!ok){r.className="notice err";r.textContent="INVALID SIGNATURE — файл .PSIG изменён или повреждён."}else if(h!==o.documentSha256){r.className="notice err";r.textContent="DOCUMENT MODIFIED — PDF отличается от подписанной версии."}else{r.className="notice ok";r.textContent="VERIFIED — PDF совпадает с зафиксированной версией."}}catch(e){alert("Не удалось проверить: "+e.message)}
+}
+$("start").onclick=()=>$("picker").click();$("picker").onchange=e=>{choose(e.target.files[0]);e.target.value=""};
+$("homeBtn").onclick=$("doneHome").onclick=$("verifyBack").onclick=()=>screen("home");
+$("prev").onclick=async()=>{if(S.page>1){S.page--;await render()}};$("next").onclick=async()=>{if(S.page<S.count){S.page++;await render()}};
+$("redraw").onclick=openPad;$("finish").onclick=finalize;$("getPdf").onclick=()=>dl(S.final,S.base+".pdf","application/pdf");$("getPsig").onclick=()=>dl(JSON.stringify(S.psig,null,2),S.base+".psig","application/json");
+$("verifyOpen").onclick=()=>screen("verify");$("vpdf").onchange=$("vpsig").onchange=()=>{$("verifyBtn").disabled=!($("vpdf").files[0]&&$("vpsig").files[0])};$("verifyBtn").onclick=verify;
+window.addEventListener("resize",()=>{if($("modal").classList.contains("on"))psize();if(S.pdf&&$("sign").classList.contains("on"))render().catch(()=>{})});
+})();
+</script>
+</body></html>

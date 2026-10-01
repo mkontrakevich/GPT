@@ -1,14 +1,6 @@
-name: Generate CSUM editorial images
+name: Legacy batch CSUM image generator
 
 on:
-  push:
-    branches:
-      - csum-nn-site
-    paths:
-      - "articles/**.html"
-      - "tools/generate_csum_images.py"
-      - "skills/csum-editorial-writer/SKILL.md"
-      - ".github/workflows/generate-csum-images.yml"
   workflow_dispatch:
     inputs:
       force_regenerate:

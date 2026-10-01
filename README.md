@@ -37,6 +37,6 @@ python -m http.server 8080
 - `workers/csum-image-api/` — Cloudflare Worker-прокси к OpenRouter Image API.
 - `editor-image-studio.js` — генерация, preview и публикация выбранного candidate.
 
-OpenRouter key хранится только в Worker secret. В production-режиме R2 хранит generated assets, KV хранит активную версию изображения для каждого visual id. Публичный сайт получает только опубликованный manifest.
+OpenRouter key хранится только в Worker secret. В production-режиме R2 хранит generated assets и активный JSON-manifest изображений. Публичный сайт получает только опубликованный manifest.
 
 Открыть редактор локально: `/admin.html`.

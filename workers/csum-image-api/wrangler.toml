@@ -1,17 +1,17 @@
 name = "csum-nn-image-studio"
 main = "worker.js"
 compatibility_date = "2026-10-01"
+workers_dev = true
 
 [vars]
 SITE_URL = "https://mkontrakevich.github.io/GPT/"
-# For production, set the exact site origin, e.g.:
+# For production you may restrict CORS:
 # ALLOWED_ORIGIN = "https://mkontrakevich.github.io"
 
-# Secrets (do not commit values):
+[[r2_buckets]]
+binding = "CSUM_IMAGES"
+bucket_name = "csum-nn-images"
+
+# Secrets (never commit values):
 # wrangler secret put OPENROUTER_API_KEY
 # wrangler secret put ADMIN_TOKEN
-#
-# Optional persistent publication:
-# 1) create an R2 bucket and bind it as CSUM_IMAGES
-# 2) create a KV namespace and bind it as CSUM_CONTENT
-# See README.md in this folder.

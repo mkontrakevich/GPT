@@ -1,6 +1,11 @@
 name: Deploy CSUM Image API
 
 on:
+  push:
+    branches: [csum-nn-site]
+    paths:
+      - "workers/csum-image-api/**"
+      - ".github/workflows/deploy-csum-image-api.yml"
   workflow_dispatch:
 
 permissions:

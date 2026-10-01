@@ -1,4 +1,4 @@
-# source: csum-nn-site@2450b10312e875345d33a36623b1a319413126ae
+# source: csum-nn-site@db95b3c384e610d51a061ddd4484fdef16214a5d
 name: Deploy CSUM Nizhny Novgorod
 
 on:

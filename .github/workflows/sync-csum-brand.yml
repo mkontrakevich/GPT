@@ -76,7 +76,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- assets/brand/csum-logo.svg assets/brand/csum-logo-official.png; then
+          if [ -z "$(git status --porcelain -- assets/brand/csum-logo.svg assets/brand/csum-logo-official.png)" ]; then
             echo "Brand asset already current"
             exit 0
           fi

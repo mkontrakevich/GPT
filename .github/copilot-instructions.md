@@ -1,0 +1,13 @@
+# ЦУМ Нижний Новгород — repository instructions
+
+For any content/editorial task in this repository, read and follow:
+
+`skills/csum-editorial-writer/SKILL.md`
+
+Core constraints:
+- no question-form headlines;
+- write full useful magazine articles, not ad cards;
+- native tenant/product integration appears only after useful editorial content;
+- verify tenant/product/event claims against current csum.ru or official tenant sources;
+- never invent stock, price, discount or product availability;
+- preserve the existing v2 visual composition unless the task explicitly asks to redesign it.

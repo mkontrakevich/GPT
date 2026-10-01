@@ -111,7 +111,7 @@ All new editorial visuals are created from the website's built-in **CSUM Image S
 4. For identity-sensitive scenes, especially the main facade hero, attach the current visual or an uploaded image as a reference.
 5. Generate through the OpenRouter Image API.
 6. Review the candidate before publication.
-7. Apply the approved candidate. With R2 + KV bindings the Worker publishes it for all visitors; without those bindings it remains a local editor preview.
+7. Apply the approved candidate. With R2 bindings the Worker publishes it for all visitors; without those bindings it remains a local editor preview.
 
 ### Security
 - Browser → Cloudflare Worker → OpenRouter.

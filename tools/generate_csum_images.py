@@ -12,7 +12,7 @@ OUT_DIR = ROOT / "assets" / "generated"
 MANIFEST_PATH = OUT_DIR / "manifest.json"
 API_BASE = "https://openrouter.ai/api/v1"
 API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
-MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "bytedance-seed/seedream-4.5").strip()
+MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "openai/gpt-image-2").strip()
 FORCE = os.environ.get("FORCE_REGENERATE", "0").lower() in {"1","true","yes"}
 HERO_REFERENCE_URL = os.environ.get("CSUM_HERO_REFERENCE_URL","https://www.csum.ru/upload/content/max_685126cd7bccf.jpg").strip()
 

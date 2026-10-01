@@ -10,4 +10,5 @@ bucket_name = "csum-nn-images"
 # Optional official social source URLs:
 # CSUM_VK_URL = "..."
 # CSUM_TG_URL = "..."
-# Secret: ADMIN_TOKEN
+# Secrets: ADMIN_TOKEN, OPENROUTER_API_KEY
+# Editorial engine: Source Cache → Facts → Content Plan → Articles

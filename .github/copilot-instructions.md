@@ -1,5 +1,9 @@
 # ЦУМ Нижний Новгород — repository instructions
 
+For any frontend/layout task in this repository, read and follow:
+
+`skills/web-layout/SKILL.md`
+
 For any content/editorial task in this repository, read and follow:
 
 `skills/csum-editorial-writer/SKILL.md`

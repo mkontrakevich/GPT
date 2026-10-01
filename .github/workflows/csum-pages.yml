@@ -1,0 +1,42 @@
+name: Deploy CSUM Nizhny Novgorod
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/csum-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: csum-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout CSUM site branch
+        uses: actions/checkout@v4
+        with:
+          ref: csum-nn-site
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

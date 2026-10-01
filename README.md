@@ -29,3 +29,14 @@
 python -m http.server 8080
 ```
 Открыть `http://localhost:8080/`.
+## v4 — встроенный генератор изображений
+- `admin.html` — встроенный CSUM Image Studio.
+- `content/visuals.json` — единый каталог визуалов секций и статей.
+- `openrouter-image.js` — browser client без API-ключа.
+- `site-image-runtime.js` — подмена опубликованных изображений на главной, в журнале и статьях.
+- `workers/csum-image-api/` — Cloudflare Worker-прокси к OpenRouter Image API.
+- `editor-image-studio.js` — генерация, preview и публикация выбранного candidate.
+
+OpenRouter key хранится только в Worker secret. В production-режиме R2 хранит generated assets, KV хранит активную версию изображения для каждого visual id. Публичный сайт получает только опубликованный manifest.
+
+Открыть редактор локально: `/admin.html`.

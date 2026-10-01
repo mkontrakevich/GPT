@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#f5f5f4">
+<title>Personal Sign 1.7</title>
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: blob:; connect-src 'none'; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none';">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--bg:#f5f5f4;--card:#fff;--ink:#18181b;--muted:#71717a;--line:#e4e4e7;--bad:#b91c1c}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+body{overscroll-behavior:none}.wrap{max-width:760px;margin:auto;padding:max(16px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom))}
+h1{font-size:26px;line-height:1.05;margin:10px 0}p{color:var(--muted);line-height:1.45}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px}
+.btn{appearance:none;border:0;border-radius:15px;min-height:52px;padding:0 16px;font-size:16px;font-weight:650;background:#ececef;color:var(--ink)}
+.btn.primary{background:#18181b;color:white}.btn.block{width:100%}.stack{display:grid;gap:10px}.small{font-size:12px;color:var(--muted)}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}.back{width:44px;height:44px;padding:0}.screen{display:none}.screen.on{display:block}
+#picker{display:none}.drop{display:flex;min-height:150px;align-items:center;justify-content:center;text-align:center;border:1px dashed #c7c7cc;border-radius:18px;background:white;padding:18px;cursor:pointer}
+.viewer{overflow:auto;background:#ddd;border-radius:14px;padding:8px;max-height:62vh}.page{position:relative;margin:auto;background:white;box-shadow:0 1px 6px #0002;touch-action:none}
+#pdfc{display:block;max-width:100%;height:auto}.sig{position:absolute;border:1px dashed #777;border-radius:6px;touch-action:none;user-select:none}
+.sig img{width:100%;height:100%;display:block;pointer-events:none}.handle{position:absolute;right:-10px;bottom:-10px;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #222}
+.nav{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0}.nav span{min-width:90px;text-align:center;color:var(--muted);font-size:13px}
+.notice{padding:10px 12px;border-radius:12px;background:#f0f0f2;color:#52525b;font-size:13px;margin-bottom:10px}
+.err{background:#fff1f2;color:#9f1239}.ok{background:#ecfdf5;color:#166534}
+.modal{position:fixed;inset:0;background:#111;z-index:50;display:none;flex-direction:column;padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+.modal.on{display:flex}.rotate{display:none;background:#222;color:white;border-radius:14px;padding:10px 12px;margin-bottom:8px;font-size:13px}.padbar{display:flex;gap:8px;margin-top:8px}
+#pad{flex:1;width:100%;background:white;border-radius:16px;touch-action:none;display:block}.padtitle{color:white;text-align:center;padding:4px 0 8px}.penctl{display:flex;align-items:center;gap:12px;color:#fff;background:#1b1b1d;border-radius:14px;padding:10px 12px;margin-bottom:8px}.penctl label{font-size:13px;white-space:nowrap}.penctl input[type=range]{flex:1;min-width:90px}.penctl .val{font-variant-numeric:tabular-nums;min-width:32px;text-align:right}.penmode{display:flex;align-items:center;gap:7px;font-size:13px;white-space:nowrap}.penmode input{width:18px;height:18px}
+@media(orientation:portrait){.rotate{display:block}}.sandbox{position:fixed;left:-20000px;top:0;width:794px;background:#fff}
+.legacy{width:794px;min-height:1123px;padding:72px 74px;background:#fff;color:#111;font-family:"Times New Roman",serif;font-size:16px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
+.progress{position:fixed;inset:0;background:#0008;z-index:80;display:none;place-items:center;padding:20px}.progress.on{display:grid}.progress>div{background:white;border-radius:18px;padding:20px;max-width:320px;text-align:center}
+code{font-size:11px;overflow-wrap:anywhere}
+.menu2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.privacy-grid{display:grid;gap:8px}.privacy-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}.privacy-row:last-child{border-bottom:0}.privacy-row b{text-align:right}.vault-list{display:grid;gap:10px}.vault-item{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}.vault-name{font-weight:650;overflow-wrap:anywhere}.vault-meta{font-size:12px;color:var(--muted);margin-top:4px}.vault-actions{display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;margin-top:10px}.vault-actions .btn{min-height:44px;padding:0 10px;font-size:13px}.danger{color:#b91c1c}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:12px;background:#ecfdf5;color:#166534}.center{text-align:center}.legal-list{margin:0;padding-left:20px;color:var(--muted);line-height:1.45}.legal-list li{margin:8px 0}.checkrow{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted)}.checkrow input{width:20px;height:20px;flex:0 0 auto;margin-top:1px}.legal-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}.legal-links .btn{min-height:44px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen on">
+  <div class="small">PERSONAL SIGN 1.7 · SELF-CONTAINED</div>
+  <h1>Подпись на документе.<br>Прямо на телефоне.</h1>
+  <p>PDF, DOCX и старый DOC. Документ и рукописная подпись обрабатываются в браузере на вашем устройстве.</p>
+  <div class="stack">
+    <button class="btn primary block" id="start">Подписать документ</button>
+    <button class="btn block" id="vaultOpen">Локальный Vault</button>
+    <button class="btn block" id="verifyOpen">Проверить PDF + .PSIG</button>
+    <button class="btn block" id="privacyOpen">Приватность и данные</button>
+  </div>
+  <p class="small"><span class="pill">Приватная сессия</span> Документ и рисунок подписи по умолчанию живут только в оперативной памяти страницы. В Vault попадает только то, что вы сохраняете сами. Runtime-библиотеки загружаются только с этого же ресурса; сторонние CDN не используются.</p>
+</section>
+
+<section id="legalGate" class="screen">
+ <div class="small">PERSONAL SIGN 1.6 · ПЕРВОЕ ОТКРЫТИЕ</div>
+ <h1>Документы остаются у вас.</h1>
+ <div class="card">
+  <ul class="legal-list">
+   <li>Документ и рисунок подписи обрабатываются локально в браузере; приложение не загружает их на сервер автора.</li>
+   <li>Вы сами выбираете документ и отвечаете за законность использования содержащихся в нём персональных данных и подписи.</li>
+   <li>Визуальный росчерк и файл .PSIG сами по себе не являются квалифицированной электронной подписью.</li>
+   <li>Перед отправкой документа вы должны проверить результат и требования получателя к форме подписи.</li>
+  </ul>
+ </div>
+ <label class="checkrow" style="margin:14px 2px"><input id="acceptLegal" type="checkbox"><span>Я понимаю локальный принцип работы и принимаю условия использования.</span></label>
+ <button class="btn primary block" id="acceptLegalBtn" disabled>Продолжить</button>
+ <div class="legal-links" style="margin-top:10px"><button class="btn" id="gatePolicy">Конфиденциальность</button><button class="btn" id="gateTerms">Условия</button></div>
+</section>
+
+<input id="picker" type="file" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/msword,.doc">
+
+<section id="sign" class="screen">
+  <div class="top"><button class="btn back" id="homeBtn">←</button><div><b id="fname">Документ</b><div class="small" id="pages">Страница</div></div></div>
+  <div id="banner" class="notice">Коснитесь места, где должна стоять подпись.</div>
+  <div class="viewer"><div id="stage" class="page"><canvas id="pdfc"></canvas><div id="sig" class="sig" hidden><img id="sigimg"><div class="handle" id="handle"></div></div></div></div>
+  <div class="nav"><button class="btn" id="prev">←</button><span id="counter"></span><button class="btn" id="next">→</button></div>
+  <div class="stack">
+    <button class="btn" id="redraw" disabled>Нарисовать заново</button>
+    <button class="btn primary" id="finish" disabled>Зафиксировать PDF</button>
+  </div>
+</section>
+
+<section id="done" class="screen">
+  <div class="top"><button class="btn back" id="doneHome">←</button><b>Готово</b></div>
+  <div class="card">
+    <div>✓ Подпись встроена</div><div>✓ PDF зафиксирован</div><div>✓ Контроль SHA-256 создан</div>
+    <p class="small">SHA-256</p><code id="hash"></code>
+  </div>
+  <div class="stack" style="margin-top:12px">
+    <button class="btn primary" id="getPdf">Скачать PDF</button>
+    <button class="btn" id="getPsig">Скачать .PSIG</button>
+    <button class="btn" id="saveVault">Сохранить в зашифрованный Vault</button>
+    <div id="vaultSaveStatus" class="small center"></div>
+  </div>
+</section>
+
+<section id="vault" class="screen">
+ <div class="top"><button class="btn back" id="vaultBack">←</button><div><b>Локальный Vault</b><div class="small">Зашифровано на этом устройстве</div></div></div>
+ <div class="notice">Здесь хранятся только документы, которые вы явно сохранили после подписания. Исходные DOC/DOCX автоматически не сохраняются.</div>
+ <div id="vaultList" class="vault-list"></div>
+ <div id="vaultEmpty" class="card center"><b>Vault пуст</b><p class="small">Подпишите документ и выберите «Сохранить в зашифрованный Vault».</p></div>
+</section>
+
+<section id="privacy" class="screen">
+ <div class="top"><button class="btn back" id="privacyBack">←</button><div><b>Приватность и данные</b><div class="small">Что остаётся на устройстве</div></div></div>
+ <div class="card privacy-grid">
+   <div class="privacy-row"><span>Исходный документ после сессии</span><b>Не сохраняется</b></div>
+   <div class="privacy-row"><span>Рисунок подписи отдельно</span><b>Не сохраняется</b></div>
+   <div class="privacy-row"><span>Защита Vault</span><b id="vaultProtection">Настроится при первом сохранении</b></div>
+   <div class="privacy-row"><span>Ключ подписи</span><b>Non-extractable, на устройстве</b></div>
+   <div class="privacy-row"><span>Настройки пера</span><b>На устройстве</b></div>
+   <div class="privacy-row"><span>Документы в Vault</span><b id="privacyVaultCount">0</b></div>
+   <div class="privacy-row"><span>Облачные копии приложения</span><b>0</b></div>
+   <div class="privacy-row"><span>Runtime-библиотеки</span><b>Только локальные</b></div><div class="privacy-row"><span>Офлайн-ресурсы</span><b id="offlineStatus">Встроены в приложение</b></div>
+ </div>
+ <p class="small">Vault 1.5 использует AES‑256‑GCM. Ключ Vault не хранится постоянно: он выводится из вашего PIN/пароля через PBKDF2 только при разблокировке и остаётся только в оперативной памяти. При сворачивании приложения Vault блокируется автоматически. Очистка данных браузера удалит Vault и криптографические данные.</p>
+ <div class="legal-links" style="margin-top:12px"><button class="btn" id="privacyPolicyBtn">Конфиденциальность</button><button class="btn" id="privacyTermsBtn">Условия</button></div>
+ <button class="btn block danger" id="clearLocal" style="margin-top:12px">Очистить все локальные данные Personal Sign</button>
+</section>
+
+<section id="policy" class="screen">
+ <div class="top"><button class="btn back" id="policyBack">←</button><b>Конфиденциальность</b></div>
+ <div class="card">
+  <p><b>Локальная обработка.</b> Personal Sign не требует аккаунта и не содержит серверного API для загрузки документов. Содержимое документов, рисунок подписи и PIN Vault приложением автору не отправляются.</p>
+  <p><b>На устройстве.</b> В браузере могут храниться настройки пера, криптографический ключ подписи и зашифрованный Vault, если пользователь сам его использует.</p>
+  <p><b>Сетевые метаданные.</b> Хостинг и поставщики библиотек могут видеть технические данные соединения, например IP-адрес, время запроса и User-Agent. Содержимое выбранного документа код Personal Sign им не отправляет.</p>
+  <p><b>Ответственность пользователя.</b> Пользователь самостоятельно определяет правовое основание работы с данными третьих лиц в выбранном документе.</p>
+ </div>
+</section>
+
+<section id="terms" class="screen">
+ <div class="top"><button class="btn back" id="termsBack">←</button><b>Условия использования</b></div>
+ <div class="card">
+  <p>Personal Sign — технический инструмент локального размещения графического росчерка и проверки целостности файла.</p>
+  <p>Пользователь подтверждает, что вправе использовать загружаемый документ, содержащиеся в нём сведения и создаваемую подпись, и несёт ответственность за отправку итогового файла адресату.</p>
+  <p>Приложение не удостоверяет личность пользователя и не заявляет, что графический росчерк является КЭП, УНЭП или иной электронной подписью с заранее установленной юридической силой.</p>
+  <p>Юридическая значимость электронной формы зависит от закона, требований адресата и/или соглашения участников электронного взаимодействия.</p>
+  <p>Пользователь обязан проверить визуальное отображение документа после преобразования DOC/DOCX и до его отправки.</p>
+ </div>
+</section>
+
+<section id="verify" class="screen">
+ <div class="top"><button class="btn back" id="verifyBack">←</button><b>Проверка</b></div>
+ <div class="stack">
+  <label class="drop">Выбрать подписанный PDF<input hidden id="vpdf" type="file" accept="application/pdf,.pdf"></label>
+  <label class="drop">Выбрать .PSIG<input hidden id="vpsig" type="file" accept=".psig,application/json"></label>
+  <button class="btn primary" id="verifyBtn" disabled>Проверить</button>
+  <div id="vresult" class="notice" hidden></div>
+ </div>
+</section>
+</div>
+
+<div class="modal" id="modal">
+ <div class="rotate">↻ Поверните телефон горизонтально — так удобнее расписаться.</div>
+ <div class="padtitle">Ваша подпись</div>
+ <div class="penctl"><label for="penWidth">Толщина</label><input id="penWidth" type="range" min="1" max="5" step="0.2" value="2.6"><span class="val" id="penWidthVal">2.6</span><label class="penmode"><input id="ballpoint" type="checkbox" checked>Шариковая ручка</label></div>
+ <canvas id="pad"></canvas>
+ <div class="padbar"><button class="btn" id="cancelPad">Отмена</button><button class="btn" id="clearPad">Очистить</button><button class="btn primary" id="okPad" disabled>Готово</button></div>
+</div>
+
+<div class="progress" id="progress"><div><b id="ptitle">Обработка</b><p id="pdetail">Локально на устройстве</p></div></div>
+<div id="sandbox" class="sandbox"></div>
+<div id="privacyCurtain" style="display:none;position:fixed;inset:0;z-index:999;background:#18181b;color:white;align-items:center;justify-content:center;text-align:center;padding:28px"><div><b>Personal Sign заблокирован</b><p style="color:#d4d4d8">Вернитесь в приложение, чтобы продолжить.</p></div></div>
+
+<script src="./vendor/jszip-3.10.1.min.js"></script>
+<script src="./vendor/docx-preview-0.4.1.min.js"></script>
+<script src="./vendor/html2canvas-1.4.1.min.js"></script>
+<script src="./vendor/pdf-lib-1.17.1.min.js"></script>
+<script src="./vendor/pdfjs-2.9.359.min.js"></script>
+<script src="./vendor/docToText-0.1.0.js"></script>
+<script src="./app.js"></script>
+</body></html>

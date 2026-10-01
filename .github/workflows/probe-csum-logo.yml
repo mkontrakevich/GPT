@@ -14,56 +14,38 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect official csum.ru HTML and styles
+      - name: Inspect official csum.ru logo assets
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import re, urllib.request, urllib.parse
-          from html.parser import HTMLParser
+          import re, urllib.request, urllib.parse, struct
 
           ROOT='https://www.csum.ru/'
-          req=urllib.request.Request(ROOT, headers={'User-Agent':'Mozilla/5.0'})
-          html=urllib.request.urlopen(req,timeout=30).read().decode('utf-8','replace')
-          print('HTML_BYTES',len(html))
+          UA={'User-Agent':'Mozilla/5.0'}
 
+          def get(path, binary=False):
+              url=urllib.parse.urljoin(ROOT,path)
+              raw=urllib.request.urlopen(urllib.request.Request(url,headers=UA),timeout=30).read()
+              return raw if binary else raw.decode('utf-8','replace')
+
+          html=get('/')
+          print('HTML_BYTES',len(html))
           for i,line in enumerate(html.splitlines(),1):
-              if re.search(r'logo|\.svg|brand', line, re.I):
+              if re.search(r'logo|\.svg|brand',line,re.I):
                   print(f'HTML_LINE {i}: {line[:2000]}')
 
-          class P(HTMLParser):
-              def __init__(self):
-                  super().__init__(); self.css=[]; self.img=[]; self.svg=0
-              def handle_starttag(self,tag,attrs):
-                  d=dict(attrs)
-                  if tag=='link' and 'stylesheet' in d.get('rel',''):
-                      if d.get('href'): self.css.append(d['href'])
-                  if tag in ('img','source','use'):
-                      for k in ('src','srcset','href','xlink:href'):
-                          if d.get(k): self.img.append((tag,k,d[k]))
-                  if tag=='svg': self.svg+=1
-          p=P(); p.feed(html)
-          print('INLINE_SVG_COUNT',p.svg)
-          for item in p.img:
-              print('MEDIA_REF',item)
-          for href in p.css:
-              url=urllib.parse.urljoin(ROOT,href)
-              print('CSS',url)
-              try:
-                  css=urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=20).read().decode('utf-8','replace')
-              except Exception as e:
-                  print('CSS_ERROR',url,e); continue
-              for m in re.finditer(r'url\(([^)]+)\)',css,re.I):
-                  raw=m.group(1).strip(' \"\'')
-                  if 'svg' in raw.lower() or 'logo' in raw.lower():
-                      print('CSS_ASSET',urllib.parse.urljoin(url,raw))
-              for line in css.splitlines():
-                  if re.search(r'logo|\.svg|brand',line,re.I):
-                      print('CSS_LINE',line[:1500])
+          fav=get('/favicon.svg')
+          print('OFFICIAL_FAVICON_SVG_BEGIN')
+          print(fav[:12000])
+          print('OFFICIAL_FAVICON_SVG_END')
 
-          urls=set()
-          for m in re.finditer(r'(?P<q>[\"\'])(?P<u>[^\"\']+\.svg(?:\?[^\"\']*)?)(?P=q)',html,re.I):
-              urls.add(urllib.parse.urljoin(ROOT,m.group('u')))
-          print('OFFICIAL_FAVICON_SVG')\n          fav=urllib.request.urlopen(urllib.request.Request(urllib.parse.urljoin(ROOT,'/favicon.svg'),headers={'User-Agent':'Mozilla/5.0'}),timeout=20).read().decode('utf-8','replace')\n          print(fav[:12000])\n          print('OFFICIAL_LOGO_PNG_INFO')\n          raw=urllib.request.urlopen(urllib.request.Request(urllib.parse.urljoin(ROOT,'/images/logo.png'),headers={'User-Agent':'Mozilla/5.0'}),timeout=20).read()\n          print('logo.png bytes',len(raw),'signature',raw[:16].hex())\n          print('SVG_URLS')
-          for u in sorted(urls): print(u)
+          png=get('/images/logo.png', binary=True)
+          print('OFFICIAL_LOGO_PNG_BYTES',len(png))
+          if png[:8] == b'\x89PNG\r\n\x1a\n':
+              w,h=struct.unpack('>II',png[16:24])
+              print('OFFICIAL_LOGO_PNG_SIZE',w,h)
+
+          print('OFFICIAL_LOGO_PNG_URL',urllib.parse.urljoin(ROOT,'/images/logo.png'))
+          print('OFFICIAL_FAVICON_SVG_URL',urllib.parse.urljoin(ROOT,'/favicon.svg'))
           PY

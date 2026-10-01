@@ -39,6 +39,18 @@ jobs:
       - name: Compile generator
         run: python3 -m py_compile tools/generate_csum_images.py
 
+      - name: Validate site and generator source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check script.js
+          python -m py_compile tools/generate_csum_images.py
+          test -s assets/brand/csum-logo.svg
+          grep -q 'assets/brand/csum-logo.svg' index.html
+          grep -q 'motion-ribbon' index.html
+          grep -q 'CSUM ANIMATED LANDING' styles.css
+          echo "Source validation passed"
+
       - name: Check OpenRouter configuration
         id: preflight
         shell: bash

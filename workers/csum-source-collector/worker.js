@@ -37,6 +37,25 @@ async function extractFacts(env,items){
  const facts=(parsed.facts||[]).filter(f=>allowed.has(f.source_fingerprint)&&f.source_url&&f.evidence).map(f=>({...f,extracted_at:new Date().toISOString()}));
  return {facts};
 }
+async function planContent(env,facts){
+ if(!env.OPENROUTER_API_KEY||!facts.length)return {topics:[],warning:"NO_FACTS_OR_OPENROUTER"};
+ const prompt="Plan a current editorial homepage for CSUM Nizhny Novgorod using ONLY supplied verified facts. Return strict JSON {topics:[{id,title,deck,angle,fact_indexes,native_integrations,priority}]}. Create 3-7 useful magazine topics. Native integrations must refer only to entities explicitly present in facts; never invent products, stock, prices or promotions. Headlines must be statements, not questions. FACTS:"+JSON.stringify(facts);
+ const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Planner"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.2})});
+ if(!res.ok)throw new Error("OpenRouter planner HTTP "+res.status);
+ const d=await res.json();let p;try{p=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{p={topics:[]}}
+ return {topics:(p.topics||[]).slice(0,7),generated_at:new Date().toISOString()};
+}
+async function writeArticles(env,plan,facts){
+ const articles=[];
+ for(const topic of (plan.topics||[])){
+  const used=(topic.fact_indexes||[]).map(i=>facts[i]).filter(Boolean); if(!used.length)continue;
+  const prompt="Write a Russian CSUM city-magazine article grounded ONLY in VERIFIED_FACTS. 700-1100 words. Structure: headline, deck, 3-5 sections, practical conclusion, then subtle native commerce in final 20-30%, one CTA. Commercial content <=15%. Do not invent facts, products, availability, prices, dates or discounts. Return strict JSON {title,deck,sections:[{heading,body}],native_integrations:[{entity,context,source_url}],cta:{label,url},visual_brief}. TOPIC:"+JSON.stringify(topic)+" VERIFIED_FACTS:"+JSON.stringify(used);
+  const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Writer"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.45})});
+  if(!res.ok)continue; const d=await res.json();let a;try{a=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{continue}
+  articles.push({...a,id:topic.id||crypto.randomUUID(),generated_at:new Date().toISOString(),source_fingerprints:used.map(x=>x.source_fingerprint)});
+ }
+ return articles;
+}
 async function refresh(env){
  if(!env.CSUM_IMAGES)throw new Error("CSUM_IMAGES binding required");
  const previous=await read(env,"_editorial/source-cache.json",{items:[]});
@@ -52,14 +71,18 @@ async function refresh(env){
  const cache={window_days:WINDOW_DAYS,refreshed_at:new Date().toISOString(),sources:{csum:true,...configured},official_sources:official,errors,items:active};
  const extracted=await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
  const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,warning:extracted.warning||null,facts:extracted.facts};
- await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);
- return {...cache,fact_count:factStore.facts.length,fact_warning:factStore.warning};
+ const plan=await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message}));
+ const articles=await writeArticles(env,plan,factStore.facts).catch(()=>[]);
+ await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);await write(env,"_editorial/content-plan.json",plan);await write(env,"_editorial/articles.json",{updated_at:cache.refreshed_at,articles});
+ return {...cache,fact_count:factStore.facts.length,topic_count:(plan.topics||[]).length,article_count:articles.length,fact_warning:factStore.warning,plan_warning:plan.warning||null};
 }
 export default{async fetch(req,env){const u=new URL(req.url);if(req.method==="OPTIONS")return new Response(null,{status:204,headers:{"access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"x-csum-admin-token"}});
  try{
   if(u.pathname==="/health")return json({ok:true,service:"csum-source-collector",r2:!!env.CSUM_IMAGES,window_days:WINDOW_DAYS});
   if(u.pathname==="/api/sources"&&req.method==="GET"){let c=await read(env,"_editorial/source-cache.json",null);if(!c||Date.now()-Date.parse(c.refreshed_at)>15*60*1000)c=await refresh(env);return json(c)}
   if(u.pathname==="/api/facts"&&req.method==="GET")return json(await read(env,"_editorial/facts.json",{window_days:WINDOW_DAYS,facts:[]}));
+  if(u.pathname==="/api/content-plan"&&req.method==="GET")return json(await read(env,"_editorial/content-plan.json",{topics:[]}));
+  if(u.pathname==="/api/articles"&&req.method==="GET")return json(await read(env,"_editorial/articles.json",{articles:[]}));
   if(u.pathname==="/api/sources/refresh"&&req.method==="POST"){if(!env.ADMIN_TOKEN||req.headers.get("x-csum-admin-token")!==env.ADMIN_TOKEN)return json({error:"UNAUTHORIZED"},401);return json(await refresh(env))}
   return json({error:"NOT_FOUND"},404);
  }catch(e){return json({error:e.message||String(e)},500)}}};

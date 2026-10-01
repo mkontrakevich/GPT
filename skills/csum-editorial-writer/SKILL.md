@@ -137,3 +137,25 @@ Every editorial cover image is generated automatically through OpenRouter from t
 
 ### Publishing rule
 Article text change → OpenRouter generation → local generated asset → HTML rewiring → validation that no remote editorial image sources remain → GitHub Pages deploy.
+
+
+## Automated image generation
+All editorial imagery for the production site is generated through OpenRouter. Do not hotlink article images from external websites and do not use stock photography as a production dependency.
+
+Pipeline:
+1. The article HTML is the source of truth.
+2. The generator reads the article headline, meta description and opening paragraphs.
+3. It converts that text into an editorial visual brief automatically.
+4. It calls OpenRouter's dedicated `POST /api/v1/images` endpoint.
+5. The returned image bytes are converted to local WebP assets under `assets/generated/`.
+6. The generated assets are committed and the site is redeployed.
+
+Rules:
+- default model: `openai/gpt-image-2`, overridable through repository variable `OPENROUTER_IMAGE_MODEL`;
+- API key exists only as GitHub Actions secret `OPENROUTER_API_KEY`; never expose it in browser JavaScript;
+- high quality and 16:9 are requested when supported by the selected model;
+- no text, typography, UI, banners, watermarks or fake tenant logos inside generated images;
+- article imagery visualizes the editorial meaning, not a direct product advertisement;
+- the ЦУМ facade is allowed only for the main hero; hero generation uses the official facade image as a reference when the selected model supports `input_references`;
+- all other generated images must avoid the facade;
+- if article text changes, its source hash changes and the corresponding image is regenerated automatically.

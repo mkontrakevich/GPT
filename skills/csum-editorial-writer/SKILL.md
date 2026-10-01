@@ -100,62 +100,46 @@ Before publishing, verify:
 - paragraphs are concise and journalistic;
 - commercial CTA is one step, not a banner stack.
 
-## AI image generation contract
-Every editorial cover image is generated automatically through OpenRouter from the article itself.
+## AI image generation contract — v4
 
-### Source of visual meaning
-- Every article MUST contain a meaningful `<meta name="description">`; this is the primary visual description.
-- The generator combines the article `<h1>`, meta description and the first substantive paragraphs.
-- Do not hand-pick an unrelated stock image after writing the article.
-- The text must be sufficient to produce one clear photographic scene.
+All new editorial visuals are created from the website's built-in **CSUM Image Studio** (`admin.html`) through OpenRouter. The public browser never receives the OpenRouter API key.
 
-### Generation pipeline
-- Generator: `tools/generate_csum_images.py`.
-- OpenRouter Image API is called only in GitHub Actions; never from public browser JavaScript.
-- API credential: GitHub Actions secret `OPENROUTER_API_KEY`.
-- Model is configurable with repository variable `OPENROUTER_IMAGE_MODEL`; default is `bytedance-seed/seedream-4.5`.
-- Generated files are committed to `assets/generated/`.
-- The generator stores a prompt/source hash in `assets/generated/manifest.json` and regenerates only when the article text, model or visual policy changes.
-- Production HTML must reference local generated files only. Third-party editorial image hotlinks are prohibited.
-- If generation fails, do not replace the image with a random external photo and do not publish a broken image.
+### Workflow
+1. Select a page section or article in Image Studio.
+2. The editor builds a prompt from the editorial brief in `content/visuals.json`.
+3. The editor may revise the prompt manually.
+4. For identity-sensitive scenes, especially the main facade hero, attach the current visual or an uploaded image as a reference.
+5. Generate through the OpenRouter Image API.
+6. Review the candidate before publication.
+7. Apply the approved candidate. With R2 + KV bindings the Worker publishes it for all visitors; without those bindings it remains a local editor preview.
 
-### Visual rules for generated article images
-- premium editorial photography, realistic rather than illustrative;
-- horizontal cover composition; current pipeline requests 16:9;
-- no text, typography, labels, UI, webpage mockups, collages or watermarks inside the image;
-- no fake tenant logos or invented signage;
-- scene derives from the editorial thesis, not from a literal product packshot;
-- restrained contemporary styling and believable human scale;
-- the exterior facade of ЦУМ is prohibited in article covers.
+### Security
+- Browser → Cloudflare Worker → OpenRouter.
+- `OPENROUTER_API_KEY` exists only as a Worker secret.
+- Generation and publication require `ADMIN_TOKEN`.
+- Never place API keys in `config.js`, HTML, localStorage, query strings or the repository.
+- `config.js` stores only the public Worker endpoint.
 
-### Hero exception
-- Only the site hero may show the ЦУМ facade.
-- Hero generation uses a real facade reference at generation time when the selected OpenRouter image model supports `input_references`.
-- Preserve building identity, proportions, window rhythm, central entrance, cornice, verticals and architecture.
-- Do not redesign, add floors or invent signage.
-- The reference is generation input, not the production hero image; production displays the generated result.
+### Visual policy
+- photography/editorial scene, not illustration unless specifically requested;
+- no text, labels, UI, webpage mockups, collages, watermarks or fake logos inside an image;
+- no marketplace-style packshot as the main editorial image;
+- scene must visualize the article's meaning, not simply display a product;
+- the exterior facade of ЦУМ is reserved for the main hero;
+- article and section imagery should normally avoid the facade;
+- when the real ЦУМ architecture is used, prefer a real reference image and preserve identity and geometry rather than inventing a new building;
+- 16:9 is the primary site ratio; change it only when the page component requires another format.
 
-### Publishing rule
-Article text change → OpenRouter generation → local generated asset → HTML rewiring → validation that no remote editorial image sources remain → GitHub Pages deploy.
+### Editorial + commerce connection
+The article creates interest first. The image reinforces that story. Tenant/product links appear only after the reader understands the practical need. Never generate an image whose sole meaning is “buy this product”.
 
+### Required fields for every new article
+When the skill creates a new article it must also add an entry to `content/visuals.json` containing:
+- stable `id`;
+- `type: "article"`;
+- article title;
+- aspect ratio;
+- concise visual brief;
+- non-generated fallback image only as a temporary resilience layer.
 
-## Automated image generation
-All editorial imagery for the production site is generated through OpenRouter. Do not hotlink article images from external websites and do not use stock photography as a production dependency.
-
-Pipeline:
-1. The article HTML is the source of truth.
-2. The generator reads the article headline, meta description and opening paragraphs.
-3. It converts that text into an editorial visual brief automatically.
-4. It calls OpenRouter's dedicated `POST /api/v1/images` endpoint.
-5. The returned image bytes are converted to local WebP assets under `assets/generated/`.
-6. The generated assets are committed and the site is redeployed.
-
-Rules:
-- default model: `openai/gpt-image-2`, overridable through repository variable `OPENROUTER_IMAGE_MODEL`;
-- API key exists only as GitHub Actions secret `OPENROUTER_API_KEY`; never expose it in browser JavaScript;
-- high quality and 16:9 are requested when supported by the selected model;
-- no text, typography, UI, banners, watermarks or fake tenant logos inside generated images;
-- article imagery visualizes the editorial meaning, not a direct product advertisement;
-- the ЦУМ facade is allowed only for the main hero; hero generation uses the official facade image as a reference when the selected model supports `input_references`;
-- all other generated images must avoid the facade;
-- if article text changes, its source hash changes and the corresponding image is regenerated automatically.
+The generated candidate becomes the preferred visual through the Image API content manifest rather than by baking text or commerce into the image.

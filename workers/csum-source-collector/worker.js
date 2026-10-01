@@ -5,6 +5,13 @@ const hash=async s=>Array.from(new Uint8Array(await crypto.subtle.digest("SHA-25
 async function read(env,key,fallback){const o=await env.CSUM_IMAGES.get(key);if(!o)return fallback;try{return await o.json()}catch{return fallback}}
 async function write(env,key,v){await env.CSUM_IMAGES.put(key,JSON.stringify(v),{httpMetadata:{contentType:"application/json"}})}
 function abs(href,base){try{return new URL(href,base).toString()}catch{return null}}
+async function discoverOfficialSources(){
+ const page=await fetch("https://www.csum.ru/contacts",{headers:{"user-agent":"CSUM Editorial Source Collector/1.0"}}).then(r=>r.text());
+ const links=[...page.matchAll(/href=["\']([^"\']+)["\']/gi)].map(m=>m[1]);
+ const vk=links.find(x=>/vk\.com\//i.test(x))||null;
+ const telegram=links.find(x=>/(?:t\.me|telegram\.me)\//i.test(x))||null;
+ return {contacts_url:"https://www.csum.ru/contacts",vk,telegram,discovered_at:new Date().toISOString()};
+}
 async function collectCsum(){
  const root="https://www.csum.ru/";
  const res=await fetch(root,{headers:{"user-agent":"CSUM Editorial Source Collector/1.0"}});
@@ -24,12 +31,13 @@ async function refresh(env){
  let fresh=[], errors=[];
  try{fresh.push(...await collectCsum())}catch(e){errors.push({source:"csum.ru",error:e.message})}
  // VK/TG adapters are deliberately gated until official channel URLs are configured.
- const configured={vk:!!env.CSUM_VK_URL,telegram:!!env.CSUM_TG_URL};
+ const official=await discoverOfficialSources().catch(()=>({contacts_url:"https://www.csum.ru/contacts",vk:null,telegram:null}));
+ const configured={vk:!!official.vk,telegram:!!official.telegram};
  const merged=await normalize([...fresh,...previous.items]);
  const cutoff=Date.now()-WINDOW_DAYS*DAY;
  const active=merged.filter(x=>!x.published_at||Date.parse(x.published_at)>=cutoff).slice(0,250);
  const archive=merged.filter(x=>x.published_at&&Date.parse(x.published_at)<cutoff).slice(0,1000);
- const cache={window_days:WINDOW_DAYS,refreshed_at:new Date().toISOString(),sources:{csum:true,...configured},errors,items:active};
+ const cache={window_days:WINDOW_DAYS,refreshed_at:new Date().toISOString(),sources:{csum:true,...configured},official_sources:official,errors,items:active};
  await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});
  return cache;
 }

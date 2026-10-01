@@ -1,0 +1,13 @@
+name = "csum-nn-source-collector"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[[r2_buckets]]
+binding = "CSUM_IMAGES"
+bucket_name = "csum-nn-images"
+
+# Optional official social source URLs:
+# CSUM_VK_URL = "..."
+# CSUM_TG_URL = "..."
+# Secret: ADMIN_TOKEN

@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#f5f5f4">
-<title>Personal Sign 1.5</title>
+<title>Personal Sign 1.6</title>
 <meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: blob:; connect-src 'none'; worker-src 'self' blob: https://cdnjs.cloudflare.com; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none';">
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -31,13 +32,13 @@ h1{font-size:26px;line-height:1.05;margin:10px 0}p{color:var(--muted);line-heigh
 .legacy{width:794px;min-height:1123px;padding:72px 74px;background:#fff;color:#111;font-family:"Times New Roman",serif;font-size:16px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
 .progress{position:fixed;inset:0;background:#0008;z-index:80;display:none;place-items:center;padding:20px}.progress.on{display:grid}.progress>div{background:white;border-radius:18px;padding:20px;max-width:320px;text-align:center}
 code{font-size:11px;overflow-wrap:anywhere}
-.menu2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.privacy-grid{display:grid;gap:8px}.privacy-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}.privacy-row:last-child{border-bottom:0}.privacy-row b{text-align:right}.vault-list{display:grid;gap:10px}.vault-item{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}.vault-name{font-weight:650;overflow-wrap:anywhere}.vault-meta{font-size:12px;color:var(--muted);margin-top:4px}.vault-actions{display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;margin-top:10px}.vault-actions .btn{min-height:44px;padding:0 10px;font-size:13px}.danger{color:#b91c1c}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:12px;background:#ecfdf5;color:#166534}.center{text-align:center}
+.menu2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.privacy-grid{display:grid;gap:8px}.privacy-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}.privacy-row:last-child{border-bottom:0}.privacy-row b{text-align:right}.vault-list{display:grid;gap:10px}.vault-item{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}.vault-name{font-weight:650;overflow-wrap:anywhere}.vault-meta{font-size:12px;color:var(--muted);margin-top:4px}.vault-actions{display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;margin-top:10px}.vault-actions .btn{min-height:44px;padding:0 10px;font-size:13px}.danger{color:#b91c1c}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:12px;background:#ecfdf5;color:#166534}.center{text-align:center}.legal-list{margin:0;padding-left:20px;color:var(--muted);line-height:1.45}.legal-list li{margin:8px 0}.checkrow{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted)}.checkrow input{width:20px;height:20px;flex:0 0 auto;margin-top:1px}.legal-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}.legal-links .btn{min-height:44px;font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <section id="home" class="screen on">
-  <div class="small">PERSONAL SIGN 1.5 · PRIVACY HARDENED</div>
+  <div class="small">PERSONAL SIGN 1.6 · LOCAL PRIVACY</div>
   <h1>Подпись на документе.<br>Прямо на телефоне.</h1>
   <p>PDF, DOCX и старый DOC. Документ и рукописная подпись обрабатываются в браузере на вашем устройстве.</p>
   <div class="stack">
@@ -47,6 +48,22 @@ code{font-size:11px;overflow-wrap:anywhere}
     <button class="btn block" id="privacyOpen">Приватность и данные</button>
   </div>
   <p class="small"><span class="pill">Приватная сессия</span> Документ и рисунок подписи по умолчанию живут только в оперативной памяти страницы. В Vault попадает только то, что вы сохраняете сами.</p>
+</section>
+
+<section id="legalGate" class="screen">
+ <div class="small">PERSONAL SIGN 1.6 · ПЕРВОЕ ОТКРЫТИЕ</div>
+ <h1>Документы остаются у вас.</h1>
+ <div class="card">
+  <ul class="legal-list">
+   <li>Документ и рисунок подписи обрабатываются локально в браузере; приложение не загружает их на сервер автора.</li>
+   <li>Вы сами выбираете документ и отвечаете за законность использования содержащихся в нём персональных данных и подписи.</li>
+   <li>Визуальный росчерк и файл .PSIG сами по себе не являются квалифицированной электронной подписью.</li>
+   <li>Перед отправкой документа вы должны проверить результат и требования получателя к форме подписи.</li>
+  </ul>
+ </div>
+ <label class="checkrow" style="margin:14px 2px"><input id="acceptLegal" type="checkbox"><span>Я понимаю локальный принцип работы и принимаю условия использования.</span></label>
+ <button class="btn primary block" id="acceptLegalBtn" disabled>Продолжить</button>
+ <div class="legal-links" style="margin-top:10px"><button class="btn" id="gatePolicy">Конфиденциальность</button><button class="btn" id="gateTerms">Условия</button></div>
 </section>
 
 <input id="picker" type="file" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/msword,.doc">
@@ -96,7 +113,29 @@ code{font-size:11px;overflow-wrap:anywhere}
    <div class="privacy-row"><span>Офлайн-ресурсы</span><b id="offlineStatus">После первого запуска</b></div>
  </div>
  <p class="small">Vault 1.5 использует AES‑256‑GCM. Ключ Vault не хранится постоянно: он выводится из вашего PIN/пароля через PBKDF2 только при разблокировке и остаётся только в оперативной памяти. При сворачивании приложения Vault блокируется автоматически. Очистка данных браузера удалит Vault и криптографические данные.</p>
+ <div class="legal-links" style="margin-top:12px"><button class="btn" id="privacyPolicyBtn">Конфиденциальность</button><button class="btn" id="privacyTermsBtn">Условия</button></div>
  <button class="btn block danger" id="clearLocal" style="margin-top:12px">Очистить все локальные данные Personal Sign</button>
+</section>
+
+<section id="policy" class="screen">
+ <div class="top"><button class="btn back" id="policyBack">←</button><b>Конфиденциальность</b></div>
+ <div class="card">
+  <p><b>Локальная обработка.</b> Personal Sign не требует аккаунта и не содержит серверного API для загрузки документов. Содержимое документов, рисунок подписи и PIN Vault приложением автору не отправляются.</p>
+  <p><b>На устройстве.</b> В браузере могут храниться настройки пера, криптографический ключ подписи и зашифрованный Vault, если пользователь сам его использует.</p>
+  <p><b>Сетевые метаданные.</b> Хостинг и поставщики библиотек могут видеть технические данные соединения, например IP-адрес, время запроса и User-Agent. Содержимое выбранного документа код Personal Sign им не отправляет.</p>
+  <p><b>Ответственность пользователя.</b> Пользователь самостоятельно определяет правовое основание работы с данными третьих лиц в выбранном документе.</p>
+ </div>
+</section>
+
+<section id="terms" class="screen">
+ <div class="top"><button class="btn back" id="termsBack">←</button><b>Условия использования</b></div>
+ <div class="card">
+  <p>Personal Sign — технический инструмент локального размещения графического росчерка и проверки целостности файла.</p>
+  <p>Пользователь подтверждает, что вправе использовать загружаемый документ, содержащиеся в нём сведения и создаваемую подпись, и несёт ответственность за отправку итогового файла адресату.</p>
+  <p>Приложение не удостоверяет личность пользователя и не заявляет, что графический росчерк является КЭП, УНЭП или иной электронной подписью с заранее установленной юридической силой.</p>
+  <p>Юридическая значимость электронной формы зависит от закона, требований адресата и/или соглашения участников электронного взаимодействия.</p>
+  <p>Пользователь обязан проверить визуальное отображение документа после преобразования DOC/DOCX и до его отправки.</p>
+ </div>
 </section>
 
 <section id="verify" class="screen">
@@ -144,7 +183,7 @@ function b64u(a){let s="";a.forEach(x=>s+=String.fromCharCode(x));return btoa(s)
 function unb64(s){s=s.replace(/-/g,"+").replace(/_/g,"/");s=s.padEnd(Math.ceil(s.length/4)*4,"=");return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
 function db(){return new Promise((ok,no)=>{const r=indexedDB.open("personal-sign",2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("keys"))d.createObjectStore("keys");if(!d.objectStoreNames.contains("vault"))d.createObjectStore("vault",{keyPath:"id"})};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
 async function key(){const d=await db();const old=await new Promise((ok,no)=>{const r=d.transaction("keys","readonly").objectStore("keys").get("k");r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});if(old)return old;const p=await crypto.subtle.generateKey({name:"ECDSA",namedCurve:"P-256"},false,["sign","verify"]);const jwk=await crypto.subtle.exportKey("jwk",p.publicKey);const rec={privateKey:p.privateKey,publicKeyJwk:jwk};await new Promise((ok,no)=>{const r=d.transaction("keys","readwrite").objectStore("keys").put(rec,"k");r.onsuccess=ok;r.onerror=()=>no(r.error)});return rec}
-async function mkpsig(bytes,sourceFormat){const h=hex(await sha(bytes)),k=await key(),m=new TextEncoder().encode("PERSONAL-SIGN-1\n"+h),sg=new Uint8Array(await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},k.privateKey,m));return{format:"PERSONAL-SIGN-1",documentSha256:h,signedAt:new Date().toISOString(),algorithm:"ECDSA-P256-SHA256",publicKeyJwk:k.publicKeyJwk,signatureBase64Url:b64u(sg),sourceFormat,appVersion:"1.5.0"}}
+async function mkpsig(bytes,sourceFormat){const h=hex(await sha(bytes)),k=await key(),m=new TextEncoder().encode("PERSONAL-SIGN-1\n"+h),sg=new Uint8Array(await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},k.privateKey,m));return{format:"PERSONAL-SIGN-1",documentSha256:h,signedAt:new Date().toISOString(),algorithm:"ECDSA-P256-SHA256",publicKeyJwk:k.publicKeyJwk,signatureBase64Url:b64u(sg),sourceFormat,appVersion:"1.6.0"}}
 let vaultSessionKey=null,vaultLockTimer=null;
 async function keyGet(name){const d=await db();return await new Promise((ok,no)=>{const r=d.transaction("keys","readonly").objectStore("keys").get(name);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
 async function keyPut(name,value){const d=await db();return await new Promise((ok,no)=>{const r=d.transaction("keys","readwrite").objectStore("keys").put(value,name);r.onsuccess=()=>ok();r.onerror=()=>no(r.error)})}
@@ -164,7 +203,7 @@ async function vaultDelete(id){if(!await unlockVault())return;const d=await db()
 async function vaultCount(){return (await vaultRecords()).length}
 async function renderVault(){const list=$("vaultList"),empty=$("vaultEmpty");list.innerHTML="";if(!await unlockVault()){screen("home");return}const recs=await vaultRecords();empty.hidden=recs.length>0;for(const rec of recs){const box=document.createElement("div");box.className="vault-item";let payload=null;try{payload=await vaultDecode(rec)}catch(e){}const name=document.createElement("div");name.className="vault-name";name.textContent=payload?.name||"Зашифрованный документ";const meta=document.createElement("div");meta.className="vault-meta";meta.textContent=new Date(rec.createdAt).toLocaleString("ru-RU");const acts=document.createElement("div");acts.className="vault-actions";const pdf=document.createElement("button");pdf.className="btn";pdf.textContent="PDF";pdf.disabled=!payload;pdf.onclick=()=>{touchVault();payload&&dl(b64Bytes(payload.pdf),payload.name,"application/pdf")};const ps=document.createElement("button");ps.className="btn";ps.textContent=".PSIG";ps.disabled=!payload;ps.onclick=()=>{touchVault();payload&&dl(JSON.stringify(payload.psig,null,2),payload.name.replace(/\.pdf$/i,"")+".psig","application/json")};const del=document.createElement("button");del.className="btn danger";del.textContent="×";del.onclick=async()=>{if(confirm("Удалить документ из локального Vault?")){await vaultDelete(rec.id);await renderVault()}};acts.append(pdf,ps,del);box.append(name,meta,acts);list.append(box)}}
 async function updatePrivacy(){try{$("privacyVaultCount").textContent=String(await vaultCount());$("vaultProtection").textContent=(await keyGet("vault-pin-config"))?"PIN/пароль + AES-256-GCM":"Настроится при первом сохранении"}catch(e){$("privacyVaultCount").textContent="—";$("vaultProtection").textContent="—"}$("offlineStatus").textContent=navigator.onLine?"Кэшируется локально":"Офлайн"}
-async function clearAllLocal(){if(!confirm("Удалить Vault, криптографические ключи и настройки Personal Sign с этого устройства?"))return;lockVault();const d=await db();await new Promise((ok,no)=>{const tx=d.transaction(["keys","vault"],"readwrite");tx.objectStore("keys").clear();tx.objectStore("vault").clear();tx.oncomplete=ok;tx.onerror=()=>no(tx.error)});try{localStorage.removeItem("personal-sign-pen-width");localStorage.removeItem("personal-sign-ballpoint")}catch(e){}if("caches"in window){for(const n of await caches.keys())if(n.startsWith("personal-sign"))await caches.delete(n)}alert("Локальные данные Personal Sign очищены.");location.reload()}
+async function clearAllLocal(){if(!confirm("Удалить Vault, криптографические ключи и настройки Personal Sign с этого устройства?"))return;lockVault();const d=await db();await new Promise((ok,no)=>{const tx=d.transaction(["keys","vault"],"readwrite");tx.objectStore("keys").clear();tx.objectStore("vault").clear();tx.oncomplete=ok;tx.onerror=()=>no(tx.error)});try{localStorage.removeItem("personal-sign-pen-width");localStorage.removeItem("personal-sign-ballpoint");localStorage.removeItem("personal-sign-legal-v1")}catch(e){}if("caches"in window){for(const n of await caches.keys())if(n.startsWith("personal-sign"))await caches.delete(n)}alert("Локальные данные Personal Sign очищены.");location.reload()}
 async function wipeSession(){try{if(S.pdf)await S.pdf.destroy()}catch(e){}S.file=null;S.format=null;S.bytes=null;S.pdf=null;S.page=1;S.count=1;S.place=null;S.tap=null;S.final=null;S.psig=null;S.base=null;strokes=[];cur=null;$("sig").hidden=true;$("pdfc").width=1;$("pdfc").height=1}
 function dl(data,name,type){const blob=data instanceof Blob?data:new Blob([data],{type}),u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1200)}
 async function htmlCanvasToPdf(node,title){
@@ -235,7 +274,15 @@ async function finalize(){
 async function verify(){
  try{const f=$("vpdf").files[0],s=$("vpsig").files[0];if(!f||!s)return;const bytes=new Uint8Array(await f.arrayBuffer()),o=JSON.parse(await s.text()),h=hex(await sha(bytes)),pub=await crypto.subtle.importKey("jwk",o.publicKeyJwk,{name:"ECDSA",namedCurve:"P-256"},true,["verify"]),m=new TextEncoder().encode("PERSONAL-SIGN-1\n"+o.documentSha256),ok=await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},pub,unb64(o.signatureBase64Url),m),r=$("vresult");r.hidden=false;if(!ok){r.className="notice err";r.textContent="INVALID SIGNATURE — файл .PSIG изменён или повреждён."}else if(h!==o.documentSha256){r.className="notice err";r.textContent="DOCUMENT MODIFIED — PDF отличается от подписанной версии."}else{r.className="notice ok";r.textContent="VERIFIED — PDF совпадает с зафиксированной версией."}}catch(e){alert("Не удалось проверить: "+e.message)}
 }
-$("start").onclick=()=>$("picker").click();$("picker").onchange=e=>{choose(e.target.files[0]);e.target.value=""};
+function legalAccepted(){try{return localStorage.getItem("personal-sign-legal-v1")==="accepted"}catch(e){return false}}
+function openPolicy(from){$("policyBack").dataset.from=from||"home";screen("policy")}
+function openTerms(from){$("termsBack").dataset.from=from||"home";screen("terms")}
+$("acceptLegal").onchange=e=>{$("acceptLegalBtn").disabled=!e.target.checked};
+$("acceptLegalBtn").onclick=()=>{if(!$("acceptLegal").checked)return;try{localStorage.setItem("personal-sign-legal-v1","accepted")}catch(e){}screen("home")};
+$("gatePolicy").onclick=()=>openPolicy("legalGate");$("gateTerms").onclick=()=>openTerms("legalGate");
+$("privacyPolicyBtn").onclick=()=>openPolicy("privacy");$("privacyTermsBtn").onclick=()=>openTerms("privacy");
+$("policyBack").onclick=()=>screen($("policyBack").dataset.from||"home");$("termsBack").onclick=()=>screen($("termsBack").dataset.from||"home");
+$("start").onclick=()=>{if(!legalAccepted()){screen("legalGate");return}$("picker").click()};$("picker").onchange=e=>{choose(e.target.files[0]);e.target.value=""};
 $("homeBtn").onclick=async()=>{await wipeSession();screen("home")};$("doneHome").onclick=async()=>{await wipeSession();screen("home")};$("verifyBack").onclick=$("vaultBack").onclick=$("privacyBack").onclick=()=>screen("home");
 $("prev").onclick=async()=>{if(S.page>1){S.page--;await render()}};$("next").onclick=async()=>{if(S.page<S.count){S.page++;await render()}};
 $("redraw").onclick=openPad;$("finish").onclick=finalize;$("getPdf").onclick=()=>dl(S.final,S.base+".pdf","application/pdf");$("getPsig").onclick=()=>dl(JSON.stringify(S.psig,null,2),S.base+".psig","application/json");
@@ -248,6 +295,7 @@ document.addEventListener("visibilitychange",()=>{const curtain=$("privacyCurtai
 window.addEventListener("pagehide",()=>{lockVault();$("privacyCurtain").style.display="flex"});
 window.addEventListener("pageshow",()=>{$("privacyCurtain").style.display="none"});
 if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+if(!legalAccepted())screen("legalGate");
 })();
 </script>
 </body></html>

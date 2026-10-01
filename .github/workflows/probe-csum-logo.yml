@@ -64,6 +64,6 @@ jobs:
           urls=set()
           for m in re.finditer(r'(?P<q>[\"\'])(?P<u>[^\"\']+\.svg(?:\?[^\"\']*)?)(?P=q)',html,re.I):
               urls.add(urllib.parse.urljoin(ROOT,m.group('u')))
-          print('SVG_URLS')
+          print('OFFICIAL_FAVICON_SVG')\n          fav=urllib.request.urlopen(urllib.request.Request(urllib.parse.urljoin(ROOT,'/favicon.svg'),headers={'User-Agent':'Mozilla/5.0'}),timeout=20).read().decode('utf-8','replace')\n          print(fav[:12000])\n          print('OFFICIAL_LOGO_PNG_INFO')\n          raw=urllib.request.urlopen(urllib.request.Request(urllib.parse.urljoin(ROOT,'/images/logo.png'),headers={'User-Agent':'Mozilla/5.0'}),timeout=20).read()\n          print('logo.png bytes',len(raw),'signature',raw[:16].hex())\n          print('SVG_URLS')
           for u in sorted(urls): print(u)
           PY

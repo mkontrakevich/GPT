@@ -150,3 +150,168 @@ img.media-failed{visibility:hidden!important}
 .brand{display:flex;align-items:center;justify-content:flex-start;width:132px;height:var(--header-h);line-height:1}
 .brand .brand-logo{display:block;width:auto;height:48px;max-width:132px;object-fit:contain;object-position:left center}
 @media(max-width:740px){.brand{width:112px;height:var(--header-h)}.brand .brand-logo{height:40px;max-width:112px}}
+
+/* CSUM ANIMATED LANDING — MOTION SYSTEM */
+:root{
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-smooth:cubic-bezier(.22,.61,.36,1);
+}
+body{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.header{
+  background:rgba(20,17,15,.96)!important;
+  color:#fff!important;
+  border-bottom-color:rgba(255,255,255,.12)!important;
+  transition:background .35s var(--ease-smooth),box-shadow .35s var(--ease-smooth),transform .35s var(--ease-smooth)!important;
+}
+.header.scrolled{
+  background:rgba(20,17,15,.985)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.09)!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.18)!important;
+}
+.brand .brand-logo{filter:none}
+.legacy-nav a{opacity:.82;transition:opacity .25s ease,transform .25s ease}
+.legacy-nav a:hover{opacity:1;transform:translateY(-1px)}
+.editorial-nav{box-shadow:0 10px 26px rgba(35,28,23,.045)}
+.hero{isolation:isolate}
+.hero::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:-20%;
+  pointer-events:none;
+  background:radial-gradient(circle at 18% 28%,rgba(255,255,255,.14),transparent 28%),
+             radial-gradient(circle at 78% 64%,rgba(154,36,56,.12),transparent 25%);
+  mix-blend-mode:screen;
+  animation:heroLight 11s ease-in-out infinite alternate;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.065) 45%,transparent 68%);
+  transform:translateX(-80%);
+  animation:heroSweep 8s ease-in-out 1.2s infinite;
+}
+@keyframes heroLight{to{transform:translate3d(3%,2%,0) scale(1.05)}}
+@keyframes heroSweep{0%,62%{transform:translateX(-90%)}85%,100%{transform:translateX(90%)}}
+.hero-copy{will-change:transform,opacity}
+body:not(.is-ready) .hero-copy{opacity:0;transform:translateY(32px)}
+body.is-ready .hero-copy{opacity:1;transform:none;transition:opacity 1s var(--ease-out),transform 1s var(--ease-out)}
+.hero h1 span{transition-delay:.08s}
+.hero-zoom{transition:opacity .25s ease,transform .35s var(--ease-out)}
+.hero-zoom:hover{transform:translateY(4px);opacity:.75}
+
+.motion-ribbon{
+  overflow:hidden;
+  white-space:nowrap;
+  background:#171310;
+  color:#e8ddd0;
+  border-top:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.motion-ribbon-track{
+  display:flex;
+  width:max-content;
+  will-change:transform;
+  animation:csumMarquee 30s linear infinite;
+}
+.motion-ribbon span{
+  display:block;
+  padding:13px 0;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+@keyframes csumMarquee{to{transform:translateX(-50%)}}
+
+.reveal{
+  opacity:0;
+  transform:translate3d(0,34px,0);
+  filter:blur(8px);
+  transition:opacity .9s var(--ease-out),transform .9s var(--ease-out),filter .9s var(--ease-out);
+}
+.reveal.visible{opacity:1;transform:none;filter:none}
+.reveal.motion-card.visible{
+  transform:perspective(1200px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translate3d(0,var(--lift,0px),0);
+}
+.motion-card{
+  transform-style:preserve-3d;
+  will-change:transform;
+  transition:transform .28s var(--ease-smooth),box-shadow .28s ease!important;
+}
+.magazine-card.motion-card:hover,.article-card.motion-card:hover,.food-card.motion-card:hover{--lift:-5px}
+.magazine-mini.motion-card:hover{--lift:-4px}
+.feature-story.motion-card:hover{--lift:-2px}
+
+.story-image,.magazine-lead,.cinematic{isolation:isolate}
+.story-image img,.magazine-lead>img,.cinematic img{
+  transform:translate3d(0,var(--media-y,0px),0) scale(1.045);
+  transition:transform .8s var(--ease-out),filter .6s ease;
+  will-change:transform;
+}
+.story-image:hover img,.magazine-lead:hover>img,.cinematic:hover img{transform:translate3d(0,var(--media-y,0px),0) scale(1.075)}
+.story-image::after,.magazine-lead::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(120deg,rgba(255,255,255,.08),transparent 35%,transparent 70%,rgba(255,255,255,.05));
+  opacity:0;
+  transition:opacity .4s ease;
+  z-index:1;
+}
+.story-image:hover::after,.magazine-lead:hover::before{opacity:1}
+
+.magazine-card{position:relative;overflow:hidden}
+.magazine-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:0;
+  height:1px;
+  background:var(--wine);
+  transition:width .65s var(--ease-out);
+}
+.magazine-card:hover::before{width:100%}
+.store-chip,.magazine-read,.story-link,.btn,.map-button{
+  transition:transform .22s var(--ease-out),background .25s ease,color .25s ease,border-color .25s ease,opacity .25s ease;
+  will-change:transform;
+}
+.cursor-glow{
+  position:fixed;
+  z-index:5;
+  width:360px;
+  height:360px;
+  left:0;
+  top:0;
+  border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(154,36,56,.085),rgba(154,36,56,0) 68%);
+  transform:translate3d(-50%,-50%,0);
+  opacity:0;
+  transition:opacity .35s ease;
+  mix-blend-mode:multiply;
+}
+.cursor-glow.active{opacity:1}
+.ai-image-ready{animation:aiImageIn .7s var(--ease-out) both}
+@keyframes aiImageIn{from{opacity:.25;filter:blur(12px);transform:scale(1.025)}to{opacity:1;filter:none}}
+
+@media(max-width:740px){
+  .motion-ribbon span{padding:11px 0;font-size:9px}
+  .hero::after{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .motion-ribbon-track,.hero::before,.hero::after{animation:none!important}
+  .reveal{opacity:1!important;transform:none!important;filter:none!important}
+  .motion-card{transform:none!important}
+  .story-image img,.magazine-lead>img,.cinematic img{transform:none!important}
+  .cursor-glow{display:none!important}
+}

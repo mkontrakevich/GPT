@@ -17,7 +17,7 @@ FORCE = os.environ.get("FORCE_REGENERATE", "0").lower() in {"1","true","yes"}
 HERO_REFERENCE_URL = os.environ.get("CSUM_HERO_REFERENCE_URL","https://www.csum.ru/upload/content/max_685126cd7bccf.jpg").strip()
 
 ARTICLE_FILES = [
-"дорога" if False else "dorozhnaya-avtonomnost.html",
+"dorozhnaya-avtonomnost.html",
 "dva-chasa-do-poezda.html",
 "pereryv-kotoryi-vozvrashchaet-vnimanie.html",
 "semeinyi-marshrut.html",

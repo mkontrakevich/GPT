@@ -18,3 +18,7 @@ Core constraints:
 - editorial imagery is automatic OpenRouter-generated media from article text; never add stock/hotlink article photos manually;
 - keep OpenRouter credentials server/CI-side only; never expose API keys in browser code;
 - use `assets/brand/csum-logo.svg` for the CSUM header brand asset;
+
+
+## v4 image workflow
+For all new editorial imagery use the built-in `admin.html` / CSUM Image Studio and the Cloudflare Worker under `workers/csum-image-api/`. Do not introduce third-party image hotlinks as the preferred production source. The OpenRouter key must never appear in browser code or commits. Every new article must receive a matching entry in `content/visuals.json`.

@@ -15,3 +15,6 @@ Core constraints:
 - verify tenant/product/event claims against current csum.ru or official tenant sources;
 - never invent stock, price, discount or product availability;
 - preserve the existing v2 visual composition unless the task explicitly asks to redesign it.
+- editorial imagery is automatic OpenRouter-generated media from article text; never add stock/hotlink article photos manually;
+- keep OpenRouter credentials server/CI-side only; never expose API keys in browser code;
+- use `assets/brand/csum-logo.svg` for the CSUM header brand asset;

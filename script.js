@@ -101,5 +101,25 @@
   $('#debugClose')?.addEventListener('click',()=>dbg.classList.remove('open'));
   addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key.toLowerCase()==='d') $('#debugToggle')?.click();});
 
+  // MEDIA RESILIENCE: never expose broken-image alt text inside the composition.
+  const mediaParents = '.hero-picture,.story-image,.magazine-lead,.cinematic';
+  $('img').forEach(img => {
+    const fail = () => {
+      const fallback = img.dataset.fallback;
+      if (fallback && !img.dataset.fallbackTried) {
+        img.dataset.fallbackTried = '1';
+        img.removeAttribute('srcset');
+        img.src = fallback;
+        return;
+      }
+      img.classList.add('media-failed');
+      img.closest(mediaParents)?.classList.add('media-frame-failed');
+      state.errors.push('image_failed: ' + (img.currentSrc || img.src || 'unknown'));
+      updateDebug();
+    };
+    img.addEventListener('error', fail);
+    if (img.complete && img.naturalWidth === 0) fail();
+  });
+
   log('ready');
 })();

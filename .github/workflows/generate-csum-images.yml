@@ -36,6 +36,9 @@ jobs:
           ref: csum-nn-site
           fetch-depth: 0
 
+      - name: Compile generator
+        run: python3 -m py_compile tools/generate_csum_images.py
+
       - name: Check OpenRouter configuration
         id: preflight
         shell: bash

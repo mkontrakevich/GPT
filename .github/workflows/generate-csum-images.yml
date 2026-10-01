@@ -46,9 +46,9 @@ jobs:
 
       - name: Generate editorial images through OpenRouter
         env:
-          OPENROUTER_API_KEY: \${{ secrets.OPENROUTER_API_KEY }}
-          OPENROUTER_IMAGE_MODEL: \${{ vars.OPENROUTER_IMAGE_MODEL || 'bytedance-seed/seedream-4.5' }}
-          FORCE_REGENERATE: \${{ inputs.force_regenerate && '1' || '0' }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_IMAGE_MODEL: ${{ vars.OPENROUTER_IMAGE_MODEL || 'bytedance-seed/seedream-4.5' }}
+          FORCE_REGENERATE: ${{ inputs.force_regenerate && '1' || '0' }}
         run: python tools/generate_csum_images.py
 
       - name: Validate generated image package
@@ -83,5 +83,5 @@ jobs:
       - name: Publish refreshed CSUM site
         if: steps.commit.outputs.changed == 'true'
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: gh workflow run csum-pages.yml --ref main

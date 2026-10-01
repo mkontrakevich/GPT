@@ -84,7 +84,7 @@
         }
         window.CSUMImageAPI.saveLocalOverride(state.item.id,record);
         $("#currentImage").src=record.url;
-        status(record.local_only?"Применено на этом устройстве. Для публикации подключите R2 + KV к Worker.":"Опубликовано: сайт будет брать этот visual через Image API.","ok");
+        status(record.local_only?"Применено на этом устройстве. Для публикации подключите R2 к Worker.":"Опубликовано: сайт будет брать этот visual через Image API.","ok");
       }catch(err){status(err.message||String(err),"err");}finally{btn.disabled=false;}
     };
   }

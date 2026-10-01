@@ -34,7 +34,7 @@
 
   <nav class="editorial-nav" id="editorialNav" aria-label="Редакционная навигация">
     <a href="#today">Сегодня</a>
-    <a href="magazine.html">Журнал</a>
+    <a href="#today">Главные истории</a><a href="magazine.html">Все статьи</a>
     <a href="#culture">Культурные события</a>
     <a href="#guide">Путеводитель</a>
     <a href="#gifts">Подарки</a>
@@ -62,26 +62,114 @@
       <button class="hero-zoom" id="heroZoom" type="button" aria-label="Приблизить центральный вход"><span>К центральному входу</span><i>↓</i></button>
     </section>
 
-    <section class="arrival-reveal" id="arrivalReveal" aria-label="Главный вход">
-      <div class="arrival-frame">
-        <img src="https://www.marinsgroup.ru/upload/contentRedactor/6523e18322ca3.jpg" srcset="https://www.marinsgroup.ru/upload/contentRedactor/6523e18322ca3.jpg 1400w, https://www.marinsgroup.ru/upload/contentRedactor/6523e18322ca3.jpg 2800w" sizes="100vw" alt="Центральный вход ЦУМа, фронтально" />
-        <div class="arrival-label"><span>Главный вход</span><b>Парадная точка встречи города и человека</b></div>
-      </div>
-    </section>
-
-    <section class="section intro" id="today">
+    <section class="section magazine-front" id="today">
       <div class="wrap">
-        <div class="section-head reveal">
-          <div><p class="eyebrow">Сейчас в ЦУМе</p><h2>Знакомый сайт — новый способ читать город.</h2></div>
-          <p class="lead">Привычные разделы текущего csum.ru сохраняются в шапке. Ниже появляется новый слой: редакционные статьи, события и маршруты, которые естественно приводят к магазинам и сервисам.</p>
+        <div class="magazine-masthead reveal">
+          <div>
+            <p class="eyebrow">Журнал ЦУМа · Нижний Новгород</p>
+            <h2>Город читается через маршруты, вещи и повседневные привычки.</h2>
+          </div>
+          <p class="lead">Это не каталог товаров. Сначала — полезная история, городской сценарий или разбор. И только затем — конкретное место в ЦУМе, где материал можно продолжить действием.</p>
         </div>
-        <div class="quick-grid">
-          <a class="quick-card reveal" href="#culture"><span>01</span><b>Культурные мероприятия</b><em>главная афиша Нижнего Новгорода</em></a>
-          <a class="quick-card reveal delay-1" href="#guide"><span>02</span><b>Путеводитель</b><em>маршруты по времени и интересам</em></a>
-          <a class="quick-card reveal delay-2" href="#gifts"><span>03</span><b>Подарки и сувениры</b><em>что действительно стоит увезти</em></a>
-          <a class="quick-card reveal" href="#family"><span>04</span><b>Семьям</b><em>досуг без лишней логистики</em></a>
-          <a class="quick-card reveal delay-1" href="#office"><span>05</span><b>Офисным сотрудникам</b><em>обед, сервисы, покупки по пути</em></a>
-          <a class="quick-card reveal delay-2" href="#locals"><span>06</span><b>Жителям района</b><em>полезное рядом каждый день</em></a>
+
+        <div class="magazine-cover-grid">
+          <article class="magazine-lead reveal">
+            <img src="https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg" alt="Нижний Новгород, короткий маршрут перед поездом">
+            <div class="magazine-lead-shade"></div>
+            <div class="magazine-lead-copy">
+              <span>Маршрут номера</span>
+              <h3>Два часа до поезда: короткий маршрут без риска опоздать</h3>
+              <p>Один сильный вид, короткая прогулка, спокойный возврат к вокзалу и полезная последняя остановка в ЦУМе.</p>
+              <div class="magazine-actions">
+                <a class="magazine-read" href="articles/dva-chasa-do-poezda.html">Читать материал →</a>
+                <a class="store-chip" href="https://www.csum.ru/stores/view?id=453" target="_blank">DNS · магазин в ЦУМе ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <div class="magazine-side">
+            <article class="magazine-mini reveal delay-1">
+              <span class="magazine-kicker">Город · вечер</span>
+              <h3>Вечер в новом городе начинается с паузы</h3>
+              <p>Спектакль, прогулка, кофе и один практичный заход перед событием — без ощущения, что весь вечер ушёл на логистику.</p>
+              <div class="magazine-actions compact">
+                <a class="magazine-read" href="articles/vecher-v-gorode.html">Читать →</a>
+                <a class="store-chip" href="https://www.csum.ru/stores/view?id=283" target="_blank">Familia ↗</a>
+              </div>
+            </article>
+
+            <article class="magazine-mini dark reveal delay-2">
+              <span class="magazine-kicker">Технологии · дорога</span>
+              <h3>Запас энергии — часть дорожной инфраструктуры</h3>
+              <p>Ёмкость, мощность, кабели и реальные сценарии поездки — без списка характеристик ради характеристик.</p>
+              <div class="magazine-actions compact">
+                <a class="magazine-read" href="articles/dorozhnaya-avtonomnost.html">Читать →</a>
+                <a class="store-chip light" href="https://www.csum.ru/stores/view?id=445" target="_blank">Future Phone ↗</a>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="magazine-index reveal">
+          <article class="magazine-card">
+            <span>Материалы · интерьер</span>
+            <h3>Свет, ткань и цвет: один оттенок в разное время суток</h3>
+            <p>Почему ткань меняется при дневном и искусственном свете и зачем смотреть материал в реальном пространстве.</p>
+            <div class="magazine-actions compact">
+              <a class="magazine-read" href="articles/svet-tkan-i-cvet.html">Читать →</a>
+              <a class="store-chip" href="https://www.csum.ru/stores/view?id=151" target="_blank">Любимые ткани ↗</a>
+            </div>
+          </article>
+          <article class="magazine-card">
+            <span>Стиль · событие</span>
+            <h3>Вечерний образ оценивается в движении</h3>
+            <p>Посадка, фактура и свет раскрываются не на статичном фото, а когда человек двигается и меняется освещение.</p>
+            <div class="magazine-actions compact">
+              <a class="magazine-read" href="articles/vechernii-obraz-v-dvizhenii.html">Читать →</a>
+              <a class="store-chip" href="https://www.csum.ru/stores/view?id=146" target="_blank">Mon amour ↗</a>
+            </div>
+          </article>
+          <article class="magazine-card">
+            <span>Семья · досуг</span>
+            <h3>Смена впечатлений — основа семейного маршрута</h3>
+            <p>Любопытство, движение, отдых и еда работают лучше одной длинной активности — особенно в плохую погоду.</p>
+            <div class="magazine-actions compact">
+              <a class="magazine-read" href="articles/semeinyi-marshrut.html">Читать →</a>
+              <a class="store-chip" href="https://www.csum.ru/stores/view?id=423" target="_blank">Кварки ↗</a>
+            </div>
+          </article>
+          <article class="magazine-card">
+            <span>Рабочий день · сервис</span>
+            <h3>Перерыв, который возвращает внимание</h3>
+            <p>Короткая смена среды, бытовая задача и кофе могут вернуть концентрацию лучше ещё десяти минут у экрана.</p>
+            <div class="magazine-actions compact">
+              <a class="magazine-read" href="articles/pereryv-kotoryi-vozvrashchaet-vnimanie.html">Читать →</a>
+              <a class="store-chip" href="https://www.csum.ru/stores/view?id=411" target="_blank">Альфа-Банк ↗</a>
+            </div>
+          </article>
+          <article class="magazine-card">
+            <span>Подарки · память</span>
+            <h3>Сувенир — память о месте, а не надпись на предмете</h3>
+            <p>Лучшие вещи из поездки работают как якоря памяти: через материал, вкус, запах и историю происхождения.</p>
+            <div class="magazine-actions compact">
+              <a class="magazine-read" href="articles/suvenir-kak-pamyat.html">Читать →</a>
+              <a class="store-chip" href="https://www.csum.ru/stores/view?id=201" target="_blank">Презент ↗</a>
+            </div>
+          </article>
+          <article class="magazine-card">
+            <span>Город · каждый день</span>
+            <h3>Универмаг в повседневном маршруте</h3>
+            <p>Многие покупки начинаются не с поиска, а с момента: вспомнили по пути, сравнили, примерили и сразу решили задачу.</p>
+            <div class="magazine-actions compact">
+              <a class="magazine-read" href="articles/univermag-v-povsednevnom-marshrute.html">Читать →</a>
+              <a class="store-chip" href="https://www.csum.ru/stores/view?id=452" target="_blank">Подружка ↗</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="magazine-footer-link reveal">
+          <span>Архив и все материалы</span>
+          <a href="magazine.html">Открыть весь журнал ЦУМа →</a>
         </div>
       </div>
     </section>
@@ -106,9 +194,9 @@
           </div>
         </article>
         <div class="grid-3 article-grid">
-          <article class="article-card reveal"><span>Город</span><h3>Один вечер в Нижнем: музыка, набережная и поздний кофе</h3><p>Как соединить одно событие и короткую прогулку, не превращая вечер в марафон.</p><a href="#food">Где сделать паузу →</a></article>
-          <article class="article-card reveal delay-1"><span>Культура</span><h3>Полчаса до фестиваля: город до начала события</h3><p>Полчаса до события — это время, когда город еще принадлежит вам: можно осмотреться, выбрать точку встречи и избежать спешки.</p><a href="#guide">Маршрут до события →</a></article>
-          <article class="article-card reveal delay-2"><span>Спорт</span><h3>Событие меняет взгляд на район</h3><p>Матч, забег или городской турнир меняет привычный маршрут. Мы показываем, где встретиться и что сделать до или после.</p><a href="#map">Открыть карту ЦУМа →</a></article>
+          <article class="article-card reveal"><span>Город</span><h3>Один вечер в Нижнем: музыка, набережная и поздний кофе</h3><p>Как соединить одно событие и короткую прогулку, не превращая вечер в марафон.</p><a href="https://www.csum.ru/stores/view?id=431" target="_blank">Coffee Like →</a></article>
+          <article class="article-card reveal delay-1"><span>Культура</span><h3>Полчаса до фестиваля: город до начала события</h3><p>Полчаса до события — это время, когда город еще принадлежит вам: можно осмотреться, выбрать точку встречи и избежать спешки.</p><a href="https://www.csum.ru/stores/view?id=283" target="_blank">Familia →</a></article>
+          <article class="article-card reveal delay-2"><span>Спорт</span><h3>Событие меняет взгляд на район</h3><p>Матч, забег или городской турнир меняет привычный маршрут. Мы показываем, где встретиться и что сделать до или после.</p><a href="https://www.csum.ru/stores/view?id=473" target="_blank">Форсаж →</a></article>
         </div>
       </div>
     </section>
@@ -159,9 +247,9 @@
           </div>
         </article>
         <div class="grid-3 article-grid">
-          <article class="article-card reveal"><span>Гастрономия</span><h3>Съедобный сувенир: вкус, который возвращает в поездку</h3><p>Еда — самый короткий путь к памяти о месте. Локальный продукт не требует объяснений, если у него есть история.</p><a href="#food">К гастрономии →</a></article>
-          <article class="article-card reveal delay-1"><span>Предмет</span><h3>Вещь, которую хочется оставить на столе</h3><p>Небольшой предмет работает лучше сувенира, если он красив сам по себе и не кричит о происхождении.</p><a href="articles/suvenir-kak-pamyat.html">Читать статью полностью →</a></article>
-          <article class="article-card reveal delay-2"><span>Подарок</span><h3>Подарок для коллег без туристического клише</h3><p>Лучший деловой подарок — вещь с локальной историей, но без избыточного фольклора.</p><a href="https://www.csum.ru/stores" target="_blank">Посмотреть магазины →</a></article>
+          <article class="article-card reveal"><span>Гастрономия</span><h3>Съедобный сувенир: вкус, который возвращает в поездку</h3><p>Еда — самый короткий путь к памяти о месте. Локальный продукт не требует объяснений, если у него есть история.</p><a href="https://www.csum.ru/stores/view?id=468" target="_blank">Еда от ШефСергея →</a></article>
+          <article class="article-card reveal delay-1"><span>Предмет</span><h3>Вещь, которую хочется оставить на столе</h3><p>Небольшой предмет работает лучше сувенира, если он красив сам по себе и не кричит о происхождении.</p><a href="https://www.csum.ru/stores/view?id=201" target="_blank">Презент →</a></article>
+          <article class="article-card reveal delay-2"><span>Подарок</span><h3>Подарок для коллег без туристического клише</h3><p>Лучший деловой подарок — вещь с локальной историей, но без избыточного фольклора.</p><a href="https://www.csum.ru/stores/view?id=283" target="_blank">Familia →</a></article>
         </div>
       </div>
     </section>

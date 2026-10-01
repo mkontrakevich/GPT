@@ -1,4 +1,4 @@
-const CACHE="personal-sign-1.5.0";
+const CACHE="personal-sign-1.6.0";
 const APP=["./","./index.html","./manifest.webmanifest","./icon.svg"];
 const REMOTE=[
 "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",

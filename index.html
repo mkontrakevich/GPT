@@ -1,26 +1,249 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#06141b">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="HROS">
-<link rel="manifest" href="./manifest.webmanifest">
-<title>HROS v0.1</title>
-<style>
-:root{--bg:#02080d;--panel:rgba(8,25,34,.78);--panel2:rgba(13,40,51,.72);--line:rgba(88,226,218,.24);--text:#e9fffd;--muted:#8fb7b7;--accent:#38d8cf;--accent2:#6e7cff;--danger:#ff7878;--ok:#79e8ae}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% 10%,#0d2932 0,#06131a 35%,#02070b 75%);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}button,input,textarea{font:inherit}.noise{position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:32px 32px}.app{min-height:100vh;padding:calc(16px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom));max-width:1180px;margin:auto}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;position:relative;z-index:5}.brand{display:flex;align-items:center;gap:12px}.mark{width:42px;height:42px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(56,216,207,.22),rgba(110,124,255,.12));box-shadow:0 0 28px rgba(56,216,207,.16)}.mark:before{content:"H";font-weight:900;color:var(--accent)}.brand b{letter-spacing:.14em}.brand small,.status{color:var(--muted);font-size:12px}.status{padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:rgba(5,22,29,.65)}.hero{display:grid;grid-template-columns:1fr 1.12fr;gap:28px;align-items:center;min-height:500px}.copy h1{font-size:clamp(42px,7vw,84px);line-height:.92;margin:0 0 18px;letter-spacing:-.06em}.gradient{background:linear-gradient(100deg,#ecffff 10%,var(--accent) 58%,#8994ff);-webkit-background-clip:text;color:transparent}.copy p{max-width:570px;color:var(--muted);font-size:18px;line-height:1.55}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.btn{border:1px solid var(--line);border-radius:14px;padding:13px 16px;background:rgba(15,44,54,.72);color:var(--text);font-weight:750;cursor:pointer}.btn.primary{background:linear-gradient(135deg,var(--accent),#2498a5);color:#001013;border:none}.btn:hover{transform:translateY(-1px)}.scene{height:440px;perspective:900px;position:relative;display:grid;place-items:center}.orbit{position:absolute;border:1px solid rgba(56,216,207,.17);border-radius:50%;transform-style:preserve-3d;animation:spin 18s linear infinite}.o1{width:390px;height:390px;transform:rotateX(66deg)}.o2{width:290px;height:290px;animation-direction:reverse;animation-duration:13s;transform:rotateY(72deg)}.core{width:125px;height:125px;border-radius:32px;display:grid;place-items:center;transform:rotateX(10deg) rotateY(-18deg);background:linear-gradient(145deg,rgba(56,216,207,.32),rgba(110,124,255,.18));border:1px solid rgba(143,255,250,.55);box-shadow:0 0 90px rgba(56,216,207,.22),inset 0 0 40px rgba(255,255,255,.08);font-size:32px;font-weight:900;letter-spacing:.08em}.node{position:absolute;width:84px;height:84px;border-radius:22px;display:grid;place-items:center;text-align:center;padding:8px;background:rgba(8,30,39,.88);border:1px solid var(--line);box-shadow:0 15px 50px rgba(0,0,0,.35);font-size:12px;color:#ccf9f6;animation:float 5s ease-in-out infinite}.n1{transform:translate(-190px,-90px);animation-delay:-1s}.n2{transform:translate(185px,-55px);animation-delay:-2s}.n3{transform:translate(-130px,155px);animation-delay:-3s}.n4{transform:translate(150px,145px);animation-delay:-4s}@keyframes spin{to{transform:rotateX(66deg) rotateZ(360deg)}}@keyframes float{50%{margin-top:-14px}}.sectionTitle{display:flex;justify-content:space-between;align-items:end;margin:18px 0 14px}.sectionTitle h2{font-size:26px;margin:0}.sectionTitle span{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.module{min-height:190px;padding:18px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,var(--panel),rgba(5,17,24,.65));position:relative;overflow:hidden;cursor:pointer;transition:.2s}.module:hover{transform:translateY(-3px);border-color:rgba(56,216,207,.55)}.module:after{content:"";position:absolute;width:100px;height:100px;border-radius:50%;right:-35px;bottom:-40px;background:radial-gradient(circle,rgba(56,216,207,.22),transparent 70%)}.ico{font-size:26px}.module h3{margin:28px 0 8px}.module p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}.tag{position:absolute;top:16px;right:16px;font-size:10px;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:5px 7px}.dock{position:sticky;bottom:14px;margin:28px auto 0;max-width:520px;display:flex;justify-content:space-around;padding:10px;border:1px solid var(--line);border-radius:20px;background:rgba(3,16,22,.84);backdrop-filter:blur(20px);z-index:6}.dock button{border:0;background:none;color:var(--muted);padding:8px 13px;border-radius:12px}.dock button.active{background:rgba(56,216,207,.12);color:var(--accent)}.modal{position:fixed;inset:0;background:rgba(0,5,8,.76);backdrop-filter:blur(12px);display:none;z-index:20;padding:18px;overflow:auto}.modal.open{display:grid;place-items:center}.sheet{width:min(720px,100%);border:1px solid var(--line);background:#071820;border-radius:26px;padding:22px;box-shadow:0 30px 100px rgba(0,0,0,.55)}.sheetTop{display:flex;justify-content:space-between;align-items:center}.close{border:1px solid var(--line);background:transparent;color:var(--text);width:38px;height:38px;border-radius:12px}.sheet h2{font-size:29px}.lead{color:var(--muted);line-height:1.55}.modeGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);color:var(--text);text-align:left}.mode b{display:block;margin-bottom:6px}.mode small{color:var(--muted)}label{display:block;color:#b7d8d7;font-weight:700;margin:14px 0 7px}input,textarea{width:100%;border:1px solid var(--line);background:#041117;color:var(--text);border-radius:14px;padding:13px;outline:none}textarea{min-height:110px;resize:vertical}.step{display:none}.step.active{display:block}.progress{height:5px;background:#102c35;border-radius:99px;overflow:hidden;margin:16px 0}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:20%;transition:.3s}.summary{display:grid;gap:10px}.summary article{padding:14px;border:1px solid var(--line);border-radius:15px;background:rgba(8,31,39,.65)}.summary strong{color:var(--accent)}.note{font-size:12px;color:var(--muted)}@media(max-width:840px){.hero{grid-template-columns:1fr;min-height:auto;padding-top:64px}.scene{height:360px;order:-1}.grid{grid-template-columns:1fr 1fr}.copy{text-align:center}.copy p{margin-inline:auto}.actions{justify-content:center}}@media(max-width:520px){.app{padding-inline:12px}.scene{height:310px;transform:scale(.78);margin:-30px 0}.grid{grid-template-columns:1fr}.module{min-height:150px}.modeGrid{grid-template-columns:1fr}.sheet{padding:18px}.copy h1{font-size:48px}.hero{gap:0}.topbar .status{display:none}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f1e8" />
+  <meta name="description" content="Концепт нового сайта ЦУМа Нижнего Новгорода: культурная афиша, путеводитель, статьи, магазины, еда и развлечения." />
+  <title>ЦУМ Нижний Новгород — путешествие начинается здесь</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js"></script>
 </head>
-<body><div class="noise"></div><div class="app">
-<header class="topbar"><div class="brand"><div class="mark"></div><div><b>HROS</b><br><small>Human Relations Operating System · v0.1</small></div></div><div class="status">● LOCAL-FIRST · PWA</div></header>
-<section class="hero"><div class="copy"><h1><span class="gradient">Система близости</span><br>для реальной жизни</h1><p>Web3D-интерфейс для осознанных диалогов, совместных решений и фиксации маленьких действий, которые укрепляют отношения.</p><div class="actions"><button class="btn primary" onclick="openDialogue()">Начать диалог</button><button class="btn" onclick="shareApp()">Поделиться со Снежей</button></div></div><div class="scene" aria-label="3D-карта HROS"><div class="orbit o1"></div><div class="orbit o2"></div><div class="core">HROS</div><div class="node n1">Диалог</div><div class="node n2">Доверие</div><div class="node n3">Цели</div><div class="node n4">История</div></div></section>
-<div class="sectionTitle"><h2>Модули системы</h2><span>4 активных · локальное хранение</span></div>
-<section class="grid"><article class="module" onclick="openDialogue()"><span class="tag">ACTIVE</span><div class="ico">◎</div><h3>Еженедельный диалог</h3><p>Структурированный разговор без перебивания и обвинений.</p></article><article class="module" onclick="openMode('conflict')"><span class="tag">ACTIVE</span><div class="ico">◫</div><h3>Решение конфликта</h3><p>Факты, чувства, потребности и одно выполнимое решение.</p></article><article class="module" onclick="openMode('gratitude')"><span class="tag">ACTIVE</span><div class="ico">◇</div><h3>Благодарность</h3><p>Фиксация того, что партнёр сделал и почему это важно.</p></article><article class="module" onclick="openHistory()"><span class="tag">ACTIVE</span><div class="ico">⌁</div><h3>История отношений</h3><p>Локальная история завершённых сессий и договорённостей.</p></article></section>
-<nav class="dock"><button class="active">Система</button><button onclick="openDialogue()">Диалог</button><button onclick="openHistory()">История</button><button onclick="exportData()">Экспорт</button></nav>
-</div>
-<div class="modal" id="modal"><div class="sheet"><div class="sheetTop"><div><small style="color:var(--accent)">HROS SESSION</small><h2 id="modalTitle">Еженедельный диалог</h2></div><button class="close" onclick="closeModal()">×</button></div><div class="progress"><i id="bar"></i></div><div id="flow"></div></div></div>
-<script>
-const KEY='hros_v01_data';let db=JSON.parse(localStorage.getItem(KEY)||'{"sessions":[]}');let state={mode:'weekly',step:0,names:['Михаил','Снежа'],answers:{},agreement:''};const $=s=>document.querySelector(s);function save(){localStorage.setItem(KEY,JSON.stringify(db))}function closeModal(){$('#modal').classList.remove('open')}function openDialogue(){state={mode:'weekly',step:0,names:['Михаил','Снежа'],answers:{},agreement:''};$('#modalTitle').textContent='Еженедельный диалог';$('#modal').classList.add('open');renderFlow()}function openMode(mode){state={mode,step:0,names:['Михаил','Снежа'],answers:{},agreement:''};$('#modalTitle').textContent=mode==='conflict'?'Решение конфликта':'Благодарность';$('#modal').classList.add('open');renderFlow()}function renderFlow(){const f=$('#flow');$('#bar').style.width=((state.step+1)/5*100)+'%';if(state.step===0)f.innerHTML=`<div class="step active"><p class="lead">Настройте участников. Ответы сохраняются только после завершения сессии.</p><label>Первый участник</label><input id="n1" value="${state.names[0]}"><label>Второй участник</label><input id="n2" value="${state.names[1]}"><div class="actions"><button class="btn primary" onclick="nextNames()">Продолжить</button></div></div>`;else if(state.step===1){let q=state.mode==='weekly'?'Что партнёр сделал за последнюю неделю, что укрепило твою близость?':state.mode==='conflict'?'Опиши только наблюдаемые факты — без оценки намерений партнёра.':'За какое конкретное действие ты благодарен(на) партнёру?';f.innerHTML=formStep(state.names[0],q,'a')}else if(state.step===2){let q=state.mode==='weekly'?'Что партнёр мог бы делать иначе, чтобы тебе было спокойнее и ближе?':state.mode==='conflict'?'Какие чувства и потребности стоят за твоей реакцией?':'Почему это действие было для тебя важным?';f.innerHTML=formStep(state.names[1],q,'b')}else if(state.step===3)f.innerHTML=`<div class="step active"><h3>Общее действие</h3><p class="lead">Сформулируйте один небольшой шаг на ближайшие семь дней. Он должен быть конкретным и выполнимым.</p><textarea id="agreement" placeholder="Например: три вечера на неделе ужинаем без телефонов">${state.agreement||''}</textarea><div class="actions"><button class="btn primary" onclick="finishSession()">Сохранить сессию</button></div></div>`;else showResult(f)}function formStep(name,q,key){return `<div class="step active"><small style="color:var(--accent)">Сейчас отвечает: ${esc(name)}</small><h3>${q}</h3><textarea id="answer" placeholder="Когда происходит…, я чувствую…, для меня это означает…">${esc(state.answers[key]||'')}</textarea><p class="note">Второй участник слушает и не комментирует до сохранения ответа.</p><div class="actions"><button class="btn primary" onclick="nextAnswer('${key}')">Сохранить и передать телефон</button></div></div>`}function nextNames(){state.names=[$('#n1').value.trim()||'Участник 1',$('#n2').value.trim()||'Участник 2'];state.step=1;renderFlow()}function nextAnswer(k){const v=$('#answer').value.trim();if(!v)return alert('Запишите ответ.');state.answers[k]=v;state.step++;renderFlow()}function finishSession(){const v=$('#agreement').value.trim();if(!v)return alert('Сформулируйте общее действие.');state.agreement=v;db.sessions.unshift({id:Date.now(),date:new Date().toISOString(),mode:state.mode,names:state.names,answers:state.answers,agreement:v});save();state.step=4;renderFlow()}function showResult(f){const s=db.sessions[0];f.innerHTML=`<div class="step active"><h3>Сессия сохранена</h3><div class="summary"><article><strong>${esc(s.names[0])}</strong><br>${esc(s.answers.a)}</article><article><strong>${esc(s.names[1])}</strong><br>${esc(s.answers.b)}</article><article><strong>Договорённость на неделю</strong><br>${esc(s.agreement)}</article></div><div class="actions"><button class="btn primary" onclick="closeModal()">Завершить</button><button class="btn" onclick="exportData()">Экспортировать</button></div></div>`}function openHistory(){if(!db.sessions.length){$('#modalTitle').textContent='История';$('#modal').classList.add('open');$('#bar').style.width='100%';$('#flow').innerHTML='<p class="lead">Завершённых сессий пока нет.</p>';return}$('#modalTitle').textContent='История отношений';$('#modal').classList.add('open');$('#bar').style.width='100%';$('#flow').innerHTML='<div class="summary">'+db.sessions.map(s=>`<article><strong>${new Date(s.date).toLocaleDateString('ru-RU')} · ${labelMode(s.mode)}</strong><br>${esc(s.agreement)}</article>`).join('')+'</div>'}function labelMode(m){return m==='weekly'?'Еженедельный диалог':m==='conflict'?'Решение конфликта':'Благодарность'}function exportData(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hros-export.json';a.click();URL.revokeObjectURL(a.href)}async function shareApp(){const data={title:'HROS',text:'Давай пройдём диалог вместе',url:location.href};if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(location.href);alert('Ссылка скопирована.')}}function esc(v){const d=document.createElement('div');d.textContent=v||'';return d.innerHTML}if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-</script></body></html>
+<body>
+  <div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+
+  <header class="header" id="header">
+    <a class="brand" href="#top" aria-label="ЦУМ Нижний Новгород">
+      <strong>ЦУМ</strong><span>НИЖНИЙ НОВГОРОД</span>
+    </a>
+    <nav class="legacy-nav" id="legacyNav" aria-label="Привычные разделы ЦУМа">
+      <a href="https://www.csum.ru/about" target="_blank">О ЦУМе</a>
+      <a href="https://www.csum.ru/stores" target="_blank">Магазины</a>
+      <a href="https://www.csum.ru/food" target="_blank">Еда</a>
+      <a href="https://www.csum.ru/entertainments" target="_blank">Развлечения</a>
+      <a href="https://www.csum.ru/news" target="_blank">Новости и акции</a>
+      <a href="https://www.csum.ru/events" target="_blank">Афиша</a>
+      <a href="https://www.csum.ru/contacts" target="_blank">Контакты</a>
+    </nav>
+    <div class="header-actions">
+      <button class="search-button" id="searchOpen" type="button" aria-label="Поиск">⌕</button>
+      <a class="map-button" href="#map">Карта ЦУМа</a>
+      <button class="menu-button" id="menuToggle" type="button" aria-label="Меню"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <nav class="editorial-nav" id="editorialNav" aria-label="Редакционная навигация">
+    <a href="#today">Сегодня</a>
+    <a href="magazine.html">Журнал</a>
+    <a href="#culture">Культурные события</a>
+    <a href="#guide">Путеводитель</a>
+    <a href="#gifts">Подарки</a>
+    <a href="#family">Семьям</a>
+    <a href="#office">Офисным</a>
+    <a href="#locals">Жителям района</a>
+  </nav>
+
+  <main id="top">
+    <section class="hero" id="hero">
+      <picture class="hero-picture" id="heroPicture">
+        <source type="image/webp" srcset="https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg 1600w">
+        <img src="https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg" srcset="https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg 1920w, https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg 3840w" sizes="100vw" alt="Фронтальный ортогональный фасад ЦУМа Нижнего Новгорода" />
+      </picture>
+      <div class="hero-overlay"></div>
+      <div class="hero-copy reveal">
+        <p class="eyebrow light">Центральный универсальный магазин · Нижний Новгород</p>
+        <h1>Добро пожаловать в ЦУМ <span>— путешествие начинается здесь!</span></h1>
+        <p class="hero-lead">Точка, где гости начинают знакомство с городом и куда возвращаются перед дорогой — за впечатлениями, подарками, местными товарами и удобными сервисами.</p>
+        <div class="hero-cta-row">
+          <a class="btn primary" href="#culture">Что происходит в городе</a>
+          <a class="btn glass" href="#gifts">Что увезти с собой</a>
+        </div>
+      </div>
+      <button class="hero-zoom" id="heroZoom" type="button" aria-label="Приблизить центральный вход"><span>К центральному входу</span><i>↓</i></button>
+    </section>
+
+    <section class="arrival-reveal" id="arrivalReveal" aria-label="Главный вход">
+      <div class="arrival-frame">
+        <img src="https://www.marinsgroup.ru/upload/contentRedactor/6523e18322ca3.jpg" srcset="https://www.marinsgroup.ru/upload/contentRedactor/6523e18322ca3.jpg 1400w, https://www.marinsgroup.ru/upload/contentRedactor/6523e18322ca3.jpg 2800w" sizes="100vw" alt="Центральный вход ЦУМа, фронтально" />
+        <div class="arrival-label"><span>Главный вход</span><b>Парадная точка встречи города и человека</b></div>
+      </div>
+    </section>
+
+    <section class="section intro" id="today">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Сейчас в ЦУМе</p><h2>Знакомый сайт — новый способ читать город.</h2></div>
+          <p class="lead">Привычные разделы текущего csum.ru сохраняются в шапке. Ниже появляется новый слой: редакционные статьи, события и маршруты, которые естественно приводят к магазинам и сервисам.</p>
+        </div>
+        <div class="quick-grid">
+          <a class="quick-card reveal" href="#culture"><span>01</span><b>Культурные мероприятия</b><em>главная афиша Нижнего Новгорода</em></a>
+          <a class="quick-card reveal delay-1" href="#guide"><span>02</span><b>Путеводитель</b><em>маршруты по времени и интересам</em></a>
+          <a class="quick-card reveal delay-2" href="#gifts"><span>03</span><b>Подарки и сувениры</b><em>что действительно стоит увезти</em></a>
+          <a class="quick-card reveal" href="#family"><span>04</span><b>Семьям</b><em>досуг без лишней логистики</em></a>
+          <a class="quick-card reveal delay-1" href="#office"><span>05</span><b>Офисным сотрудникам</b><em>обед, сервисы, покупки по пути</em></a>
+          <a class="quick-card reveal delay-2" href="#locals"><span>06</span><b>Жителям района</b><em>полезное рядом каждый день</em></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section editorial-block" id="culture">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Культурные мероприятия</p><h2>Афиша города начинается с ЦУМа.</h2></div>
+          <p class="lead">Не рекламный список. Короткие истории о событиях, местах и привычках города — с полезным переходом к тому, что может понадобиться по пути.</p>
+        </div>
+        <article class="feature-story reveal">
+          <div class="story-image">
+            <picture><source type="image/webp" srcset="https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG"><img src="https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG" srcset="https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG 1920w, https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG 3840w" alt="Культурное событие в Нижнем Новгороде, городской вечер" /></picture>
+          </div>
+          <div class="story-copy">
+            <span class="article-label">Большая история</span>
+            <h3>Вечер в новом городе начинается с паузы</h3>
+            <p>Путешественник обычно хочет «успеть больше». Но самые запоминающиеся поездки часто начинаются с обратного: сначала остановиться, понять ритм места и выбрать одно сильное событие. В Нижнем таким событием может стать концерт, спектакль, городской фестиваль или вечерняя прогулка по историческому центру.</p>
+            <p>ЦУМ в этой логике работает как удобная точка настройки: свериться с афишей, выпить кофе, оставить себе запас времени и только потом выйти в город. А перед мероприятием можно решить практический вопрос — например, подобрать небольшой подарок или нужную вещь без отдельной поездки.</p>
+            <div class="native-note"><span>Полезно по пути</span><p>Если нужен быстрый образ или подарок перед событием, в ЦУМе можно посмотреть <a href="https://www.csum.ru/stores/view?id=283" target="_blank">Familia</a>, <a href="https://www.csum.ru/stores/view?id=452" target="_blank">Подружку</a> и другие магазины категории.</p></div>
+            <a class="story-link" href="articles/vecher-v-gorode.html">Читать статью полностью →</a>
+          </div>
+        </article>
+        <div class="grid-3 article-grid">
+          <article class="article-card reveal"><span>Город</span><h3>Один вечер в Нижнем: музыка, набережная и поздний кофе</h3><p>Как соединить одно событие и короткую прогулку, не превращая вечер в марафон.</p><a href="#food">Где сделать паузу →</a></article>
+          <article class="article-card reveal delay-1"><span>Культура</span><h3>Полчаса до фестиваля: город до начала события</h3><p>Полчаса до события — это время, когда город еще принадлежит вам: можно осмотреться, выбрать точку встречи и избежать спешки.</p><a href="#guide">Маршрут до события →</a></article>
+          <article class="article-card reveal delay-2"><span>Спорт</span><h3>Событие меняет взгляд на район</h3><p>Матч, забег или городской турнир меняет привычный маршрут. Мы показываем, где встретиться и что сделать до или после.</p><a href="#map">Открыть карту ЦУМа →</a></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section editorial-block alt" id="guide">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Путеводитель</p><h2>Маршруты, которые учитывают реальное время.</h2></div>
+          <p class="lead">Не энциклопедия достопримечательностей, а сценарии для тех, кто приехал на несколько часов, полдня или один вечер.</p>
+        </div>
+        <article class="feature-story reverse reveal">
+          <div class="story-image">
+            <picture><source type="image/webp" srcset="https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg"><img src="https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg" srcset="https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg 1920w, https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg 3840w" alt="Городской маршрут по Нижнему Новгороду" /></picture>
+          </div>
+          <div class="story-copy">
+            <span class="article-label">Маршрут</span>
+            <h3>Два часа до поезда: маршрут без риска опоздать</h3>
+            <p>Когда времени мало, выбор важнее количества. Вместо попытки объехать весь город — один сильный вид, короткая прогулка и заранее заложенный путь обратно. ЦУМ становится естественной базой: он находится рядом с вокзалом и помогает завершить маршрут без лишнего крюка.</p>
+            <p>Последние двадцать минут можно оставить не «про запас», а на приятный финал: взять локальный сувенир, кофе в дорогу или полезную вещь, о которой вспоминаешь уже перед отправлением.</p>
+            <div class="native-note"><span>Полезно перед поездом</span><p>За техникой и аксессуарами — <a href="https://www.csum.ru/stores/view?id=453" target="_blank">DNS</a> и <a href="https://www.csum.ru/stores/view?id=445" target="_blank">Future Phone</a>. За кофе — <a href="https://www.csum.ru/stores" target="_blank">кафе ЦУМа</a>.</p></div>
+            <a class="story-link" href="articles/dva-chasa-do-poezda.html">Читать маршрут полностью →</a>
+          </div>
+        </article>
+        <div class="time-routes reveal">
+          <button data-time="30" class="active"><b>30 минут</b><span>кофе + подарок + вокзал</span></button>
+          <button data-time="60"><b>1 час</b><span>еда + магазин + подарок</span></button>
+          <button data-time="120"><b>2 часа</b><span>мини-маршрут по городу</span></button>
+        </div>
+        <div class="route-output reveal" id="routeOutput"></div>
+      </div>
+    </section>
+
+    <section class="section editorial-block" id="gifts">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Подарки и сувениры</p><h2>Подарки, которые сохраняют память о Нижнем.</h2></div>
+          <p class="lead">История вещей, локальных вкусов и привычек — а уже потом ссылка на место, где это можно найти.</p>
+        </div>
+        <article class="feature-story reveal">
+          <div class="story-image"><picture><source type="image/webp" srcset="https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg"><img src="https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg" srcset="https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg 1920w, https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg 3840w" alt="Подарки и сувениры Нижнего Новгорода, предметная сцена" /></picture></div>
+          <div class="story-copy">
+            <span class="article-label">История вещи</span>
+            <h3>Сувенир — память о месте</h3>
+            <p>Самые удачные вещи из поездок редко бывают дорогими. Они работают как якорь памяти: текстура, запах, упаковка или локальный образ возвращают к конкретному дню. Поэтому вместо случайного магнита лучше выбирать предмет, связанный с ремеслом, локальной гастрономией или визуальным кодом региона.</p>
+            <p>На сайте ЦУМа такие материалы могут объяснять происхождение продукта, его символику и историю — без прямой продажи. И только в финале читателю предлагается посмотреть, где похожие вещи доступны внутри универмага.</p>
+            <div class="native-note"><span>Где посмотреть в ЦУМе</span><p>Для подарка можно начать с категории <a href="https://www.csum.ru/stores" target="_blank">аксессуары и подарки</a>, а для памятной вещи — с ювелирных магазинов, которых в каталоге ЦУМа несколько.</p></div>
+            <a class="story-link" href="https://www.csum.ru/stores" target="_blank">Все магазины →</a>
+          </div>
+        </article>
+        <div class="grid-3 article-grid">
+          <article class="article-card reveal"><span>Гастрономия</span><h3>Съедобный сувенир: вкус, который возвращает в поездку</h3><p>Еда — самый короткий путь к памяти о месте. Локальный продукт не требует объяснений, если у него есть история.</p><a href="#food">К гастрономии →</a></article>
+          <article class="article-card reveal delay-1"><span>Предмет</span><h3>Вещь, которую хочется оставить на столе</h3><p>Небольшой предмет работает лучше сувенира, если он красив сам по себе и не кричит о происхождении.</p><a href="articles/suvenir-kak-pamyat.html">Читать статью полностью →</a></article>
+          <article class="article-card reveal delay-2"><span>Подарок</span><h3>Подарок для коллег без туристического клише</h3><p>Лучший деловой подарок — вещь с локальной историей, но без избыточного фольклора.</p><a href="https://www.csum.ru/stores" target="_blank">Посмотреть магазины →</a></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section editorial-block alt" id="family">
+      <div class="wrap">
+        <div class="section-head reveal"><div><p class="eyebrow">Семьям</p><h2>Городской план на плохую погоду.</h2></div><p class="lead">Семейный сценарий должен собираться за минуту: что делать, где поесть и чем занять детей, не перемещаясь через весь город.</p></div>
+        <article class="feature-story reverse reveal">
+          <div class="story-image"><picture><source type="image/webp" srcset="https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg"><img src="https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg" srcset="https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg 1920w, https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg 3840w" alt="Семейный досуг в ЦУМе, прямой редакционный кадр" /></picture></div>
+          <div class="story-copy"><span class="article-label">Семейный сценарий</span><h3>Смена впечатлений — основа семейного маршрута</h3><p>Через час даже хорошая активность перестает работать. Поэтому сильный семейный маршрут строится на чередовании: любопытство, движение, отдых, еда. В ЦУМе это можно собрать внутри одного здания.</p><p>Например, начать с научного опыта, затем переключиться на активную игру и закончить обедом. Сайт объясняет не «что продают», а как прожить несколько часов без усталости.</p><div class="native-note"><span>Точки маршрута</span><p><a href="https://www.csum.ru/stores/view?id=423" target="_blank">Кварки</a> — научный интерес; <a href="https://www.csum.ru/stores/view?id=473" target="_blank">Форсаж</a> — движение; VR Boom — короткая цифровая активность.</p></div><a class="story-link" href="articles/semeinyi-marshrut.html">Читать статью полностью →</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section editorial-block" id="office">
+      <div class="wrap">
+        <div class="section-head reveal"><div><p class="eyebrow">Офисным сотрудникам</p><h2>Час между встречами — тоже часть города.</h2></div><p class="lead">Редакционный контент может помогать в рабочем ритме: куда уйти на обед, где быстро решить задачу и что успеть по пути.</p></div>
+        <article class="feature-story reveal">
+          <div class="story-image"><picture><source type="image/webp" srcset="https://i.archi.ru/i/238294.jpg"><img src="https://i.archi.ru/i/238294.jpg" srcset="https://i.archi.ru/i/238294.jpg 1920w, https://i.archi.ru/i/238294.jpg 3840w" alt="Городской рабочий маршрут через ЦУМ" /></picture></div>
+          <div class="story-copy"><span class="article-label">Рабочий ритм</span><h3>Перерыв, который возвращает внимание</h3><p>Самый короткий способ перезагрузиться — физически сменить среду. Десять минут пешком, кофе, пара бытовых задач и возвращение в офис работают лучше бесконечного скролла за рабочим столом.</p><p>Для человека, работающего у вокзала и площади Революции, ЦУМ может стать именно такой точкой: не отдельной поездкой за покупками, а частью ежедневного маршрута.</p><div class="native-note"><span>Практично по пути</span><p>Финансовые вопросы можно решить в <a href="https://www.csum.ru/stores/view?id=411" target="_blank">Альфа-Банке</a>, технику посмотреть в <a href="https://www.csum.ru/stores/view?id=453" target="_blank">DNS</a>, а быстрый shopping — в <a href="https://www.csum.ru/stores/view?id=283" target="_blank">Familia</a>.</p></div><a class="story-link" href="articles/pereryv-kotoryi-vozvrashchaet-vnimanie.html">Читать статью полностью →</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section editorial-block alt" id="locals">
+      <div class="wrap">
+        <div class="section-head reveal"><div><p class="eyebrow">Жителям района</p><h2>Знакомое место, которое снова хочется замечать.</h2></div><p class="lead">Для местных жителей контент не должен объяснять, где находится ЦУМ. Он должен давать новые поводы зайти: сезонные сценарии, полезные категории и события.</p></div>
+        <article class="feature-story reverse reveal">
+          <div class="story-image"><picture><source type="image/webp" srcset="https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg"><img src="https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg" srcset="https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg 1920w, https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg 3840w" alt="Повседневный городской маршрут рядом с ЦУМом" /></picture></div>
+          <div class="story-copy"><span class="article-label">Повседневность</span><h3>Универсальный магазин в повседневном маршруте</h3><p>Маркетплейс хорош, когда точно знаешь, что ищешь. Но в реальной жизни многие покупки начинаются иначе: вспомнили по пути, увидели материал, сравнили оттенок, примерили, взяли сразу. Универмаг выигрывает там, где решение принимается в моменте.</p><p>Поэтому современный сайт ЦУМа должен не копировать интернет-магазин, а помогать быстро понять, какие категории есть рядом и зачем зайти именно сегодня.</p><div class="native-note"><span>Категории рядом</span><p>Beauty — <a href="https://www.csum.ru/stores/view?id=452" target="_blank">Подружка</a>; fashion — <a href="https://www.csum.ru/stores/view?id=283" target="_blank">Familia</a>; техника — <a href="https://www.csum.ru/stores/view?id=445" target="_blank">Future Phone</a>.</p></div><a class="story-link" href="articles/univermag-v-povsednevnom-marshrute.html">Читать статью полностью →</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section editorial-block" id="magazine-preview">
+      <div class="wrap">
+        <div class="section-head reveal"><div><p class="eyebrow">Журнал ЦУМа</p><h2>Полезные статьи, после которых товар становится понятнее.</h2></div><p class="lead">Материал, цвет, дорога, одежда, семейный ритм и городские сценарии. Коммерческая ссылка появляется только после содержательной части.</p></div>
+        <div class="grid-3 article-grid">
+          <article class="article-card reveal"><span>Материалы</span><h3>Свет, ткань и цвет: один оттенок в разное время суток</h3><p>Редакционный материал о свете, фактуре и выборе текстиля в реальном пространстве.</p><a href="articles/svet-tkan-i-cvet.html">Читать полностью →</a></article>
+          <article class="article-card reveal delay-1"><span>Стиль</span><h3>Вечерний образ оценивается в движении</h3><p>Посадка, фактура и свет сильнее раскрываются в реальном сценарии, чем в статичной карточке.</p><a href="articles/vechernii-obraz-v-dvizhenii.html">Читать полностью →</a></article>
+          <article class="article-card reveal delay-2"><span>Технологии в дороге</span><h3>Запас энергии — часть дорожной инфраструктуры</h3><p>Полезный разбор ёмкости, мощности, кабелей и реальных сценариев поездки.</p><a href="articles/dorozhnaya-avtonomnost.html">Читать полностью →</a></article>
+        </div>
+        <p style="margin-top:26px"><a class="story-link" href="magazine.html">Открыть весь журнал →</a></p>
+      </div>
+    </section>
+
+    <section class="section food" id="food">
+      <div class="wrap">
+        <div class="section-head reveal"><div><p class="eyebrow">Еда</p><h2>Гастрономия — часть маршрута, а не отдельная страница.</h2></div><p class="lead">Сохраняем привычный раздел «Еда», но показываем его в контексте времени: быстрый кофе, обед, встреча или финальная остановка перед поездом.</p></div>
+        <div class="grid-3 food-grid">
+          <article class="food-card reveal"><span>15 минут</span><h3>Кофе перед дорогой</h3><p>Когда нужен не выбор из двадцати вариантов, а один надежный сценарий рядом с вокзалом.</p><a href="https://www.csum.ru/food" target="_blank">Кафе ЦУМа →</a></article>
+          <article class="food-card reveal delay-1"><span>45 минут</span><h3>Обед без спешки</h3><p>Пауза между встречами или перед культурным событием — с понятным временем возврата.</p><a href="https://www.csum.ru/food" target="_blank">Где поесть →</a></article>
+          <article class="food-card reveal delay-2"><span>Вечер</span><h3>Еда — финальная точка городского дня</h3><p>Вернуться в ЦУМ после прогулки, забрать подарок и спокойно поесть перед дорогой.</p><a href="#guide">Собрать маршрут →</a></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section map" id="map">
+      <div class="wrap map-layout">
+        <div class="map-copy reveal"><p class="eyebrow">Карта ЦУМа</p><h2>Из статьи — сразу к нужной точке.</h2><p>Новый контент не прячет практику. У любого упоминания магазина должна быть возможность открыть этаж, категорию и карточку арендатора.</p><div class="floor-tabs" id="floorTabs"><button class="active" data-floor="1">1</button><button data-floor="2">2</button><button data-floor="3">3</button><button data-floor="4">4</button></div></div>
+        <div class="floor-panel reveal delay-1"><div class="floor-title"><b id="floorTitle">1 этаж</b><span id="floorSub">первый контакт · сервисы · категории</span></div><div id="floorContent" class="floor-content"></div><a class="story-link" href="https://www.csum.ru/stores" target="_blank">Открыть текущий каталог →</a></div>
+      </div>
+    </section>
+
+    <section class="section final-story">
+      <div class="wrap">
+        <div class="section-head reveal"><div><p class="eyebrow">ЦУМ и город</p><h2>Приехать. Открыть. Вернуться. Увезти с собой.</h2></div></div>
+        <div class="cinematic reveal">
+          <picture><source type="image/webp" srcset="https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg"><img src="https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg" srcset="https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg 1920w, https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg 3840w" alt="Нижний Новгород, городской маршрут" /></picture>
+          <div class="cinematic-copy"><p>Сайт ЦУМа не заменяет Нижний Новгород. Он помогает войти в него — и красиво выйти из него перед дорогой.</p><a href="#top">Вернуться к началу ↑</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid"><div><strong>ЦУМ</strong><span>Центральный универсальный магазин Нижнего Новгорода</span></div><div><span>Адрес</span><b>ул. Героя Фильченкова, 10</b></div><div><span>Режим работы</span><b>09:00–21:00</b></div><div><span>Телефон</span><b>+7 831 233-23-88</b></div><div><a href="https://www.csum.ru" target="_blank">Текущий csum.ru ↗</a></div></div>
+  </footer>
+
+  <dialog id="searchModal" class="search-modal"><form method="dialog" class="search-shell"><button class="modal-close" aria-label="Закрыть">×</button><p class="eyebrow">Поиск по ЦУМу</p><label for="searchInput">Что вы ищете?</label><input id="searchInput" placeholder="Например: подарок, кофе, Кварки, техника, событие" /><div class="search-tags" id="searchTags"></div><a class="search-legacy" href="https://www.csum.ru/stores" target="_blank">Перейти в привычный каталог магазинов →</a></form></dialog>
+
+  <aside class="debug-panel" id="debugPanel" aria-hidden="true"><div><b>CSUM DIAGNOSTICS</b><button id="debugClose">×</button></div><pre id="debugLog"></pre></aside>
+  <button class="debug-dot" id="debugToggle" type="button" aria-label="Диагностика">D</button>
+</body>
+</html>

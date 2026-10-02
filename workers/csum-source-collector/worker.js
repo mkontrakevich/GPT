@@ -66,8 +66,8 @@ async function refresh(env){
  const configured={vk:!!official.vk,telegram:!!official.telegram};
  const merged=await normalize([...fresh,...previous.items]);
  const cutoff=Date.now()-WINDOW_DAYS*DAY;
- const active=merged.filter(x=>!x.published_at||Date.parse(x.published_at)>=cutoff).slice(0,250);
- const archive=merged.filter(x=>x.published_at&&Date.parse(x.published_at)<cutoff).slice(0,1000);
+ const active=merged.filter(x=>Date.parse(x.published_at||x.collected_at||0)>=cutoff).slice(0,250);
+ const archive=merged.filter(x=>Date.parse(x.published_at||x.collected_at||0)<cutoff).slice(0,1000);
  const cache={window_days:WINDOW_DAYS,refreshed_at:new Date().toISOString(),sources:{csum:true,...configured},official_sources:official,errors,items:active};
  const extracted=await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
  const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,warning:extracted.warning||null,facts:extracted.facts};

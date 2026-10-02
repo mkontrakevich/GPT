@@ -52,7 +52,10 @@ async function writeArticles(env,plan,facts){
   const prompt="Write a Russian CSUM city-magazine article grounded ONLY in VERIFIED_FACTS. 700-1100 words. Structure: headline, deck, 3-5 sections, practical conclusion, then subtle native commerce in final 20-30%, one CTA. Commercial content <=15%. Do not invent facts, products, availability, prices, dates or discounts. Return strict JSON {title,deck,sections:[{heading,body}],native_integrations:[{entity,context,source_url}],cta:{label,url},visual_brief}. TOPIC:"+JSON.stringify(topic)+" VERIFIED_FACTS:"+JSON.stringify(used);
   const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Writer"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.45})});
   if(!res.ok)continue; const d=await res.json();let a;try{a=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{continue}
-  const allowedUrls=new Set(used.map(x=>x.source_url).filter(Boolean));\n  a.native_integrations=(a.native_integrations||[]).filter(x=>x&&allowedUrls.has(x.source_url));\n  if(a.cta&&!allowedUrls.has(a.cta.url))a.cta=null;\n  articles.push({...a,id:topic.id||crypto.randomUUID(),generated_at:new Date().toISOString(),source_fingerprints:used.map(x=>x.source_fingerprint)});
+  const allowedUrls=new Set(used.map(x=>x.source_url).filter(Boolean));
+  a.native_integrations=(a.native_integrations||[]).filter(x=>x&&allowedUrls.has(x.source_url));
+  if(a.cta&&!allowedUrls.has(a.cta.url))a.cta=null;
+  articles.push({...a,id:topic.id||crypto.randomUUID(),generated_at:new Date().toISOString(),source_fingerprints:used.map(x=>x.source_fingerprint)});
  }
  return articles;
 }

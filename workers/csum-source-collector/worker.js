@@ -45,6 +45,7 @@ async function planContent(env,facts){
  const d=await res.json();let p;try{p=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{p={topics:[]}}
  return {topics:(p.topics||[]).slice(0,7),generated_at:new Date().toISOString()};
 }
+async function generateArticleImage(env,id,brief){if(!env.ADMIN_TOKEN||!brief)return null;const base="https://csum-nn-image-studio.kontrakevich.workers.dev";const g=await fetch(base+"/api/generate",{method:"POST",headers:{"content-type":"application/json","x-csum-admin-token":env.ADMIN_TOKEN},body:JSON.stringify({id:"article-"+id,prompt:brief,aspect_ratio:"16:9",output_format:"webp"})});if(!g.ok)return null;const d=await g.json();if(!d.candidate_key)return null;const a=await fetch(base+"/api/apply",{method:"POST",headers:{"content-type":"application/json","x-csum-admin-token":env.ADMIN_TOKEN},body:JSON.stringify({id:"article-"+id,candidate_key:d.candidate_key})});if(!a.ok)return d.url||null;const x=await a.json();return x.url||d.url||null;}
 async function writeArticles(env,plan,facts){
  const articles=[];
  for(const topic of (plan.topics||[])){
@@ -55,7 +56,7 @@ async function writeArticles(env,plan,facts){
   const allowedUrls=new Set(used.map(x=>x.source_url).filter(Boolean));
   a.native_integrations=(a.native_integrations||[]).filter(x=>x&&allowedUrls.has(x.source_url));
   if(a.cta&&!allowedUrls.has(a.cta.url))a.cta=null;
-  articles.push({...a,id:topic.id||crypto.randomUUID(),generated_at:new Date().toISOString(),source_fingerprints:used.map(x=>x.source_fingerprint)});
+  const articleId=topic.id||crypto.randomUUID(); const image_url=await generateArticleImage(env,articleId,a.visual_brief).catch(()=>null); articles.push({...a,id:articleId,image_url,generated_at:new Date().toISOString(),source_fingerprints:used.map(x=>x.source_fingerprint)});
  }
  return articles;
 }

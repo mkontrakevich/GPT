@@ -56,7 +56,7 @@ async function writeArticles(env,plan,facts){
  }
  return articles;
 }
-async function refresh(env){
+async function refresh(env){\n const previousArticles=await read(env,"_editorial/articles.json",null);
  if(!env.CSUM_IMAGES)throw new Error("CSUM_IMAGES binding required");
  const previous=await read(env,"_editorial/source-cache.json",{items:[]});
  let fresh=[], errors=[];

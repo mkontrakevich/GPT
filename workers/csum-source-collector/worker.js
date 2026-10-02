@@ -56,7 +56,8 @@ async function writeArticles(env,plan,facts){
  }
  return articles;
 }
-async function refresh(env){\n const previousArticles=await read(env,"_editorial/articles.json",null);
+async function refresh(env){
+ const previousArticles=await read(env,"_editorial/articles.json",null);
  if(!env.CSUM_IMAGES)throw new Error("CSUM_IMAGES binding required");
  const previous=await read(env,"_editorial/source-cache.json",{items:[]});
  let fresh=[], errors=[];
@@ -69,7 +70,10 @@ async function refresh(env){\n const previousArticles=await read(env,"_editorial
  const active=merged.filter(x=>Date.parse(x.published_at||x.collected_at||0)>=cutoff).slice(0,250);
  const archive=merged.filter(x=>Date.parse(x.published_at||x.collected_at||0)<cutoff).slice(0,1000);
  const cache={window_days:WINDOW_DAYS,refreshed_at:new Date().toISOString(),sources:{csum:true,...configured},official_sources:official,errors,items:active};
- const context_hash=await hash(active.map(x=>x.fingerprint).sort().join("|"));\n const previousFacts=await read(env,"_editorial/facts.json",null), previousPlan=await read(env,"_editorial/content-plan.json",null);\n const reuse=previousArticles?.context_hash===context_hash&&previousFacts?.context_hash===context_hash&&previousPlan?.context_hash===context_hash;\n const extracted=reuse?{facts:previousFacts.facts||[],warning:previousFacts.warning||null}:await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
+ const context_hash=await hash(active.map(x=>x.fingerprint).sort().join("|"));
+ const previousFacts=await read(env,"_editorial/facts.json",null), previousPlan=await read(env,"_editorial/content-plan.json",null);
+ const reuse=previousArticles?.context_hash===context_hash&&previousFacts?.context_hash===context_hash&&previousPlan?.context_hash===context_hash;
+ const extracted=reuse?{facts:previousFacts.facts||[],warning:previousFacts.warning||null}:await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
  const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,context_hash,warning:extracted.warning||null,facts:extracted.facts};
  const plan=reuse?previousPlan:await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message})); plan.context_hash=context_hash;
  const articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts).catch(()=>[]);

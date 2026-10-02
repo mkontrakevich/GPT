@@ -69,11 +69,11 @@ async function refresh(env){\n const previousArticles=await read(env,"_editorial
  const active=merged.filter(x=>Date.parse(x.published_at||x.collected_at||0)>=cutoff).slice(0,250);
  const archive=merged.filter(x=>Date.parse(x.published_at||x.collected_at||0)<cutoff).slice(0,1000);
  const cache={window_days:WINDOW_DAYS,refreshed_at:new Date().toISOString(),sources:{csum:true,...configured},official_sources:official,errors,items:active};
- const extracted=await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
- const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,warning:extracted.warning||null,facts:extracted.facts};
- const plan=await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message}));
- const articles=await writeArticles(env,plan,factStore.facts).catch(()=>[]);
- await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);await write(env,"_editorial/content-plan.json",plan);await write(env,"_editorial/articles.json",{updated_at:cache.refreshed_at,articles});
+ const context_hash=await hash(active.map(x=>x.fingerprint).sort().join("|"));\n const previousFacts=await read(env,"_editorial/facts.json",null), previousPlan=await read(env,"_editorial/content-plan.json",null);\n const reuse=previousArticles?.context_hash===context_hash&&previousFacts?.context_hash===context_hash&&previousPlan?.context_hash===context_hash;\n const extracted=reuse?{facts:previousFacts.facts||[],warning:previousFacts.warning||null}:await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
+ const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,context_hash,warning:extracted.warning||null,facts:extracted.facts};
+ const plan=reuse?previousPlan:await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message})); plan.context_hash=context_hash;
+ const articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts).catch(()=>[]);
+ await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);await write(env,"_editorial/content-plan.json",plan);await write(env,"_editorial/articles.json",{updated_at:cache.refreshed_at,context_hash,reused:reuse,articles});
  return {...cache,fact_count:factStore.facts.length,topic_count:(plan.topics||[]).length,article_count:articles.length,fact_warning:factStore.warning,plan_warning:plan.warning||null};
 }
 export default{async fetch(req,env){const u=new URL(req.url);if(req.method==="OPTIONS")return new Response(null,{status:204,headers:{"access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"x-csum-admin-token"}});

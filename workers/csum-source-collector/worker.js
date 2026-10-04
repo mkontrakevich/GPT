@@ -61,7 +61,14 @@ async function planContent(env,facts){
  const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Planner"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.2})});
  if(!res.ok)throw new Error("OpenRouter planner HTTP "+res.status);
  const d=await res.json();let p;try{p=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{p={topics:[]}}
- return {topics:dedupeTopics((p.topics||[]).slice(0,7),facts),generated_at:new Date().toISOString()};
+ let topics=dedupeTopics((p.topics||[]).slice(0,7),facts);
+ if(!topics.length){
+  const groups=new Map();
+  facts.forEach((f,i)=>{const key=String(f.type||"news");if(!groups.has(key))groups.set(key,[]);groups.get(key).push(i)});
+  topics=[...groups.entries()].slice(0,6).map(([type,idx],n)=>({id:"auto-"+type,title:({event:"Афиша ЦУМа",promotion:"Актуальные предложения ЦУМа",store:"Магазины ЦУМа",brand:"Бренды ЦУМа",product:"Выбор в ЦУМе",service:"Сервисы ЦУМа",news:"Новости ЦУМа"}[type]||"Новости ЦУМа"),deck:"Проверенная информация из официальных источников ЦУМа.",angle:"Обзор подтверждённых фактов без повторов.",fact_indexes:idx.slice(0,12),native_integrations:[],priority:n+1}));
+  topics=dedupeTopics(topics,facts);
+ }
+ return {topics,generated_at:new Date().toISOString()};
 }
 async function generateArticleImage(env,id,brief,references=[]){
  if(!brief||!env.OPENROUTER_API_KEY||!env.CSUM_IMAGES)return null;

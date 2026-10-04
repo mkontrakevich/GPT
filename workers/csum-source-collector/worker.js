@@ -16,13 +16,28 @@ async function collectCsum(){
  const root="https://www.csum.ru/";
  const res=await fetch(root,{headers:{"user-agent":"CSUM Editorial Source Collector/1.0"}});
  if(!res.ok)throw new Error("csum.ru HTTP "+res.status);
- const html=await res.text(), out=[], re=/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi; let m;
- while((m=re.exec(html))&&out.length<80){const title=clean(m[2]);const u=abs(m[1],root);if(title.length<12||!u||!u.includes("csum.ru"))continue;out.push({source:"csum.ru",source_url:u,title,published_at:null,raw_excerpt:title,collected_at:new Date().toISOString()})}
+ const html=await res.text(), candidates=[], seen=new Set(), re=/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi; let m;
+ while((m=re.exec(html))&&candidates.length<24){
+  const title=clean(m[2]).replace(/^[-–—>\s]+|[-–—<\s]+$/g,""),u=abs(m[1],root);
+  if(title.length<4||!u)continue; const q=new URL(u); if(q.hostname!=="www.csum.ru"&&q.hostname!=="csum.ru")continue;
+  q.hash=""; const canonical=q.toString(); if(seen.has(canonical))continue; seen.add(canonical); candidates.push({title,url:canonical});
+ }
+ const out=[];
+ for(const x of candidates){
+  try{
+   const r=await fetch(x.url,{headers:{"user-agent":"CSUM Editorial Source Collector/1.0"}});
+   if(!r.ok)continue; const page=await r.text();
+   const pageTitle=clean((page.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||x.title);
+   const body=clean(page.replace(/<!--[\s\S]*?-->/g," ")).slice(0,5000);
+   if(body.length<40)continue;
+   out.push({source:"csum.ru",source_url:x.url,title:pageTitle||x.title,published_at:null,raw_excerpt:body,collected_at:new Date().toISOString()});
+  }catch{}
+ }
  return out;
 }
 async function normalize(items){
  const seen=new Set(), out=[];
- for(const x of items){const fp=await hash([x.source,x.source_url,x.title,x.published_at||""].join("|"));if(seen.has(fp))continue;seen.add(fp);out.push({...x,fingerprint:fp})}
+ for(const x of items){const fp=await hash([x.source,x.source_url,x.title,x.published_at||"",x.raw_excerpt||""].join("|"));if(seen.has(fp))continue;seen.add(fp);out.push({...x,fingerprint:fp})}
  return out;
 }
 async function extractFacts(env,items){
@@ -94,7 +109,7 @@ async function refresh(env){
  try{fresh.push(...await collectCsum())}catch(e){errors.push({source:"csum.ru",error:e.message})}
  // VK/TG adapters are deliberately gated until official channel URLs are configured.
  const official=await discoverOfficialSources().catch(()=>({contacts_url:"https://www.csum.ru/contacts",vk:null,telegram:null}));
- const configured={vk:!!official.vk,telegram:!!official.telegram};
+ const configured={vk:false,telegram:false};
  const merged=await normalize([...fresh,...previous.items]);
  const cutoff=Date.now()-WINDOW_DAYS*DAY;
  const active=merged.filter(x=>Date.parse(x.published_at||x.collected_at||0)>=cutoff).slice(0,250);

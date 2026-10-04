@@ -83,7 +83,8 @@ async function refresh(env){
  const cache={window_days:WINDOW_DAYS,refreshed_at:new Date().toISOString(),sources:{csum:true,...configured},official_sources:official,errors,items:active};
  const context_hash=await hash(active.map(x=>x.fingerprint).sort().join("|"));
  const previousFacts=await read(env,"_editorial/facts.json",null), previousPlan=await read(env,"_editorial/content-plan.json",null);
- const articlesCurrent=Array.isArray(previousArticles?.articles)&&previousArticles.articles.length>0&&previousArticles.articles.every(a=>a?.schema_version===ARTICLE_SCHEMA_VERSION&&Array.isArray(a.sources)&&a.sources.length>0&&a.visual?.mode);\n const reuse=articlesCurrent&&previousArticles?.context_hash===context_hash&&previousFacts?.context_hash===context_hash&&previousPlan?.context_hash===context_hash;
+ const articlesCurrent=Array.isArray(previousArticles?.articles)&&previousArticles.articles.length>0&&previousArticles.articles.every(a=>a?.schema_version===ARTICLE_SCHEMA_VERSION&&Array.isArray(a.sources)&&a.sources.length>0&&a.visual?.mode);
+ const reuse=articlesCurrent&&previousArticles?.context_hash===context_hash&&previousFacts?.context_hash===context_hash&&previousPlan?.context_hash===context_hash;
  const extracted=reuse?{facts:previousFacts.facts||[],warning:previousFacts.warning||null}:await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
  const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,context_hash,warning:extracted.warning||null,facts:extracted.facts};
  const plan=reuse?previousPlan:await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message})); plan.context_hash=context_hash;

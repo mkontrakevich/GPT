@@ -46,4 +46,11 @@ jobs:
           cat /tmp/refresh.json
           curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/facts
           curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/content-plan
-          curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/articles
+          articles="$(curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/articles)"
+          printf '%s' "$articles" | jq -e '.reused == false and (.articles|length) > 0 and all(.articles[]; .schema_version == 2 and (.sources|length) > 0 and (.visual.mode|type) == "string")' >/dev/null
+          printf '%s' "$articles"
+          image_health="$(curl -fsS https://csum-nn-image-studio.kontrakevich.workers.dev/health)"
+          printf '%s' "$image_health" | jq -e '.ok == true and .r2 == true and .openrouter == true' >/dev/null
+          test_id="editorial-e2e-$(date +%s)"
+          generated="$(curl -fsS -X POST -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" https://csum-nn-image-studio.kontrakevich.workers.dev/api/generate --data "$(jq -nc --arg id "$test_id" '{id:$id,prompt:"Editorial E2E smoke test: abstract architectural light and shadow, no text, no logos",aspect_ratio:"16:9",output_format:"webp"}')")"
+          printf '%s' "$generated" | jq -e '.ok == true and (.candidate_key|length) > 0' >/dev/null

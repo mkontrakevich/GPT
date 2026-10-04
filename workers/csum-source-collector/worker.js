@@ -17,7 +17,7 @@ async function collectCsum(){
  const res=await fetch(root,{headers:{"user-agent":"CSUM Editorial Source Collector/1.0"}});
  if(!res.ok)throw new Error("csum.ru HTTP "+res.status);
  const html=await res.text(), candidates=[], seen=new Set(), re=/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi; let m;
- while((m=re.exec(html))&&candidates.length<24){
+ while((m=re.exec(html))&&candidates.length<12){
   const title=clean(m[2]).replace(/^[-–—>\s]+|[-–—<\s]+$/g,""),u=abs(m[1],root);
   if(title.length<4||!u)continue; const q=new URL(u); if(q.hostname!=="www.csum.ru"&&q.hostname!=="csum.ru")continue;
   q.hash=""; const canonical=q.toString(); if(seen.has(canonical))continue; seen.add(canonical); candidates.push({title,url:canonical});
@@ -27,7 +27,7 @@ async function collectCsum(){
    const r=await fetch(x.url,{headers:{"user-agent":"CSUM Editorial Source Collector/1.0"}});
    if(!r.ok)return null; const page=await r.text();
    const pageTitle=clean((page.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||x.title);
-   const body=clean(page.replace(/<!--[\s\S]*?-->/g," ")).slice(0,5000);
+   const body=clean(page.replace(/<!--[\s\S]*?-->/g," ")).slice(0,2500);
    if(body.length<40)return null;
    return {source:"csum.ru",source_url:x.url,title:pageTitle||x.title,published_at:null,raw_excerpt:body,collected_at:new Date().toISOString()};
   }catch{return null}

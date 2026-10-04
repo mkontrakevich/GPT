@@ -44,3 +44,10 @@ jobs:
           npx -y playwright@1.55.0 screenshot --viewport-size="390,844" --user-agent="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36" --wait-for-timeout=4000 https://mkontrakevich.github.io/GPT/ /tmp/csum-mobile.png
           test -s /tmp/csum-desktop.png
           test -s /tmp/csum-mobile.png
+          article_id="$(curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/articles | jq -r '.articles[0].id // empty')"
+          test -n "$article_id"
+          article_url="https://mkontrakevich.github.io/GPT/dynamic-article.html?id=$article_id"
+          npx -y playwright@1.55.0 screenshot --device="Desktop Chrome" --wait-for-timeout=4000 "$article_url" /tmp/csum-article-desktop.png
+          npx -y playwright@1.55.0 screenshot --viewport-size="390,844" --user-agent="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36" --wait-for-timeout=4000 "$article_url" /tmp/csum-article-mobile.png
+          test -s /tmp/csum-article-desktop.png
+          test -s /tmp/csum-article-mobile.png

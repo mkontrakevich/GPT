@@ -45,7 +45,9 @@ async function normalize(items){
 }
 async function extractFacts(env,items){
  if(!env.OPENROUTER_API_KEY||!items.length)return {facts:[],warning:"OPENROUTER_API_KEY_NOT_CONFIGURED"};
- const input=items.slice(0,80).map(x=>({fingerprint:x.fingerprint,source:x.source,url:x.source_url,title:x.title,published_at:x.published_at,excerpt:x.raw_excerpt,images:x.source_images||[]}));
+ const unique=[];const seenUrls=new Set();
+ for(const x of items){if(!x.source_url||seenUrls.has(x.source_url)||String(x.raw_excerpt||"").length<80)continue;seenUrls.add(x.source_url);unique.push(x);if(unique.length>=20)break}
+ const input=unique.map(x=>({fingerprint:x.fingerprint,source:x.source,url:x.source_url,title:x.title,published_at:x.published_at,excerpt:String(x.raw_excerpt||"").slice(0,1800),images:(x.source_images||[]).slice(0,3)}));
  const prompt="Extract only explicit facts from these official CSUM Nizhny Novgorod source records. Never infer prices, stock, dates, brands, products, promotions or events. Return strict JSON object {facts:[{source_fingerprint,type,title,entity,date,source_url,evidence,confidence}]}. type must be one of event,promotion,store,brand,product,service,news. confidence 0..1. Evidence must be a short paraphrase grounded in source. INPUT:"+JSON.stringify(input);
  const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Fact Extractor"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:0,usage:{include:true}})});
  if(!res.ok)throw new Error("OpenRouter facts HTTP "+res.status);
@@ -147,7 +149,9 @@ async function refresh(env){
  const extracted=reuse?{facts:previousFacts.facts||[],warning:previousFacts.warning||null}:await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
  const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,context_hash,warning:extracted.warning||null,facts:extracted.facts};
  const plan=reuse?previousPlan:await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message})); plan.context_hash=context_hash;
- let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts,active).catch(()=>[]); articles=dedupeArticles(articles); articles=await hydrateArticleImages(env,articles);
+ let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts,active).catch(()=>[]);
+ if(!reuse&&!articles.length&&Array.isArray(previousArticles?.articles)&&previousArticles.articles.length){articles=previousArticles.articles;factStore.warning=factStore.warning||"REFRESH_EMPTY_PRESERVED_PREVIOUS_ARTICLES"}
+ articles=dedupeArticles(articles); articles=await hydrateArticleImages(env,articles);
  const cycle_cost_usd=Number((reuse?0:Number(extracted.cost_usd||0))+(reuse?0:Number(plan.cost_usd||0))+articles.reduce((s,a)=>s+(reuse?0:Number(a.text_cost_usd||0))+Number(a.visual?.cost_usd||0),0));
  const previous_total_cost_usd=Number(previousArticles?.total_cost_usd||0);
  const total_cost_usd=previous_total_cost_usd+cycle_cost_usd;

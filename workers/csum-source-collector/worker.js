@@ -45,7 +45,18 @@ async function planContent(env,facts){
  const d=await res.json();let p;try{p=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{p={topics:[]}}
  return {topics:(p.topics||[]).slice(0,7),generated_at:new Date().toISOString()};
 }
-async function generateArticleImage(env,id,brief){if(!env.ADMIN_TOKEN||!brief)return null;const base="https://csum-nn-image-studio.kontrakevich.workers.dev";const g=await fetch(base+"/api/generate",{method:"POST",headers:{"content-type":"application/json","x-csum-admin-token":env.ADMIN_TOKEN},body:JSON.stringify({id:"article-"+id,prompt:brief,aspect_ratio:"16:9",output_format:"webp"})});if(!g.ok){const e=await g.json().catch(()=>({}));throw new Error("IMAGE_GENERATE_"+g.status+":"+(e.error||"unknown"));}const d=await g.json();if(!d.candidate_key)throw new Error("IMAGE_GENERATE_NO_CANDIDATE");const a=await fetch(base+"/api/apply",{method:"POST",headers:{"content-type":"application/json","x-csum-admin-token":env.ADMIN_TOKEN},body:JSON.stringify({id:"article-"+id,candidate_key:d.candidate_key})});if(!a.ok)return d.url||null;const x=await a.json();return x.url||d.url||null;}
+async function generateArticleImage(env,id,brief){
+ if(!brief||!env.OPENROUTER_API_KEY||!env.CSUM_IMAGES)return null;
+ const res=await fetch("https://openrouter.ai/api/v1/images",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Image Generator"},body:JSON.stringify({model:env.IMAGE_MODEL||"bytedance-seed/seedream-4.5",prompt:brief,aspect_ratio:"16:9",output_format:"webp",n:1})});
+ const data=await res.json().catch(()=>({}));
+ if(!res.ok)throw new Error("OPENROUTER_IMAGE_"+res.status+":"+(data?.error?.message||data?.message||"unknown"));
+ const first=data?.data?.[0]; if(!first?.b64_json)throw new Error("OPENROUTER_IMAGE_NO_DATA");
+ const media=first.media_type||"image/webp",ext=media.includes("png")?"png":media.includes("jpeg")?"jpg":"webp";
+ const key="articles/"+id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+ const bytes=Uint8Array.from(atob(first.b64_json),x=>x.charCodeAt(0));
+ await env.CSUM_IMAGES.put(key,bytes,{httpMetadata:{contentType:media}});
+ return "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/"+encodeURIComponent(key);
+}
 async function hydrateArticleImages(env,articles){
  for(const a of articles||[]){
   if(a?.visual?.mode!=="editorial"||a.image_url||!a.visual?.brief)continue;

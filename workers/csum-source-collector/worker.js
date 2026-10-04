@@ -56,7 +56,14 @@ async function writeArticles(env,plan,facts){
   const allowedUrls=new Set(used.map(x=>x.source_url).filter(Boolean));
   a.native_integrations=(a.native_integrations||[]).filter(x=>x&&allowedUrls.has(x.source_url));
   if(a.cta&&!allowedUrls.has(a.cta.url))a.cta=null;
-  const articleId=topic.id||crypto.randomUUID(); const image_url=await generateArticleImage(env,articleId,a.visual_brief).catch(()=>null); articles.push({...a,id:articleId,image_url,generated_at:new Date().toISOString(),source_fingerprints:used.map(x=>x.source_fingerprint)});
+  const articleId=topic.id||crypto.randomUUID();
+  const sources=[...new Map(used.filter(x=>x.source_url).map(x=>[x.source_url,{url:x.source_url,title:x.title||x.entity||"Источник",source_fingerprint:x.source_fingerprint,evidence:x.evidence||null}])).values()];
+  const factualTypes=new Set(["product","promotion","store","brand","event"]);
+  const factualVisual=used.some(x=>factualTypes.has(String(x.type||"").toLowerCase()));
+  const visual={mode:factualVisual?"factual":"editorial",brief:a.visual_brief||"",generated:false,reason:factualVisual?"verified_real-world_subject":"editorial_illustration"};
+  const image_url=factualVisual?null:await generateArticleImage(env,articleId,a.visual_brief).catch(()=>null);
+  visual.generated=!!image_url;
+  articles.push({...a,id:articleId,image_url,visual,generated_at:new Date().toISOString(),sources,source_urls:sources.map(x=>x.url),source_fingerprints:used.map(x=>x.source_fingerprint)});
  }
  return articles;
 }

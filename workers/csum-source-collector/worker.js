@@ -73,10 +73,11 @@ async function generateArticleImage(env,id,brief){
  return "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/"+encodeURIComponent(key);
 }
 async function hydrateArticleImages(env,articles){
+ let generatedNow=0;
  for(const a of articles||[]){
-  if(a?.visual?.mode!=="editorial"||a.image_url||!a.visual?.brief)continue;
+  if(a?.visual?.mode!=="editorial"||a.image_url||!a.visual?.brief||generatedNow>=2)continue;
   const u=await generateArticleImage(env,a.id,a.visual.brief).catch(e=>{a.visual.error=e.message||String(e);return null});
-  if(u){a.image_url=u;a.visual.generated=true;a.visual.reason="editorial_illustration";}
+  if(u){a.image_url=u;a.visual.generated=true;a.visual.reason="editorial_illustration";delete a.visual.error;generatedNow++;}
  }
  return articles;
 }
@@ -95,8 +96,8 @@ async function writeArticles(env,plan,facts){
   const factualTypes=new Set(["product","promotion","store","brand","event"]);
   const factualVisual=used.some(x=>factualTypes.has(String(x.type||"").toLowerCase()));
   const visual={mode:factualVisual?"factual":"editorial",brief:a.visual_brief||"",generated:false,reason:factualVisual?"verified_real-world_subject":"editorial_illustration"};
-  const image_url=factualVisual?null:await generateArticleImage(env,articleId,a.visual_brief).catch(()=>null);
-  visual.generated=!!image_url;
+  const image_url=null;
+  visual.generated=false;
   articles.push({...a,id:articleId,image_url,visual,schema_version:ARTICLE_SCHEMA_VERSION,generated_at:new Date().toISOString(),sources,source_urls:sources.map(x=>x.url),source_fingerprints:used.map(x=>x.source_fingerprint)});
  }
  return articles;

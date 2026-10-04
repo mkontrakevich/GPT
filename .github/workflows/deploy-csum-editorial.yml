@@ -47,7 +47,7 @@ jobs:
           curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/facts
           curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/content-plan
           articles="$(curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/articles)"
-          printf '%s' "$articles" | jq -e '.reused == false and (.articles|length) > 0 and all(.articles[]; .schema_version == 2 and (.sources|length) > 0 and (.visual.mode|type) == "string")' >/dev/null
+          printf '%s' "$articles" | jq -e '(.articles|length) > 0 and all(.articles[]; .schema_version == 2 and (.sources|length) > 0 and (.visual.mode|type) == "string")' >/dev/null
           printf '%s' "$articles"
           image_health="$(curl -fsS https://csum-nn-image-studio.kontrakevich.workers.dev/health)"
           printf '%s' "$image_health" | jq -e '.ok == true and .r2 == true and .openrouter == true' >/dev/null

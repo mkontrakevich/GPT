@@ -91,6 +91,16 @@ async function hydrateArticleImages(env,articles){
  }
  return articles;
 }
+function dedupeArticles(articles){
+ const kept=[];
+ for(const a of articles||[]){
+  const textA=(a.title||"")+" "+(a.deck||"")+" "+(a.sections||[]).map(s=>(s.heading||"")+" "+(s.body||"")).join(" ");
+  const factsA=new Set(a.source_fingerprints||[]);
+  const dup=kept.some(k=>{const titleSim=similarity(a.title,k.a.title),bodySim=similarity(textA,k.text),shared=[...factsA].filter(x=>k.facts.has(x)).length/Math.max(1,Math.min(factsA.size,k.facts.size));return titleSim>.55||(bodySim>.5&&shared>.35)||(titleSim>.4&&bodySim>.42)});
+  if(!dup)kept.push({a,text:textA,facts:factsA});
+ }
+ return kept.map(x=>x.a);
+}
 async function writeArticles(env,plan,facts,items){
  const articles=[];
  for(const topic of (plan.topics||[])){
@@ -136,7 +146,7 @@ async function refresh(env){
  const extracted=reuse?{facts:previousFacts.facts||[],warning:previousFacts.warning||null}:await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
  const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,context_hash,warning:extracted.warning||null,facts:extracted.facts};
  const plan=reuse?previousPlan:await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message})); plan.context_hash=context_hash;
- let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts,active).catch(()=>[]); articles=await hydrateArticleImages(env,articles);
+ let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts,active).catch(()=>[]); articles=dedupeArticles(articles); articles=await hydrateArticleImages(env,articles);
  await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);await write(env,"_editorial/content-plan.json",plan);await write(env,"_editorial/articles.json",{updated_at:cache.refreshed_at,context_hash,reused:reuse,articles});
  return {...cache,fact_count:factStore.facts.length,topic_count:(plan.topics||[]).length,article_count:articles.length,fact_warning:factStore.warning,plan_warning:plan.warning||null};
 }

@@ -31,3 +31,16 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Public smoke
+        run: |
+          curl --retry 6 --retry-delay 3 -fsS https://mkontrakevich.github.io/GPT/ >/tmp/index.html
+          grep -qi "ЦУМ" /tmp/index.html
+          curl --retry 6 --retry-delay 3 -fsS https://mkontrakevich.github.io/GPT/dynamic-article.html >/tmp/article.html
+          grep -qi "Журнал" /tmp/article.html
+      - name: Desktop and mobile public E2E
+        run: |
+          npx -y playwright@1.55.0 install --with-deps chromium
+          npx -y playwright@1.55.0 screenshot --device="Desktop Chrome" --wait-for-timeout=4000 https://mkontrakevich.github.io/GPT/ /tmp/csum-desktop.png
+          npx -y playwright@1.55.0 screenshot --device="iPhone 15 Pro" --wait-for-timeout=4000 https://mkontrakevich.github.io/GPT/ /tmp/csum-mobile.png
+          test -s /tmp/csum-desktop.png
+          test -s /tmp/csum-mobile.png

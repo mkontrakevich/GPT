@@ -6,6 +6,9 @@ on:
       - "workers/csum-source-collector/**"
       - ".github/workflows/deploy-csum-editorial.yml"
   workflow_dispatch:
+concurrency:
+  group: csum-editorial-production
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

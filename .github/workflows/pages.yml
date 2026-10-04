@@ -2,6 +2,15 @@ name: CSUM Pages backup deploy
 
 on:
   workflow_dispatch:
+  push:
+    branches: [csum-nn-site]
+    paths:
+      - "*.html"
+      - "*.js"
+      - "*.css"
+      - "assets/**"
+      - "config.js"
+      - ".github/workflows/pages.yml"
 
 permissions:
   contents: read

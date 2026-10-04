@@ -76,7 +76,8 @@ async function generateArticleImage(env,id,brief,references=[]){
  const data=await res.json().catch(()=>({}));
  if(!res.ok)throw new Error("OPENROUTER_IMAGE_"+res.status+":"+(data?.error?.message||data?.message||"unknown"));
  const first=data?.data?.[0]; if(!first?.b64_json)throw new Error("OPENROUTER_IMAGE_NO_DATA");
- const cost_usd=Number(data?.usage?.cost||0);\n const media=first.media_type||"image/webp",ext=media.includes("png")?"png":media.includes("jpeg")?"jpg":"webp";
+ const cost_usd=Number(data?.usage?.cost||0);
+ const media=first.media_type||"image/webp",ext=media.includes("png")?"png":media.includes("jpeg")?"jpg":"webp";
  const key="articles/"+id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
  const bytes=Uint8Array.from(atob(first.b64_json),x=>x.charCodeAt(0));
  await env.CSUM_IMAGES.put(key,bytes,{httpMetadata:{contentType:media}});

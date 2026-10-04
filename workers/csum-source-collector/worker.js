@@ -45,11 +45,11 @@ async function planContent(env,facts){
  const d=await res.json();let p;try{p=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{p={topics:[]}}
  return {topics:(p.topics||[]).slice(0,7),generated_at:new Date().toISOString()};
 }
-async function generateArticleImage(env,id,brief){if(!env.ADMIN_TOKEN||!brief)return null;const base="https://csum-nn-image-studio.kontrakevich.workers.dev";const g=await fetch(base+"/api/generate",{method:"POST",headers:{"content-type":"application/json","x-csum-admin-token":env.ADMIN_TOKEN},body:JSON.stringify({id:"article-"+id,prompt:brief,aspect_ratio:"16:9",output_format:"webp"})});if(!g.ok)return null;const d=await g.json();if(!d.candidate_key)return null;const a=await fetch(base+"/api/apply",{method:"POST",headers:{"content-type":"application/json","x-csum-admin-token":env.ADMIN_TOKEN},body:JSON.stringify({id:"article-"+id,candidate_key:d.candidate_key})});if(!a.ok)return d.url||null;const x=await a.json();return x.url||d.url||null;}
+async function generateArticleImage(env,id,brief){if(!env.ADMIN_TOKEN||!brief)return null;const base="https://csum-nn-image-studio.kontrakevich.workers.dev";const g=await fetch(base+"/api/generate",{method:"POST",headers:{"content-type":"application/json","x-csum-admin-token":env.ADMIN_TOKEN},body:JSON.stringify({id:"article-"+id,prompt:brief,aspect_ratio:"16:9",output_format:"webp"})});if(!g.ok){const e=await g.json().catch(()=>({}));throw new Error("IMAGE_GENERATE_"+g.status+":"+(e.error||"unknown"));}const d=await g.json();if(!d.candidate_key)throw new Error("IMAGE_GENERATE_NO_CANDIDATE");const a=await fetch(base+"/api/apply",{method:"POST",headers:{"content-type":"application/json","x-csum-admin-token":env.ADMIN_TOKEN},body:JSON.stringify({id:"article-"+id,candidate_key:d.candidate_key})});if(!a.ok)return d.url||null;const x=await a.json();return x.url||d.url||null;}
 async function hydrateArticleImages(env,articles){
  for(const a of articles||[]){
   if(a?.visual?.mode!=="editorial"||a.image_url||!a.visual?.brief)continue;
-  const u=await generateArticleImage(env,a.id,a.visual.brief).catch(()=>null);
+  const u=await generateArticleImage(env,a.id,a.visual.brief).catch(e=>{a.visual.error=e.message||String(e);return null});
   if(u){a.image_url=u;a.visual.generated=true;a.visual.reason="editorial_illustration";}
  }
  return articles;

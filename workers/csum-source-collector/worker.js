@@ -47,18 +47,18 @@ async function extractFacts(env,items){
  if(!env.OPENROUTER_API_KEY||!items.length)return {facts:[],warning:"OPENROUTER_API_KEY_NOT_CONFIGURED"};
  const input=items.slice(0,80).map(x=>({fingerprint:x.fingerprint,source:x.source,url:x.source_url,title:x.title,published_at:x.published_at,excerpt:x.raw_excerpt,images:x.source_images||[]}));
  const prompt="Extract only explicit facts from these official CSUM Nizhny Novgorod source records. Never infer prices, stock, dates, brands, products, promotions or events. Return strict JSON object {facts:[{source_fingerprint,type,title,entity,date,source_url,evidence,confidence}]}. type must be one of event,promotion,store,brand,product,service,news. confidence 0..1. Evidence must be a short paraphrase grounded in source. INPUT:"+JSON.stringify(input);
- const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Fact Extractor"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:0})});
+ const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Fact Extractor"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:0,usage:{include:true}})});
  if(!res.ok)throw new Error("OpenRouter facts HTTP "+res.status);
  const data=await res.json(), raw=data?.choices?.[0]?.message?.content||"{\"facts\":[]}";
  let parsed;try{parsed=JSON.parse(raw)}catch{parsed={facts:[]}}
  const allowed=new Set(input.map(x=>x.fingerprint));
  const facts=(parsed.facts||[]).filter(f=>allowed.has(f.source_fingerprint)&&f.source_url&&f.evidence).map(f=>({...f,extracted_at:new Date().toISOString()}));
- return {facts};
+ return {facts,cost_usd:Number(data?.usage?.cost||0)};
 }
 async function planContent(env,facts){
  if(!env.OPENROUTER_API_KEY||!facts.length)return {topics:[],warning:"NO_FACTS_OR_OPENROUTER"};
  const prompt="Plan a current editorial homepage for CSUM Nizhny Novgorod in RUSSIAN using ONLY supplied verified facts. Do not use outside knowledge or infer anything beyond the evidence. Return strict JSON {topics:[{id,title,deck,angle,fact_indexes,native_integrations,priority}]}. Create 3-7 useful magazine topics. Native integrations must refer only to entities explicitly present in facts; never invent products, stock, prices or promotions. Headlines must be statements, not questions. FACTS:"+JSON.stringify(facts);
- const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Planner"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.2})});
+ const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Planner"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.2,usage:{include:true}})});
  if(!res.ok)throw new Error("OpenRouter planner HTTP "+res.status);
  const d=await res.json();let p;try{p=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{p={topics:[]}}
  let topics=dedupeTopics((p.topics||[]).slice(0,7),facts);
@@ -68,7 +68,7 @@ async function planContent(env,facts){
   topics=[...groups.entries()].slice(0,6).map(([type,idx],n)=>({id:"auto-"+type,title:({event:"Афиша ЦУМа",promotion:"Актуальные предложения ЦУМа",store:"Магазины ЦУМа",brand:"Бренды ЦУМа",product:"Выбор в ЦУМе",service:"Сервисы ЦУМа",news:"Новости ЦУМа"}[type]||"Новости ЦУМа"),deck:"Проверенная информация из официальных источников ЦУМа.",angle:"Обзор подтверждённых фактов без повторов.",fact_indexes:idx.slice(0,12),native_integrations:[],priority:n+1}));
   topics=dedupeTopics(topics,facts);
  }
- return {topics,generated_at:new Date().toISOString()};
+ return {topics,generated_at:new Date().toISOString(),cost_usd:Number(d?.usage?.cost||0)};
 }
 async function generateArticleImage(env,id,brief,references=[]){
  if(!brief||!env.OPENROUTER_API_KEY||!env.CSUM_IMAGES)return null;
@@ -76,18 +76,18 @@ async function generateArticleImage(env,id,brief,references=[]){
  const data=await res.json().catch(()=>({}));
  if(!res.ok)throw new Error("OPENROUTER_IMAGE_"+res.status+":"+(data?.error?.message||data?.message||"unknown"));
  const first=data?.data?.[0]; if(!first?.b64_json)throw new Error("OPENROUTER_IMAGE_NO_DATA");
- const media=first.media_type||"image/webp",ext=media.includes("png")?"png":media.includes("jpeg")?"jpg":"webp";
+ const cost_usd=Number(data?.usage?.cost||0);\n const media=first.media_type||"image/webp",ext=media.includes("png")?"png":media.includes("jpeg")?"jpg":"webp";
  const key="articles/"+id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
  const bytes=Uint8Array.from(atob(first.b64_json),x=>x.charCodeAt(0));
  await env.CSUM_IMAGES.put(key,bytes,{httpMetadata:{contentType:media}});
- return "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/"+encodeURIComponent(key);
+ return {url:"https://csum-nn-image-studio.kontrakevich.workers.dev/generated/"+encodeURIComponent(key),cost_usd};
 }
 async function hydrateArticleImages(env,articles){
  let generatedNow=0;
  for(const a of articles||[]){
   if(a?.visual?.mode!=="editorial"||a.image_url||!a.visual?.brief||generatedNow>=2)continue;
   const u=await generateArticleImage(env,a.id,a.visual.brief,a.visual.source_images||[]).catch(e=>{a.visual.error=e.message||String(e);return null});
-  if(u){a.image_url=u;a.visual.generated=true;a.visual.reason="editorial_illustration";delete a.visual.error;generatedNow++;}
+  if(u){a.image_url=u.url;a.visual.generated=true;a.visual.reason="editorial_illustration";a.visual.cost_usd=Number(u.cost_usd||0);delete a.visual.error;generatedNow++;}
  }
  return articles;
 }
@@ -106,7 +106,7 @@ async function writeArticles(env,plan,facts,items){
  for(const topic of (plan.topics||[])){
   const used=(topic.fact_indexes||[]).map(i=>facts[i]).filter(Boolean); if(!used.length)continue;
   const prompt="Write a Russian CSUM city-magazine article grounded ONLY in VERIFIED_FACTS. Do NOT add historical background, descriptions, amenities, locations, brands, products, dates, availability or any other knowledge unless explicitly stated in VERIFIED_FACTS evidence. If facts are sparse, write a shorter 250-500 word useful article rather than filling gaps. Every factual claim must be directly supported by supplied evidence.  Structure: headline, deck, 3-5 sections, practical conclusion, then subtle native commerce in final 20-30%, one CTA. Commercial content <=15%. Do not invent facts, products, availability, prices, dates or discounts. Return strict JSON {title,deck,sections:[{heading,body}],native_integrations:[{entity,context,source_url}],cta:{label,url},visual_brief}. TOPIC:"+JSON.stringify(topic)+" VERIFIED_FACTS:"+JSON.stringify(used);
-  const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Writer"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.45})});
+  const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Writer"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.45,usage:{include:true}})});
   if(!res.ok)continue; const d=await res.json();let a;try{a=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{continue}
   const allowedUrls=new Set(used.map(x=>x.source_url).filter(Boolean));
   a.native_integrations=(a.native_integrations||[]).filter(x=>x&&allowedUrls.has(x.source_url));
@@ -121,7 +121,7 @@ async function writeArticles(env,plan,facts,items){
   const visual={mode:factualVisual?"factual":"editorial",brief:groundedBrief,generated:false,reason:factualVisual?"verified_real-world_subject":"source_grounded_editorial",source_images};
   const image_url=factualVisual&&source_images.length?source_images[0]:null;
   visual.generated=false;
-  articles.push({...a,id:articleId,image_url,visual,schema_version:ARTICLE_SCHEMA_VERSION,generated_at:new Date().toISOString(),sources,source_urls:sources.map(x=>x.url),source_fingerprints:used.map(x=>x.source_fingerprint)});
+  articles.push({...a,id:articleId,image_url,visual,text_cost_usd:Number(d?.usage?.cost||0),schema_version:ARTICLE_SCHEMA_VERSION,generated_at:new Date().toISOString(),sources,source_urls:sources.map(x=>x.url),source_fingerprints:used.map(x=>x.source_fingerprint)});
  }
  return articles;
 }
@@ -147,8 +147,11 @@ async function refresh(env){
  const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,context_hash,warning:extracted.warning||null,facts:extracted.facts};
  const plan=reuse?previousPlan:await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message})); plan.context_hash=context_hash;
  let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts,active).catch(()=>[]); articles=dedupeArticles(articles); articles=await hydrateArticleImages(env,articles);
- await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);await write(env,"_editorial/content-plan.json",plan);await write(env,"_editorial/articles.json",{updated_at:cache.refreshed_at,context_hash,reused:reuse,articles});
- return {...cache,fact_count:factStore.facts.length,topic_count:(plan.topics||[]).length,article_count:articles.length,fact_warning:factStore.warning,plan_warning:plan.warning||null};
+ const cycle_cost_usd=Number((reuse?0:Number(extracted.cost_usd||0))+(reuse?0:Number(plan.cost_usd||0))+articles.reduce((s,a)=>s+(reuse?0:Number(a.text_cost_usd||0))+Number(a.visual?.cost_usd||0),0));
+ const previous_total_cost_usd=Number(previousArticles?.total_cost_usd||0);
+ const total_cost_usd=previous_total_cost_usd+cycle_cost_usd;
+ await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);await write(env,"_editorial/content-plan.json",plan);await write(env,"_editorial/articles.json",{updated_at:cache.refreshed_at,context_hash,reused:reuse,cost:{cycle_usd:cycle_cost_usd,total_usd:total_cost_usd},total_cost_usd,articles});
+ return {...cache,fact_count:factStore.facts.length,topic_count:(plan.topics||[]).length,article_count:articles.length,cost:{cycle_usd:cycle_cost_usd,total_usd:total_cost_usd},fact_warning:factStore.warning,plan_warning:plan.warning||null};
 }
 export default{async fetch(req,env){const u=new URL(req.url);if(req.method==="OPTIONS")return new Response(null,{status:204,headers:{"access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"x-csum-admin-token"}});
  try{

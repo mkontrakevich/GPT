@@ -1,10 +1,14 @@
-const DAY=86400000, WINDOW_DAYS=7, ARTICLE_SCHEMA_VERSION=2;
+const DAY=86400000, WINDOW_DAYS=7, ARTICLE_SCHEMA_VERSION=3;
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","cache-control":"no-store",...h}});
 const clean=s=>(s||"").replace(/<script[\s\S]*?<\/script>/gi," ").replace(/<style[\s\S]*?<\/style>/gi," ").replace(/<[^>]+>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/\s+/g," ").trim();
 const hash=async s=>Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)))).map(x=>x.toString(16).padStart(2,"0")).join("");
 async function read(env,key,fallback){const o=await env.CSUM_IMAGES.get(key);if(!o)return fallback;try{return await o.json()}catch{return fallback}}
 async function write(env,key,v){await env.CSUM_IMAGES.put(key,JSON.stringify(v),{httpMetadata:{contentType:"application/json"}})}
 function abs(href,base){try{return new URL(href,base).toString()}catch{return null}}
+function sourceImages(html,base){const out=[],seen=new Set(),re=/<img\b[^>]*(?:src|data-src)=["']([^"']+)["'][^>]*>/gi;let m;while((m=re.exec(html))&&out.length<8){const u=abs(m[1],base);if(!u)continue;try{const q=new URL(u);if(!["http:","https:"].includes(q.protocol)||seen.has(q.href)||/logo|icon|sprite|pixel|counter/i.test(q.pathname))continue;seen.add(q.href);out.push(q.href)}catch{}}return out}
+function wordSet(s){return new Set(String(s||"").toLowerCase().replace(/[^a-zа-яё0-9 ]/gi," ").split(/\s+/).filter(x=>x.length>3))}
+function similarity(a,b){const A=wordSet(a),B=wordSet(b);if(!A.size||!B.size)return 0;let n=0;for(const x of A)if(B.has(x))n++;return n/Math.min(A.size,B.size)}
+function dedupeTopics(topics,facts){const kept=[];for(const t of [...(topics||[])].sort((a,b)=>(a.priority||99)-(b.priority||99))){const idx=[...new Set((t.fact_indexes||[]).filter(i=>facts[i]))],fps=new Set(idx.map(i=>facts[i].source_fingerprint)),entities=new Set(idx.map(i=>String(facts[i].entity||"").toLowerCase()).filter(Boolean));const dup=kept.some(k=>{const shared=[...fps].some(x=>k.fps.has(x)),sameEntity=[...entities].some(x=>k.entities.has(x)),semantic=similarity((t.title||"")+" "+(t.angle||""),(k.topic.title||"")+" "+(k.topic.angle||""));return shared||(sameEntity&&semantic>.45)||semantic>.62});if(!dup)kept.push({topic:{...t,fact_indexes:idx},fps,entities})}return kept.map(x=>x.topic)}
 async function discoverOfficialSources(){
  const page=await fetch("https://www.csum.ru/contacts",{headers:{"user-agent":"CSUM Editorial Source Collector/1.0"}}).then(r=>r.text());
  const links=[...page.matchAll(/href=["\']([^"\']+)["\']/gi)].map(m=>m[1]);
@@ -29,7 +33,7 @@ async function collectCsum(){
    const pageTitle=clean((page.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||x.title);
    const body=clean(page.replace(/<!--[\s\S]*?-->/g," ")).slice(0,2500);
    if(body.length<40)return null;
-   return {source:"csum.ru",source_url:x.url,title:pageTitle||x.title,published_at:null,raw_excerpt:body,collected_at:new Date().toISOString()};
+   return {source:"csum.ru",source_url:x.url,title:pageTitle||x.title,published_at:null,raw_excerpt:body,source_images:sourceImages(page,x.url),collected_at:new Date().toISOString()};
   }catch{return null}
  }));
  return rows.filter(Boolean);
@@ -41,7 +45,7 @@ async function normalize(items){
 }
 async function extractFacts(env,items){
  if(!env.OPENROUTER_API_KEY||!items.length)return {facts:[],warning:"OPENROUTER_API_KEY_NOT_CONFIGURED"};
- const input=items.slice(0,80).map(x=>({fingerprint:x.fingerprint,source:x.source,url:x.source_url,title:x.title,published_at:x.published_at,excerpt:x.raw_excerpt}));
+ const input=items.slice(0,80).map(x=>({fingerprint:x.fingerprint,source:x.source,url:x.source_url,title:x.title,published_at:x.published_at,excerpt:x.raw_excerpt,images:x.source_images||[]}));
  const prompt="Extract only explicit facts from these official CSUM Nizhny Novgorod source records. Never infer prices, stock, dates, brands, products, promotions or events. Return strict JSON object {facts:[{source_fingerprint,type,title,entity,date,source_url,evidence,confidence}]}. type must be one of event,promotion,store,brand,product,service,news. confidence 0..1. Evidence must be a short paraphrase grounded in source. INPUT:"+JSON.stringify(input);
  const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Fact Extractor"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:0})});
  if(!res.ok)throw new Error("OpenRouter facts HTTP "+res.status);
@@ -57,11 +61,11 @@ async function planContent(env,facts){
  const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Planner"},body:JSON.stringify({model:env.TEXT_MODEL||"google/gemini-2.5-flash",messages:[{role:"user",content:prompt}],response_format:{type:"json_object"},temperature:.2})});
  if(!res.ok)throw new Error("OpenRouter planner HTTP "+res.status);
  const d=await res.json();let p;try{p=JSON.parse(d?.choices?.[0]?.message?.content||"{}")}catch{p={topics:[]}}
- return {topics:(p.topics||[]).slice(0,7),generated_at:new Date().toISOString()};
+ return {topics:dedupeTopics((p.topics||[]).slice(0,7),facts),generated_at:new Date().toISOString()};
 }
-async function generateArticleImage(env,id,brief){
+async function generateArticleImage(env,id,brief,references=[]){
  if(!brief||!env.OPENROUTER_API_KEY||!env.CSUM_IMAGES)return null;
- const res=await fetch("https://openrouter.ai/api/v1/images",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Image Generator"},body:JSON.stringify({model:env.IMAGE_MODEL||"bytedance-seed/seedream-4.5",prompt:brief,aspect_ratio:"16:9",output_format:"webp",n:1})});
+ const res=await fetch("https://openrouter.ai/api/v1/images",{method:"POST",headers:{"authorization":"Bearer "+env.OPENROUTER_API_KEY,"content-type":"application/json","HTTP-Referer":"https://mkontrakevich.github.io/GPT/","X-Title":"CSUM Editorial Image Generator"},body:JSON.stringify({model:env.IMAGE_MODEL||"bytedance-seed/seedream-4.5",prompt:brief,aspect_ratio:"16:9",output_format:"webp",n:1,...(references.length?{input_references:references.slice(0,3).map(u=>({type:"image_url",image_url:{url:u}}))}:{})})});
  const data=await res.json().catch(()=>({}));
  if(!res.ok)throw new Error("OPENROUTER_IMAGE_"+res.status+":"+(data?.error?.message||data?.message||"unknown"));
  const first=data?.data?.[0]; if(!first?.b64_json)throw new Error("OPENROUTER_IMAGE_NO_DATA");
@@ -75,12 +79,12 @@ async function hydrateArticleImages(env,articles){
  let generatedNow=0;
  for(const a of articles||[]){
   if(a?.visual?.mode!=="editorial"||a.image_url||!a.visual?.brief||generatedNow>=2)continue;
-  const u=await generateArticleImage(env,a.id,a.visual.brief).catch(e=>{a.visual.error=e.message||String(e);return null});
+  const u=await generateArticleImage(env,a.id,a.visual.brief,a.visual.source_images||[]).catch(e=>{a.visual.error=e.message||String(e);return null});
   if(u){a.image_url=u;a.visual.generated=true;a.visual.reason="editorial_illustration";delete a.visual.error;generatedNow++;}
  }
  return articles;
 }
-async function writeArticles(env,plan,facts){
+async function writeArticles(env,plan,facts,items){
  const articles=[];
  for(const topic of (plan.topics||[])){
   const used=(topic.fact_indexes||[]).map(i=>facts[i]).filter(Boolean); if(!used.length)continue;
@@ -92,10 +96,13 @@ async function writeArticles(env,plan,facts){
   if(a.cta&&!allowedUrls.has(a.cta.url))a.cta=null;
   const articleId=topic.id||crypto.randomUUID();
   const sources=[...new Map(used.filter(x=>x.source_url).map(x=>[x.source_url,{url:x.source_url,title:x.title||x.entity||"Источник",source_fingerprint:x.source_fingerprint,evidence:x.evidence||null}])).values()];
+  const sourceItems=used.map(f=>(items||[]).find(x=>x.fingerprint===f.source_fingerprint)).filter(Boolean);
+  const source_images=[...new Set(sourceItems.flatMap(x=>x.source_images||[]))].slice(0,8);
   const factualTypes=new Set(["product","promotion","store","brand","event"]);
   const factualVisual=used.some(x=>factualTypes.has(String(x.type||"").toLowerCase()));
-  const visual={mode:factualVisual?"factual":"editorial",brief:a.visual_brief||"",generated:false,reason:factualVisual?"verified_real-world_subject":"editorial_illustration"};
-  const image_url=null;
+  const groundedBrief="Create an editorial image for this exact article. Ground composition, subject and atmosphere in the supplied official CSUM reference images and verified article facts. Do not invent logos, products, people, architecture, prices, text, signage or event details not visible in references or stated in facts. ARTICLE: "+(a.title||"")+" "+(a.deck||"")+" "+(a.sections||[]).map(s=>(s.heading||"")+" "+(s.body||"")).join(" ")+" VERIFIED FACTS: "+used.map(x=>x.evidence).join(" ")+" ORIGINAL BRIEF: "+(a.visual_brief||"");
+  const visual={mode:factualVisual?"factual":"editorial",brief:groundedBrief,generated:false,reason:factualVisual?"verified_real-world_subject":"source_grounded_editorial",source_images};
+  const image_url=factualVisual&&source_images.length?source_images[0]:null;
   visual.generated=false;
   articles.push({...a,id:articleId,image_url,visual,schema_version:ARTICLE_SCHEMA_VERSION,generated_at:new Date().toISOString(),sources,source_urls:sources.map(x=>x.url),source_fingerprints:used.map(x=>x.source_fingerprint)});
  }
@@ -122,7 +129,7 @@ async function refresh(env){
  const extracted=reuse?{facts:previousFacts.facts||[],warning:previousFacts.warning||null}:await extractFacts(env,active).catch(e=>({facts:[],warning:e.message}));
  const factStore={window_days:WINDOW_DAYS,updated_at:cache.refreshed_at,context_hash,warning:extracted.warning||null,facts:extracted.facts};
  const plan=reuse?previousPlan:await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message})); plan.context_hash=context_hash;
- let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts).catch(()=>[]); articles=await hydrateArticleImages(env,articles);
+ let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts,active).catch(()=>[]); articles=await hydrateArticleImages(env,articles);
  await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);await write(env,"_editorial/content-plan.json",plan);await write(env,"_editorial/articles.json",{updated_at:cache.refreshed_at,context_hash,reused:reuse,articles});
  return {...cache,fact_count:factStore.facts.length,topic_count:(plan.topics||[]).length,article_count:articles.length,fact_warning:factStore.warning,plan_warning:plan.warning||null};
 }

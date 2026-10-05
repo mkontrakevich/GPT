@@ -6,6 +6,8 @@ on:
       - "workers/csum-source-collector/**"
       - ".github/workflows/deploy-csum-editorial.yml"
   workflow_dispatch:
+  schedule:
+    - cron: '17 4,16 * * *'
 concurrency:
   group: csum-editorial-production
   cancel-in-progress: true
@@ -13,6 +15,7 @@ permissions:
   contents: read
 jobs:
   deploy:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -57,3 +60,24 @@ jobs:
           test_id="editorial-e2e-$(date +%s)"
           generated="$(curl -sS -X POST -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" https://csum-nn-image-studio.kontrakevich.workers.dev/api/generate --data "$(jq -nc --arg id "$test_id" '{id:$id,prompt:"Editorial E2E smoke test: abstract architectural light and shadow, no text, no logos",aspect_ratio:"16:9",output_format:"webp"}')")"
           printf '%s' "$generated" | jq -e '.ok == true and (.candidate_key|length) > 0 or (.error|tostring|test("Insufficient credits"))' >/dev/null
+
+  refresh:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scheduled editorial refresh
+        env:
+          CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
+        run: |
+          before="$(curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/articles)"
+          before_total="$(printf '%s' "$before" | jq -r '.cost.total_usd // 0')"
+          curl --retry 2 --max-time 540 -fsS -X POST -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" https://csum-nn-source-collector.kontrakevich.workers.dev/api/sources/refresh > /tmp/refresh.json
+          cat /tmp/refresh.json
+          after="$(curl -fsS https://csum-nn-source-collector.kontrakevich.workers.dev/api/articles)"
+          printf '%s' "$after" | jq -e '(.articles|length) > 0 and all(.articles[]; .schema_version == 3 and (.sources|length) > 0)' >/dev/null
+          printf '%s' "$after" | jq -e '[.articles[].title|ascii_downcase] | length == (unique|length)' >/dev/null
+          after_total="$(printf '%s' "$after" | jq -r '.cost.total_usd // 0')"
+          cycle="$(printf '%s' "$after" | jq -r '.cost.cycle_usd // 0')"
+          echo "OPENROUTER_COST_CYCLE_USD=$cycle"
+          echo "OPENROUTER_COST_TOTAL_USD=$after_total"
+          awk "BEGIN {exit !($after_total >= $before_total)}"

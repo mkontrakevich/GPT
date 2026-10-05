@@ -152,7 +152,7 @@ async function refresh(env){
  let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts,active).catch(()=>[]);
  if(!reuse&&!articles.length&&Array.isArray(previousArticles?.articles)&&previousArticles.articles.length){articles=previousArticles.articles;factStore.warning=factStore.warning||"REFRESH_EMPTY_PRESERVED_PREVIOUS_ARTICLES"}
  articles=dedupeArticles(articles); if(!reuse)articles=await hydrateArticleImages(env,articles);
- const cycle_cost_usd=Number((reuse?0:Number(extracted.cost_usd||0))+(reuse?0:Number(plan.cost_usd||0))+articles.reduce((s,a)=>s+(reuse?0:Number(a.text_cost_usd||0))+Number(a.visual?.cost_usd||0),0));
+ const cycle_cost_usd=reuse?0:Number(Number(extracted.cost_usd||0)+Number(plan.cost_usd||0)+articles.reduce((s,a)=>s+Number(a.text_cost_usd||0)+Number(a.visual?.cost_usd||0),0));
  const previous_total_cost_usd=Number(previousArticles?.total_cost_usd||0);
  const total_cost_usd=previous_total_cost_usd+cycle_cost_usd;
  await write(env,"_editorial/source-cache.json",cache);await write(env,"_editorial/source-archive.json",{updated_at:cache.refreshed_at,items:archive});await write(env,"_editorial/facts.json",factStore);await write(env,"_editorial/content-plan.json",plan);await write(env,"_editorial/articles.json",{updated_at:cache.refreshed_at,context_hash,reused:reuse,cost:{cycle_usd:cycle_cost_usd,total_usd:total_cost_usd},total_cost_usd,articles});

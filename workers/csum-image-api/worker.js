@@ -68,7 +68,8 @@ export default {
         const body=await req.json();
         if(!body.id || !body.prompt) return json({error:"id and prompt are required"},400,cors(env));
         const sourceBase=env.EDITORIAL_API || "https://csum-nn-source-collector.kontrakevich.workers.dev";
-        const library=await fetch(sourceBase+"/api/visual-assets").then(r=>r.ok?r.json():({assets:[]}));
+        let library=await fetch(sourceBase+"/api/visual-assets").then(r=>r.ok?r.json():({assets:[]}));
+        if(!(library.assets||[]).length){const articles=await fetch(sourceBase+"/api/articles").then(r=>r.ok?r.json():({articles:[]}));library={assets:(articles.articles||[]).flatMap(a=>(a.visual?.source_images||[]).map(image_url=>({image_url,title:a.title||"",source:"csum.ru",tags:["editorial"]})))};}
         const terms=String([body.title,body.prompt,body.kind].filter(Boolean).join(" ")).toLowerCase().split(/[^a-zа-яё0-9]+/i).filter(x=>x.length>3);
         const ranked=(library.assets||[]).map(a=>{const hay=String((a.title||"")+" "+(a.tags||[]).join(" ")).toLowerCase();return {...a,score:terms.reduce((s,t)=>s+(hay.includes(t)?1:0),0)+(body.kind==="hero"&&a.tags?.includes("architecture")?4:0)};}).sort((a,b)=>b.score-a.score);
         const refs=[...new Set(ranked.map(x=>x.image_url).filter(officialReference))].slice(0,3);

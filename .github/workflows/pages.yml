@@ -30,9 +30,11 @@ jobs:
         with:
           ref: csum-nn-site
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload fresh Pages artifact
+        uses: actions/upload-pages-artifact@v4
         with:
           path: .
+          name: github-pages
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

@@ -9,6 +9,8 @@ const unauthorized = env => json({error:"UNAUTHORIZED"},401,cors(env));
 const requireAdmin = (req,env) => !!env.ADMIN_TOKEN && req.headers.get("X-CSUM-Admin-Token") === env.ADMIN_TOKEN;
 const bytesFromBase64 = b64 => Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
 const extFor = media => media?.includes("png")?"png":media?.includes("jpeg")?"jpg":"webp";
+const officialReference = value => { try { const u=new URL(value); return ["http:","https:"].includes(u.protocol) && /(^|\\.)csum\\.ru$/i.test(u.hostname); } catch { return false; } };
+const referenceList = body => [...new Set([...(Array.isArray(body.reference_urls)?body.reference_urls:[]),body.reference_url].filter(Boolean))].filter(officialReference).slice(0,3);
 
 async function openRouter(env,path,init={}){
   if(!env.OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not configured");
@@ -66,7 +68,7 @@ export default {
         const body=await req.json();
         if(!body.id || !body.prompt) return json({error:"id and prompt are required"},400,cors(env));
 
-        const ref=body.reference_data_url || body.reference_url;
+        const refs=referenceList(body); const ref=body.reference_data_url || refs[0];
         const payload={
           model:body.model || "bytedance-seed/seedream-4.5",
           prompt:body.prompt,
@@ -74,7 +76,7 @@ export default {
           output_format:body.output_format || "webp",
           n:1
         };
-        if(ref) payload.input_references=[{type:"image_url",image_url:{url:ref}}];
+        if(body.reference_data_url) payload.input_references=[{type:"image_url",image_url:{url:body.reference_data_url}}]; else if(refs.length) payload.input_references=refs.map(ref=>({type:"image_url",image_url:{url:ref}}));
 
         let result;
         try{
@@ -99,7 +101,7 @@ export default {
         }
         return json({
           ok:true,id:body.id,url:imageUrl,candidate_key:persisted?candidateKey:null,
-          persistent_candidate:persisted,prompt:body.prompt,model:payload.model,media_type:media,usage:result.usage||null
+          persistent_candidate:persisted,prompt:body.prompt,model:payload.model,media_type:media,reference_urls:refs,reference_grounded:refs.length>0,usage:result.usage||null
         },200,cors(env));
       }
 

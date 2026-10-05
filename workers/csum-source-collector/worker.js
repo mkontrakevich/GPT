@@ -151,7 +151,7 @@ async function refresh(env){
  const plan=reuse?previousPlan:await planContent(env,factStore.facts).catch(e=>({topics:[],warning:e.message})); plan.context_hash=context_hash;
  let articles=reuse?(previousArticles.articles||[]):await writeArticles(env,plan,factStore.facts,active).catch(()=>[]);
  if(!reuse&&!articles.length&&Array.isArray(previousArticles?.articles)&&previousArticles.articles.length){articles=previousArticles.articles;factStore.warning=factStore.warning||"REFRESH_EMPTY_PRESERVED_PREVIOUS_ARTICLES"}
- articles=dedupeArticles(articles); articles=await hydrateArticleImages(env,articles);
+ articles=dedupeArticles(articles); if(!reuse)articles=await hydrateArticleImages(env,articles);
  const cycle_cost_usd=Number((reuse?0:Number(extracted.cost_usd||0))+(reuse?0:Number(plan.cost_usd||0))+articles.reduce((s,a)=>s+(reuse?0:Number(a.text_cost_usd||0))+Number(a.visual?.cost_usd||0),0));
  const previous_total_cost_usd=Number(previousArticles?.total_cost_usd||0);
  const total_cost_usd=previous_total_cost_usd+cycle_cost_usd;

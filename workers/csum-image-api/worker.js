@@ -44,7 +44,7 @@ export default {
     const url=new URL(req.url);
     if(req.method==="OPTIONS") return new Response(null,{status:204,headers:cors(env)});
     try{
-      if(url.pathname==="/health") return json({ok:true,service:"csum-image-api",version:"reference-v2",r2:!!env.CSUM_IMAGES,openrouter:!!env.OPENROUTER_API_KEY},200,cors(env));
+      if(url.pathname==="/health") return json({ok:true,service:"csum-image-api",version:"reference-v3",r2:!!env.CSUM_IMAGES,openrouter:!!env.OPENROUTER_API_KEY},200,cors(env));
 
       if(url.pathname==="/api/models" && req.method==="GET"){
         const data=await openRouter(env,"/api/v1/images/models",{method:"GET"});

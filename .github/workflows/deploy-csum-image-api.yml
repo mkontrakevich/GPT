@@ -89,8 +89,9 @@ jobs:
           generated="$(curl -fsS -X POST "$WORKER_URL/api/reference-generate" \
             -H "Content-Type: application/json" \
             -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" \
-            --data '{"id":"e2e-smoke","kind":"hero","title":"ЦУМ Нижний Новгород","prompt":"Editorial architectural portrait grounded in the supplied official CSUM references. Preserve the real building identity and geometry. Soft daylight, no text, no logos added.","aspect_ratio":"1:1","output_format":"webp"}')"
-          printf '%s' "$generated" | jq -e '.reference_grounded == true and (.reference_urls|length) > 0' >/dev/null
+            --data '{"id":"e2e-smoke","kind":"hero","title":"ЦУМ Нижний Новгород","project_reference_url":"https://mkontrakevich.github.io/GPT/assets/brand/csum-logo-official.png","prompt":"Grounding verification only. Preserve supplied reference identity. Minimal neutral editorial composition.","aspect_ratio":"1:1","output_format":"webp"}')"
+          printf '%s' "$generated" | jq -e '.reference_grounded == true and .reference_count > 0 and ([.reference_sources[].type] | index("project_source") != null)' >/dev/null
+          printf '%s' "$generated" | jq -c '{usage,reference_count,reference_sources}'
           candidate_key="$(printf '%s' "$generated" | jq -r '.candidate_key // empty')"
           [ -n "$candidate_key" ] || { echo "::error::Generation returned no persisted candidate"; printf '%s\n' "$generated"; exit 1; }
 
@@ -111,7 +112,7 @@ jobs:
             echo "- /health: OK"
             echo "- OpenRouter image models: OK"
             echo "- Reference-grounded generate: OK"
-            echo "- Automatic official reference selection: OK"
+            echo "- Project-source grounding: OK"
             echo "- R2 candidate: OK"
             echo "- Apply manifest: OK"
             echo "- Generated asset GET: OK"

@@ -9,7 +9,9 @@ const unauthorized = env => json({error:"UNAUTHORIZED"},401,cors(env));
 const requireAdmin = (req,env) => !!env.ADMIN_TOKEN && req.headers.get("X-CSUM-Admin-Token") === env.ADMIN_TOKEN;
 const bytesFromBase64 = b64 => Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
 const extFor = media => media?.includes("png")?"png":media?.includes("jpeg")?"jpg":"webp";
-const officialReference = value => { try { const u=new URL(value); return ["http:","https:"].includes(u.protocol) && /(^|\\.)csum\\.ru$/i.test(u.hostname); } catch { return false; } };
+const httpReference = value => { try { const u=new URL(value); return ["http:","https:"].includes(u.protocol); } catch { return false; } };
+const officialReference = value => { try { const u=new URL(value); return httpReference(value) && /(^|\\.)csum\\.ru$/i.test(u.hostname); } catch { return false; } };
+const projectReference = (value,env) => { try { const u=new URL(value); const allowed=[new URL(env.SITE_URL||"https://mkontrakevich.github.io/GPT/").hostname,new URL(env.PROJECT_ASSET_BASE||"https://mkontrakevich.github.io/GPT/").hostname]; return httpReference(value)&&allowed.includes(u.hostname); } catch { return false; } };
 const referenceList = body => [...new Set([...(Array.isArray(body.reference_urls)?body.reference_urls:[]),body.reference_url].filter(Boolean))].filter(officialReference).slice(0,3);
 
 async function openRouter(env,path,init={}){
@@ -44,7 +46,7 @@ export default {
     const url=new URL(req.url);
     if(req.method==="OPTIONS") return new Response(null,{status:204,headers:cors(env)});
     try{
-      if(url.pathname==="/health") return json({ok:true,service:"csum-image-api",version:"reference-v3",r2:!!env.CSUM_IMAGES,openrouter:!!env.OPENROUTER_API_KEY},200,cors(env));
+      if(url.pathname==="/health") return json({ok:true,service:"csum-image-api",version:"reference-v4-project-grounding",r2:!!env.CSUM_IMAGES,openrouter:!!env.OPENROUTER_API_KEY},200,cors(env));
 
       if(url.pathname==="/api/models" && req.method==="GET"){
         const data=await openRouter(env,"/api/v1/images/models",{method:"GET"});
@@ -72,14 +74,18 @@ export default {
         if(!(library.assets||[]).length){const articles=await fetch(sourceBase+"/api/articles").then(r=>r.ok?r.json():({articles:[]}));library={assets:(articles.articles||[]).flatMap(a=>(a.visual?.source_images||[]).map(image_url=>({image_url,title:a.title||"",source:"csum.ru",tags:["editorial"]})))};}
         const terms=String([body.title,body.prompt,body.kind].filter(Boolean).join(" ")).toLowerCase().split(/[^a-zа-яё0-9]+/i).filter(x=>x.length>3);
         const ranked=(library.assets||[]).map(a=>{const hay=String((a.title||"")+" "+(a.tags||[]).join(" ")).toLowerCase();return {...a,score:terms.reduce((s,t)=>s+(hay.includes(t)?1:0),0)+(body.kind==="hero"&&a.tags?.includes("architecture")?4:0)};}).sort((a,b)=>b.score-a.score);
-        const refs=[...new Set(ranked.map(x=>x.image_url).filter(officialReference))].slice(0,3);
-        if(!refs.length) return json({error:"NO_OFFICIAL_REFERENCES"},422,cors(env));
+        const requested=[...(Array.isArray(body.project_reference_urls)?body.project_reference_urls:[]),body.project_reference_url].filter(Boolean);
+        const projectRefs=[...new Set(requested.filter(ref=>projectReference(ref,env)))].slice(0,3);
+        const officialRefs=[...new Set(ranked.map(x=>x.image_url).filter(officialReference))].slice(0,3);
+        const refs=[...projectRefs,...officialRefs.filter(x=>!projectRefs.includes(x))].slice(0,3);
+        if(!refs.length) return json({error:"NO_GROUNDED_REFERENCES"},422,cors(env));
+        const referenceSources=refs.map(ref=>({url:ref,type:projectRefs.includes(ref)?"project_source":"official_source"}));
         const payload={model:body.model||"bytedance-seed/seedream-4.5",prompt:body.prompt,aspect_ratio:body.aspect_ratio||"16:9",output_format:body.output_format||"webp",n:1,input_references:refs.map(ref=>({type:"image_url",image_url:{url:ref}}))};
         const result=await openRouter(env,"/api/v1/images",{method:"POST",body:JSON.stringify(payload)});
         const first=result?.data?.[0]; if(!first?.b64_json)return json({error:"OpenRouter returned no image"},502,cors(env));
         const media=first.media_type||"image/webp", ext=extFor(media), candidateKey="candidates/"+body.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
         await env.CSUM_IMAGES.put(candidateKey,bytesFromBase64(first.b64_json),{httpMetadata:{contentType:media}});
-        return json({ok:true,id:body.id,url:new URL("/generated/"+encodeURIComponent(candidateKey),url.origin).toString(),candidate_key:candidateKey,persistent_candidate:true,prompt:body.prompt,model:payload.model,reference_urls:refs,reference_grounded:true,usage:result.usage||null},200,cors(env));
+        return json({ok:true,id:body.id,url:new URL("/generated/"+encodeURIComponent(candidateKey),url.origin).toString(),candidate_key:candidateKey,persistent_candidate:true,prompt:body.prompt,model:payload.model,reference_urls:refs,reference_count:refs.length,reference_sources:referenceSources,reference_grounded:true,usage:result.usage||null},200,cors(env));
       }
 
       if(url.pathname==="/api/generate" && req.method==="POST"){

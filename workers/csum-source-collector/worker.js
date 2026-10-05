@@ -20,7 +20,7 @@ async function collectCsum(){
  const root="https://www.csum.ru/";
  const res=await fetch(root,{headers:{"user-agent":"CSUM Editorial Source Collector/1.0"}});
  if(!res.ok)throw new Error("csum.ru HTTP "+res.status);
- const html=await res.text(), candidates=[], seen=new Set(), re=/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi; let m;
+ const html=await res.text(), candidates=[{title:"ЦУМ Нижний Новгород",url:root}], seen=new Set([root]), re=/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi; let m;
  while((m=re.exec(html))&&candidates.length<12){
   const title=clean(m[2]).replace(/^[-–—>\s]+|[-–—<\s]+$/g,""),u=abs(m[1],root);
   if(title.length<4||!u)continue; const q=new URL(u); if(q.hostname!=="www.csum.ru"&&q.hostname!=="csum.ru")continue;

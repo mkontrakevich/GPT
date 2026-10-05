@@ -57,7 +57,7 @@
     return api("/api/models", {method:"GET", headers:{}});
   }
 
-  async function generate({item, prompt, model, aspectRatio, referenceDataUrl, referenceUrl}) {
+  async function generate({item, prompt, model, aspectRatio, referenceDataUrl, referenceUrl, referenceUrls=[]}) {
     return api("/api/generate", {
       method:"POST",
       body: JSON.stringify({
@@ -68,7 +68,8 @@
         output_format:"webp",
         quality:"high",
         reference_data_url:referenceDataUrl || undefined,
-        reference_url:referenceUrl || undefined
+        reference_url:referenceUrl || undefined,
+        reference_urls:referenceUrls.length ? referenceUrls : undefined
       })
     });
   }

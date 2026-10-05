@@ -63,6 +63,24 @@ export default {
         return new Response(obj.body,{headers:{...cors(env),"content-type":obj.httpMetadata?.contentType||"image/webp","cache-control":"public,max-age=31536000,immutable"}});
       }
 
+      if(url.pathname==="/api/reference-generate" && req.method==="POST"){
+        if(!requireAdmin(req,env)) return unauthorized(env);
+        const body=await req.json();
+        if(!body.id || !body.prompt) return json({error:"id and prompt are required"},400,cors(env));
+        const sourceBase=env.EDITORIAL_API || "https://csum-nn-source-collector.kontrakevich.workers.dev";
+        const library=await fetch(sourceBase+"/api/visual-assets").then(r=>r.ok?r.json():({assets:[]}));
+        const terms=String([body.title,body.prompt,body.kind].filter(Boolean).join(" ")).toLowerCase().split(/[^a-zа-яё0-9]+/i).filter(x=>x.length>3);
+        const ranked=(library.assets||[]).map(a=>{const hay=String((a.title||"")+" "+(a.tags||[]).join(" ")).toLowerCase();return {...a,score:terms.reduce((s,t)=>s+(hay.includes(t)?1:0),0)+(body.kind==="hero"&&a.tags?.includes("architecture")?4:0)};}).sort((a,b)=>b.score-a.score);
+        const refs=[...new Set(ranked.map(x=>x.image_url).filter(officialReference))].slice(0,3);
+        if(!refs.length) return json({error:"NO_OFFICIAL_REFERENCES"},422,cors(env));
+        const payload={model:body.model||"bytedance-seed/seedream-4.5",prompt:body.prompt,aspect_ratio:body.aspect_ratio||"16:9",output_format:body.output_format||"webp",n:1,input_references:refs.map(ref=>({type:"image_url",image_url:{url:ref}}))};
+        const result=await openRouter(env,"/api/v1/images",{method:"POST",body:JSON.stringify(payload)});
+        const first=result?.data?.[0]; if(!first?.b64_json)return json({error:"OpenRouter returned no image"},502,cors(env));
+        const media=first.media_type||"image/webp", ext=extFor(media), candidateKey="candidates/"+body.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+        await env.CSUM_IMAGES.put(candidateKey,bytesFromBase64(first.b64_json),{httpMetadata:{contentType:media}});
+        return json({ok:true,id:body.id,url:new URL("/generated/"+encodeURIComponent(candidateKey),url.origin).toString(),candidate_key:candidateKey,persistent_candidate:true,prompt:body.prompt,model:payload.model,reference_urls:refs,reference_grounded:true,usage:result.usage||null},200,cors(env));
+      }
+
       if(url.pathname==="/api/generate" && req.method==="POST"){
         if(!requireAdmin(req,env)) return unauthorized(env);
         const body=await req.json();

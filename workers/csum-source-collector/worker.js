@@ -165,6 +165,12 @@ export default{async fetch(req,env){const u=new URL(req.url);if(req.method==="OP
   if(u.pathname==="/api/facts"&&req.method==="GET")return json(await read(env,"_editorial/facts.json",{window_days:WINDOW_DAYS,facts:[]}));
   if(u.pathname==="/api/content-plan"&&req.method==="GET")return json(await read(env,"_editorial/content-plan.json",{topics:[]}));
   if(u.pathname==="/api/articles"&&req.method==="GET")return json(await read(env,"_editorial/articles.json",{articles:[]}));
+  if(u.pathname==="/api/visual-assets"&&req.method==="GET"){
+   const cache=await read(env,"_editorial/source-cache.json",{items:[]});
+   const assets=[]; const seen=new Set();
+   for(const item of cache.items||[])for(const image_url of item.source_images||[]){if(seen.has(image_url))continue;seen.add(image_url);assets.push({image_url,source_url:item.source_url,title:item.title||"",source:"csum.ru",tags:[/контакт|цум/i.test(item.title||"")?"architecture":"editorial"],collected_at:item.collected_at});}
+   return json({count:assets.length,assets});
+  }
   if(u.pathname==="/api/sources/refresh"&&req.method==="POST"){if(!env.ADMIN_TOKEN||req.headers.get("x-csum-admin-token")!==env.ADMIN_TOKEN)return json({error:"UNAUTHORIZED"},401);return json(await refresh(env))}
   return json({error:"NOT_FOUND"},404);
  }catch(e){return json({error:e.message||String(e)},500)}}};

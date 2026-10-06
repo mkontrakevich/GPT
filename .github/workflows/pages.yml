@@ -1,4 +1,5 @@
 name: CSUM Pages backup deploy
+# production-trigger: serialized Pages deployment
 
 on:
   workflow_dispatch:

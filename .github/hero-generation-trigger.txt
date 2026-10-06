@@ -1,1 +1,1 @@
-hero-csum cityscape-lock image-to-image v1
+hero-csum cityscape-lock image-to-image v2

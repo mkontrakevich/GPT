@@ -70,7 +70,7 @@
 
     try {
       const cms = await fetch((window.CSUM_CONFIG?.imageApiBase || "") + "/api/editor/published", {cache:"no-store"}).then(r => r.ok ? r.json() : ({patches:[]}));
-      (cms.layout || []).forEach(op => { try { const el=document.querySelector(op.selector), parent=document.querySelector(op.parent), before=op.before?document.querySelector(op.before):null; if(el&&parent&&el.parentElement===parent) parent.insertBefore(el,before&&before.parentElement===parent?before:null); } catch {} });
+      (cms.layout || []).forEach(op => { try { const el=document.querySelector(op.selector); if(!el)return; if(op.type==='style'&&op.styles){Object.entries(op.styles).forEach(([k,v])=>el.style[k]=v);return;} const parent=document.querySelector(op.parent), before=op.before?document.querySelector(op.before):null; if(parent&&el.parentElement===parent) parent.insertBefore(el,before&&before.parentElement===parent?before:null); } catch {} });
       (cms.patches || []).forEach(p => { try { const el=document.querySelector(p.selector); if(el && typeof p.text === "string") el.textContent=p.text; } catch {} });
     } catch {}
   }

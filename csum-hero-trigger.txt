@@ -1,1 +1,1 @@
-source-lock hero v1
+source-lock hero v2 production

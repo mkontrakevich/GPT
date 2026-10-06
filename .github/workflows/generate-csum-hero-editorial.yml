@@ -1,0 +1,34 @@
+name: Generate CSUM Hero Editorial
+on:
+  push:
+    branches: [csum-nn-site]
+    paths: [.github/workflows/generate-csum-hero-editorial.yml]
+permissions:
+  contents: read
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate source-first hero candidate
+        env:
+          CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
+          IMAGE_URL: https://csum-nn-image-studio.kontrakevich.workers.dev
+        run: |
+          cat > /tmp/hero.json <<'JSON'
+          {
+            "id":"hero-csum",
+            "kind":"hero",
+            "entity":"ЦУМ Нижний Новгород",
+            "title":"Editorial cover — real facade of ЦУМ Нижний Новгород",
+            "aspect_ratio":"16:9",
+            "reference_urls":["https://www.csum.ru/upload/content/max_685126cd7bccf.jpg"],
+            "verified_facts":["Exact building: ЦУМ Нижний Новгород, ул. Героя Фильченкова, 10","Preserve the existing building identity, facade geometry, floor count, window rhythm, entrances and proportions"],
+            "prompt":"SOURCE-FIRST ARCHITECTURAL EDITORIAL PHOTOGRAPH. Create a contemporary high-end international architecture and culture magazine cover photograph from the supplied real photograph of the exact ЦУМ Нижний Новгород building. STRICT IDENTITY LOCK: preserve the actual building, massing, facade geometry, floor count, window rhythm, architectural details, entrances and proportions. Do not redesign, extend, modernize, invent or replace the architecture. Improve only photographic direction: sophisticated natural cinematic light, contemporary city atmosphere, realistic pedestrians and subtle urban movement, premium but observational editorial photography, restrained filmic grading, authentic materials, believable optics and depth. No generated logos, no generated signage, no typography, no text, no fake storefronts, no CGI cleanliness, no luxury-ad gloss, no fantasy architecture. The result must unmistakably remain the real ЦУМ Нижний Новгород and feel freshly photographed for a 2026 editorial cover."
+          }
+          JSON
+          generated="$(curl --max-time 300 -sS -X POST "$IMAGE_URL/api/reference-generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data @/tmp/hero.json)"
+          printf '%s' "$generated" | jq -e '.ok == true and .generated_derivative == true and .qa_status == "pending"' >/dev/null
+          echo "## CSUM HERO — PENDING USER QA" >> "$GITHUB_STEP_SUMMARY"
+          echo "CANDIDATE=$(printf '%s' "$generated" | jq -r '.url')" >> "$GITHUB_STEP_SUMMARY"
+          echo "CANDIDATE_KEY=$(printf '%s' "$generated" | jq -r '.candidate_key')" >> "$GITHUB_STEP_SUMMARY"
+          echo "COST_USD=$(printf '%s' "$generated" | jq -r '.usage.cost // "unavailable"')" >> "$GITHUB_STEP_SUMMARY"

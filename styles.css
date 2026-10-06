@@ -540,3 +540,12 @@ body.is-ready .hero-copy{opacity:1;transform:none;transition:opacity 1s var(--ea
  .section h2{font-size:clamp(42px,12vw,56px);line-height:.94}
  .story-copy{padding:22px 0}
 }
+
+
+/* EDITORIAL HARD EDGE SYSTEM — no rounded UI */
+:root{--radius:0px!important}
+button,.btn,a.btn,.store-chip,.magazine-mini,.magazine-lead,.magazine-card,
+.article-card,.food-card,.feature-story,.story-image,.cinematic,.map-copy,
+.floor-panel,.search-modal,.search-tags button,.native-note,.route-step,
+.store-window,.debug-panel,.editorial-nav a,.map-button,.search-button,
+.menu-button,.landing-story-caption{border-radius:0!important}

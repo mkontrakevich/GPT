@@ -121,8 +121,9 @@ async function writeArticles(env,plan,facts,items){
   const factualTypes=new Set(["product","promotion","store","brand","event"]);
   const factualVisual=used.some(x=>factualTypes.has(String(x.type||"").toLowerCase()));
   const groundedBrief="Create an editorial image for this exact article. Ground composition, subject and atmosphere in the supplied official CSUM reference images and verified article facts. Do not invent logos, products, people, architecture, prices, text, signage or event details not visible in references or stated in facts. ARTICLE: "+(a.title||"")+" "+(a.deck||"")+" "+(a.sections||[]).map(s=>(s.heading||"")+" "+(s.body||"")).join(" ")+" VERIFIED FACTS: "+used.map(x=>x.evidence).join(" ")+" ORIGINAL BRIEF: "+(typeof a.visual_brief==="string"?a.visual_brief:JSON.stringify(a.visual_brief||{}));
-  const visual={mode:factualVisual?"factual":"editorial",brief:groundedBrief,generated:false,reason:factualVisual?"verified_real-world_subject":"source_grounded_editorial",source_images};
-  const image_url=factualVisual&&source_images.length?source_images[0]:null;
+  const primaryEntity=(used.find(x=>x.entity)?.entity||a.title||topic.title||"").trim();
+  const visual={mode:factualVisual?"factual":"editorial",brief:groundedBrief,generated:false,reason:factualVisual?"verified_real-world_subject":"source_grounded_editorial",entity:primaryEntity,verified_facts:used.map(x=>x.evidence).filter(Boolean),reference_urls:source_images.slice(0,3),generation_package:{id:"article-"+articleId,kind:factualVisual?"entity":"editorial",entity:primaryEntity,title:a.title||topic.title||"",prompt:groundedBrief,verified_facts:used.map(x=>x.evidence).filter(Boolean),project_reference_urls:[],reference_urls:source_images.slice(0,3),aspect_ratio:"16:9",require_specific_grounding:true},source_images};
+  const image_url=null;
   visual.generated=false;
   articles.push({...a,id:articleId,image_url,visual,text_cost_usd:Number(d?.usage?.cost||0),schema_version:ARTICLE_SCHEMA_VERSION,generated_at:new Date().toISOString(),sources,source_urls:sources.map(x=>x.url),source_fingerprints:used.map(x=>x.source_fingerprint)});
  }

@@ -30,22 +30,29 @@
   <nav class="editorial-nav" id="editorialNav" aria-label="Контекст дня"><a href="#today">Сегодня</a><a href="#today">Для вас</a><a href="#culture">ЦУМ × Нижний</a><a href="magazine.html">Журнал</a></nav>
 
   <main id="top">
-    <section class="hero" id="hero">
+    <section class="hero editorial-cover" id="hero">
       <picture class="hero-picture" id="heroPicture">
-        
-        <img data-ai-src="assets/generated/hero-csum.webp" src="https://www.csum.ru/upload/content/max_685126cd7bccf.jpg" data-fallback="https://www.marinsgroup.ru/upload/contentRedactor/6523e18322ca3.jpg" alt="Фронтальный ортогональный фасад ЦУМа Нижнего Новгорода" />
+        <img data-ai-key="hero-csum" data-ai-src="assets/generated/hero-csum.webp" src="https://www.csum.ru/upload/content/max_685126cd7bccf.jpg" alt="Исторический фасад ЦУМа Нижнего Новгорода" />
       </picture>
       <div class="hero-overlay"></div>
+      <div class="cover-topline"><span>НИЖНИЙ НОВГОРОД · 2026</span><span>AI CITY MAGAZINE · №01</span></div>
       <div class="hero-copy reveal">
-        <p class="eyebrow light">Нижний Новгород · городской универмаг · 2026</p>
-        <h1>ЦУМ <span>Город начинается здесь.</span></h1>
-        <p class="hero-lead">Универмаг как точка входа в Нижний: город, стиль, культура, вещи и маршруты — в одном живом журнале.</p>
+        <p class="eyebrow light">ЦУМ × НИЖНИЙ НОВГОРОД</p>
+        <h1><span class="cover-title">ГОРОД<br>НАЧИНАЕТСЯ<br>ЗДЕСЬ</span></h1>
+        <p class="hero-lead">ЦУМ как точка входа в город: маршруты, стиль, культура, полезные решения и вещи, которые стоит выбирать осознанно.</p>
         <div class="hero-cta-row">
-          <a class="btn primary" href="#culture">Что происходит в городе</a>
-          <a class="btn glass" href="#gifts">Что увезти с собой</a>
+          <a class="btn primary" href="#today">Читать номер</a>
+          <a class="btn glass" href="#culture">Афиша и маршруты</a>
         </div>
       </div>
-      <button class="hero-zoom" id="heroZoom" type="button" aria-label="Листать журнал"><span>Листать журнал</span><i>↓</i></button>
+      <aside class="cover-index" aria-label="Материалы номера">
+        <span>В НОМЕРЕ</span>
+        <a href="articles/dva-chasa-do-poezda.html"><b>01</b> Два часа до поезда</a>
+        <a href="articles/vecher-v-gorode.html"><b>02</b> Хороший вечер в Нижнем</a>
+        <a href="articles/dorozhnaya-avtonomnost.html"><b>03</b> Что действительно нужно в дороге</a>
+      </aside>
+      <div class="cover-mark">ЦУМ</div>
+      <button class="hero-zoom" id="heroZoom" type="button" aria-label="Листать журнал"><span>Листать номер</span><i>↓</i></button>
     </section>
 
     <section class="landing-story" id="csum-story">

@@ -1,5 +1,8 @@
 name: Generate CSUM Editorial Image
 on:
+  push:
+    branches: [csum-nn-site]
+    paths: [".github/workflows/generate-csum-editorial-image.yml"]
   workflow_dispatch:
     inputs:
       article_index:

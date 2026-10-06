@@ -557,3 +557,21 @@ button,.btn,a.btn,.store-chip,.magazine-mini,.magazine-lead,.magazine-card,
 .native-note,.time-routes button,.editorial-nav a,.legacy-nav,.store-window{
   border-radius:0!important;
 }
+
+
+/* CITYSCAPE LOCK HERO — photographic editorial treatment only */
+.editorial-cover .hero-picture img{
+  object-position:center 54%;
+  filter:contrast(1.08) saturate(.82) brightness(.86);
+  transform:scale(1.015);
+}
+.editorial-cover .hero-overlay{
+  background:
+    linear-gradient(180deg,rgba(8,8,8,.08) 0%,rgba(8,8,8,.04) 34%,rgba(8,8,8,.72) 100%);
+}
+@media(max-width:740px){
+ .editorial-cover .hero-picture img{
+   object-position:54% center;
+   filter:contrast(1.06) saturate(.84) brightness(.82);
+ }
+}

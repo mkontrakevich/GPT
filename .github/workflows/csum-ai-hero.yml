@@ -1,0 +1,30 @@
+name: CSUM AI Hero
+on:
+  push:
+    branches: [main]
+    paths: [".github/csum-hero-trigger.txt"]
+permissions:
+  contents: read
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate source-locked HERO
+        env:
+          CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
+          IMAGE_URL: https://csum-nn-image-studio.kontrakevich.workers.dev
+        run: |
+          package="$(jq -nc '{
+            id:"hero-csum",
+            entity:"ЦУМ Нижний Новгород, ул. Героя Фильченкова, 10",
+            prompt:"High-end architectural editorial photograph derived from the supplied real source photograph. Preserve exact building identity and geometry: facade proportions, floors, window rhythm, columns, entrances, roofline and camera perspective. CITYSCAPE LOCK: preserve every recognizable visible surrounding building, street geometry and skyline element from the source; invent no landmarks, towers, spires or buildings. Change only photographic qualities: sophisticated natural directional light, restrained cinematic editorial color, believable city life and subtle motion, tactile materials, 35mm full-frame photographic character. No CGI, no HDR, no fantasy architecture, no luxury-ad gloss, no generated logos, no generated signage, no generated typography.",
+            aspect_ratio:"16:9",
+            source_references:["https://upload.wikimedia.org/wikipedia/commons/d/d7/%D0%A6%D0%A3%D0%9C_%28%D1%81%D1%82%D0%B0%D1%80%D1%8B%D0%B9_%D0%BA%D0%BE%D1%80%D0%BF%D1%83%D1%81%29.jpg"],
+            verified_facts:["Existing CSUM building at 10 Geroya Filchenkova Street, Nizhny Novgorod","Source camera geometry and visible cityscape are factual constraints"]
+          }')"
+          generated="$(curl --max-time 300 -fsS -X POST "$IMAGE_URL/api/reference-generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data "$package")"
+          printf '%s' "$generated" | jq -e '.ok == true and .generated_derivative == true and .reference_grounded == true and (.candidate_key|length)>0'
+          echo "## AI HERO candidate" >> "$GITHUB_STEP_SUMMARY"
+          echo "CANDIDATE=$(printf '%s' "$generated" | jq -r '.url')" >> "$GITHUB_STEP_SUMMARY"
+          echo "CANDIDATE_KEY=$(printf '%s' "$generated" | jq -r '.candidate_key')" >> "$GITHUB_STEP_SUMMARY"
+          echo "COST_USD=$(printf '%s' "$generated" | jq -r '.usage.cost // "unavailable"')" >> "$GITHUB_STEP_SUMMARY"

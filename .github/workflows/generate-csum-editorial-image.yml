@@ -26,7 +26,8 @@ jobs:
           package="$(printf '%s' "$articles" | jq -c --argjson i "${ARTICLE_INDEX:-0}" '.articles[$i].visual.generation_package')"
           test "$package" != "null"
           test "$(printf '%s' "$package" | jq '.reference_urls | length')" -gt 0
-          generated="$(curl --max-time 300 -fsS -X POST "$IMAGE_URL/api/reference-generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data "$package")"
+          generated="$(curl --max-time 300 -sS -X POST "$IMAGE_URL/api/reference-generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data "$package")"
+          echo "$generated"
           printf '%s' "$generated" | jq -e '.ok == true and .reference_grounded == true and .generated_derivative == true and .reference_count > 0' >/dev/null
           id="$(printf '%s' "$package" | jq -r '.id')"
           key="$(printf '%s' "$generated" | jq -r '.candidate_key')"

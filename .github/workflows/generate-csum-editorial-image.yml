@@ -1,0 +1,34 @@
+name: Generate CSUM Editorial Image
+on:
+  workflow_dispatch:
+    inputs:
+      article_index:
+        description: Article index from production editorial feed
+        required: false
+        default: "0"
+permissions:
+  contents: read
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate and publish one real article image
+        env:
+          CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
+          ARTICLE_INDEX: ${{ inputs.article_index }}
+          EDITORIAL_URL: https://csum-nn-source-collector.kontrakevich.workers.dev
+          IMAGE_URL: https://csum-nn-image-studio.kontrakevich.workers.dev
+        run: |
+          articles="$(curl --max-time 30 -fsS "$EDITORIAL_URL/api/articles")"
+          package="$(printf '%s' "$articles" | jq -c --argjson i "$ARTICLE_INDEX" '.articles[$i].visual.generation_package')"
+          test "$package" != "null"
+          test "$(printf '%s' "$package" | jq '.reference_urls | length')" -gt 0
+          generated="$(curl --max-time 300 -fsS -X POST "$IMAGE_URL/api/reference-generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data "$package")"
+          printf '%s' "$generated" | jq -e '.ok == true and .reference_grounded == true and .generated_derivative == true and .reference_count > 0' >/dev/null
+          id="$(printf '%s' "$package" | jq -r '.id')"
+          key="$(printf '%s' "$generated" | jq -r '.candidate_key')"
+          applied="$(curl --max-time 30 -fsS -X POST "$IMAGE_URL/api/apply" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data "$(jq -nc --arg id "$id" --arg key "$key" --arg prompt "$(printf '%s' "$generated" | jq -r '.prompt')" --arg model "$(printf '%s' "$generated" | jq -r '.model')" '{id:$id,candidate_key:$key,prompt:$prompt,model:$model}')")"
+          printf '%s' "$generated" | jq -c '{id,entity,usage,reference_count,reference_sources,generated_derivative}'
+          printf '%s' "$applied" | jq -c '{id,url,updated_at}'
+          echo "COST_USD=$(printf '%s' "$generated" | jq -r '.usage.cost // 0')" >> "$GITHUB_STEP_SUMMARY"
+          echo "PUBLISHED=$(printf '%s' "$applied" | jq -r '.url')" >> "$GITHUB_STEP_SUMMARY"

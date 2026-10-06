@@ -8,7 +8,7 @@ on:
       article_index:
         description: Article index from production editorial feed
         required: false
-        default: "0"
+        default: "0" # real-generation-rerun-1
 permissions:
   contents: read
 jobs:

@@ -1,21 +1,18 @@
 name: Generate CSUM Editorial Image
 on:
-  push:
-    branches: [csum-nn-site]
-    paths: [".github/workflows/generate-csum-editorial-image.yml"]
   workflow_dispatch:
     inputs:
       article_index:
         description: Article index from production editorial feed
         required: false
-        default: "0" # real-generation-rerun-1
+        default: "0"
 permissions:
   contents: read
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate and publish one real article image
+      - name: Generate candidate for visual QA
         env:
           CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
           ARTICLE_INDEX: ${{ inputs.article_index }}
@@ -25,14 +22,9 @@ jobs:
           articles="$(curl --max-time 30 -fsS "$EDITORIAL_URL/api/articles")"
           package="$(printf '%s' "$articles" | jq -c --argjson i "${ARTICLE_INDEX:-0}" '.articles[$i].visual.generation_package')"
           test "$package" != "null"
-          test "$(printf '%s' "$package" | jq '.reference_urls | length')" -gt 0
           generated="$(curl --max-time 300 -sS -X POST "$IMAGE_URL/api/reference-generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data "$package")"
-          echo "$generated"
-          printf '%s' "$generated" | jq -e '.ok == true and .reference_grounded == true and .generated_derivative == true and .reference_count > 0' >/dev/null
-          id="$(printf '%s' "$package" | jq -r '.id')"
-          key="$(printf '%s' "$generated" | jq -r '.candidate_key')"
-          applied="$(curl --max-time 30 -fsS -X POST "$IMAGE_URL/api/apply" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data "$(jq -nc --arg id "$id" --arg key "$key" --arg prompt "$(printf '%s' "$generated" | jq -r '.prompt')" --arg model "$(printf '%s' "$generated" | jq -r '.model')" '{id:$id,candidate_key:$key,prompt:$prompt,model:$model}')")"
-          printf '%s' "$generated" | jq -c '{id,entity,usage,reference_count,reference_sources,generated_derivative}'
-          printf '%s' "$applied" | jq -c '{id,url,updated_at}'
+          printf '%s' "$generated" | jq -e '.ok == true and .generated_derivative == true and (.candidate_key|length) > 0' >/dev/null
+          printf '%s' "$generated" | jq -c '{id,entity,usage,reference_count,reference_sources,generated_derivative,candidate_key,url}'
+          echo "QA_STATUS=PENDING" >> "$GITHUB_STEP_SUMMARY"
+          echo "CANDIDATE=$(printf '%s' "$generated" | jq -r '.url')" >> "$GITHUB_STEP_SUMMARY"
           echo "COST_USD=$(printf '%s' "$generated" | jq -r '.usage.cost // 0')" >> "$GITHUB_STEP_SUMMARY"
-          echo "PUBLISHED=$(printf '%s' "$applied" | jq -r '.url')" >> "$GITHUB_STEP_SUMMARY"

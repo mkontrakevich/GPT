@@ -1,14 +1,18 @@
 name: CSUM AI Hero
 on:
-  push:
-    branches: [main]
-    paths: ["csum-hero-trigger.txt"]
+  issues:
+    types: [opened]
 permissions:
-  contents: read
+  contents: write
 jobs:
   generate:
+    if: github.event.issue.title == 'CSUM_GENERATE_HERO'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: csum-nn-site
+          fetch-depth: 0
       - name: Generate source-locked HERO
         env:
           CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
@@ -28,3 +32,21 @@ jobs:
           echo "CANDIDATE=$(printf '%s' "$generated" | jq -r '.url')" >> "$GITHUB_STEP_SUMMARY"
           echo "CANDIDATE_KEY=$(printf '%s' "$generated" | jq -r '.candidate_key')" >> "$GITHUB_STEP_SUMMARY"
           echo "COST_USD=$(printf '%s' "$generated" | jq -r '.usage.cost // "unavailable"')" >> "$GITHUB_STEP_SUMMARY"
+          candidate="$(printf '%s' "$generated" | jq -r '.url')"
+          cost="$(printf '%s' "$generated" | jq -r '.usage.cost // "unavailable"')"
+          jq -nc --arg url "$candidate" --arg cost "$cost" --arg at "$(date -u +%FT%TZ)" '{url:$url,cost_usd:$cost,generated_at:$at,method:"image-to-image",cityscape_lock:true}' > csum-hero-result.json
+          python3 - "$candidate" <<'PY'
+          import re,sys
+          p="index.html"
+          s=open(p,encoding="utf-8").read()
+          candidate=sys.argv[1]
+          s=re.sub(r'(<img[^>]+data-ai-key="hero-csum"[^>]+(?:data-ai-src="[^"]*"[^>]+)?src=")[^"]+(")',r'\\1'+candidate+r'\\2',s,count=1)
+          open(p,"w",encoding="utf-8").write(s)
+          PY
+      - name: Publish HERO to site branch
+        run: |
+          git config user.name "csum-editorial-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html csum-hero-result.json
+          git commit -m "CSUM: publish source-locked AI editorial hero"
+          git push origin HEAD:csum-nn-site

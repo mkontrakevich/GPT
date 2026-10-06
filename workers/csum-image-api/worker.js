@@ -147,7 +147,7 @@ export default {
 
       if(url.pathname==="/api/editor/state" && req.method==="GET"){
         if(!requireAdmin(req,env)) return unauthorized(env);
-        return json({draft:await getJson(env,"_editor/draft.json",{patches:[]}),published:await getJson(env,"_editor/published.json",{version:0,patches:[]}),history:await getJson(env,"_editor/history.json",[])},200,cors(env));
+        return json({draft:await getJson(env,"_editor/draft.json",{patches:[],layout:[]}),published:await getJson(env,"_editor/published.json",{version:0,patches:[],layout:[]}),history:await getJson(env,"_editor/history.json",[])},200,cors(env));
       }
       if(url.pathname==="/api/editor/published" && req.method==="GET") return json(await getJson(env,"_editor/published.json",{version:0,patches:[]}),200,cors(env));
       if(url.pathname==="/api/editor/draft" && req.method==="POST"){
@@ -156,12 +156,15 @@ export default {
         const draft=await getJson(env,"_editor/draft.json",{patches:[]}); const patches=(draft.patches||[]).filter(x=>x.selector!==body.selector); patches.push({selector:body.selector,text:body.text,updated_at:now()});
         const next={patches,updated_at:now()}; await putJson(env,"_editor/draft.json",next); return json(next,200,cors(env));
       }
+      if(url.pathname==="/api/editor/layout" && req.method==="POST"){
+        if(!requireAdmin(req,env)) return unauthorized(env); const body=await req.json(); if(!Array.isArray(body.layout))return json({error:"layout array is required"},400,cors(env)); const draft=await getJson(env,"_editor/draft.json",{patches:[],layout:[]}); const next={...draft,layout:body.layout.slice(0,200),updated_at:now()}; await putJson(env,"_editor/draft.json",next); return json(next,200,cors(env));
+      }
       if(url.pathname==="/api/editor/rollback" && req.method==="POST"){
         if(!requireAdmin(req,env)) return unauthorized(env); const body=await req.json(); const history=await getJson(env,"_editor/history.json",[]); const target=history.find(x=>x.version===Number(body.version)); if(!target)return json({error:"VERSION_NOT_FOUND"},404,cors(env)); const current=await getJson(env,"_editor/published.json",{version:0,patches:[]}); const restored={...target,version:(current.version||0)+1,restored_from:target.version,published_at:now()}; history.unshift(current); await putJson(env,"_editor/history.json",history.filter(x=>x.version!==target.version).slice(0,25)); await putJson(env,"_editor/published.json",restored); return json(restored,200,cors(env));
       }
       if(url.pathname==="/api/editor/publish" && req.method==="POST"){
-        if(!requireAdmin(req,env)) return unauthorized(env); const draft=await getJson(env,"_editor/draft.json",{patches:[]}); const prev=await getJson(env,"_editor/published.json",{version:0,patches:[]}); const next={version:(prev.version||0)+1,patches:draft.patches||[],published_at:now()};
-        const history=await getJson(env,"_editor/history.json",[]); if(prev.version) history.unshift(prev); await putJson(env,"_editor/history.json",history.slice(0,25)); await putJson(env,"_editor/published.json",next); await putJson(env,"_editor/draft.json",{patches:[],updated_at:now()}); return json(next,200,cors(env));
+        if(!requireAdmin(req,env)) return unauthorized(env); const draft=await getJson(env,"_editor/draft.json",{patches:[]}); const prev=await getJson(env,"_editor/published.json",{version:0,patches:[]}); const next={version:(prev.version||0)+1,patches:draft.patches||[],layout:draft.layout||[],published_at:now()};
+        const history=await getJson(env,"_editor/history.json",[]); if(prev.version) history.unshift(prev); await putJson(env,"_editor/history.json",history.slice(0,25)); await putJson(env,"_editor/published.json",next); await putJson(env,"_editor/draft.json",{patches:[],layout:[],updated_at:now()}); return json(next,200,cors(env));
       }
       if((url.pathname==="/api/approve" || url.pathname==="/api/reject") && req.method==="POST"){
         if(!requireAdmin(req,env)) return unauthorized(env); const body=await req.json(); if(!body.candidate_key)return json({error:"candidate_key is required"},400,cors(env));

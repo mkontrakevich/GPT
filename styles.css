@@ -476,3 +476,28 @@ body.is-ready .hero-copy{opacity:1;transform:none;transition:opacity 1s var(--ea
  .editorial-nav a{flex:0 0 auto;white-space:nowrap;padding:11px 17px}
  .landing-story{padding-top:72px}
 }
+
+
+/* MOBILE HERO FIT — verified against iPhone screenshot */
+@media(max-width:740px){
+ .editorial-cover{width:100%;max-width:100vw;overflow:hidden}
+ .editorial-cover .hero-copy{left:0;right:0;width:100%;max-width:100vw;padding-left:20px;padding-right:20px;overflow:hidden}
+ .editorial-cover .hero-copy h1{width:100%;max-width:100%;overflow:hidden}
+ .editorial-cover .cover-title{
+   display:block;
+   width:100%;
+   max-width:100%;
+   font-size:clamp(42px,12.4vw,58px);
+   line-height:.88;
+   letter-spacing:-.055em;
+   white-space:normal;
+   overflow-wrap:normal;
+ }
+ .editorial-cover .hero-lead{width:100%;max-width:100%;font-size:14px}
+ .editorial-cover .hero-cta-row{width:100%;max-width:100%}
+}
+@media(max-width:430px){
+ .editorial-cover .cover-title{font-size:12.1vw}
+ .editorial-cover .hero-cta-row{grid-template-columns:1fr}
+ .editorial-cover .btn{min-height:50px}
+}

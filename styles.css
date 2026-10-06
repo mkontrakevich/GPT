@@ -524,3 +524,19 @@ body.is-ready .hero-copy{opacity:1;transform:none;transition:opacity 1s var(--ea
  .magazine-front{padding-top:54px}
  .magazine-masthead{gap:14px}
 }
+
+
+/* EDITORIAL PURITY — remove UI-like decoration */
+.section-head{border-top:0;padding-top:0}
+.magazine-index{border-top:0}
+.magazine-card{border-color:rgba(22,19,17,.14)}
+.landing-story-intro{grid-template-columns:1fr}
+.landing-story-intro h2{max-width:1050px}
+.magazine-mini h3{margin-top:0}
+.story-copy h3{margin-top:0}
+@media(max-width:740px){
+ .section{padding-top:68px;padding-bottom:68px}
+ .section-head{gap:12px;margin-bottom:30px}
+ .section h2{font-size:clamp(42px,12vw,56px);line-height:.94}
+ .story-copy{padding:22px 0}
+}

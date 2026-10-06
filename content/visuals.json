@@ -1,22 +1,197 @@
 {
-  "version": 4,
+  "version": 5,
   "items": [
-    {"id":"hero-csum","type":"hero","title":"Главный экран — ЦУМ","aspectRatio":"16:9","defaultSrc":"https://www.csum.ru/upload/content/max_685126cd7bccf.jpg","brief":"Реальный фасад ЦУМа Нижнего Новгорода и главный вход. Архитектура должна сохранять узнаваемость и геометрию."},
-    {"id":"culture","type":"section","title":"Культурные события","aspectRatio":"16:9","defaultSrc":"https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG","brief":"Городской вечер, культурное событие, спокойная журнальная фотография без рекламной постановки."},
-    {"id":"guide","type":"section","title":"Путеводитель","aspectRatio":"16:9","defaultSrc":"https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg","brief":"Короткий городской маршрут по Нижнему Новгороду перед поездом, ощущение реального времени и дороги."},
-    {"id":"gifts","type":"section","title":"Подарки и сувениры","aspectRatio":"16:9","defaultSrc":"https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg","brief":"Локальные предметы, ремесло и подарки как память о городе. Не сувенирная лавка и не рекламный баннер."},
-    {"id":"family","type":"section","title":"Семейный маршрут","aspectRatio":"16:9","defaultSrc":"https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg","brief":"Живая семейная сцена: любопытство, движение, отдых. Без постановочной рекламы."},
-    {"id":"office","type":"section","title":"Рабочий день","aspectRatio":"16:9","defaultSrc":"https://i.archi.ru/i/238294.jpg","brief":"Короткий городской перерыв офисного сотрудника: кофе, небольшая бытовая задача, спокойный современный лайфстайл."},
-    {"id":"locals","type":"section","title":"Повседневный маршрут","aspectRatio":"16:9","defaultSrc":"https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg","brief":"Повседневная городская жизнь рядом с ЦУМом: покупки по пути, люди, детали, без фасада как главного героя."},
-
-    {"id":"article-vecher-v-gorode","type":"article","title":"Вечер в новом городе начинается с паузы","aspectRatio":"16:9","defaultSrc":"https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG","brief":"Культурный вечер в Нижнем Новгороде; переход от спокойной паузы к событию."},
-    {"id":"article-dva-chasa-do-poezda","type":"article","title":"Два часа до поезда: маршрут без риска опоздать","aspectRatio":"16:9","defaultSrc":"https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg","brief":"Короткий маршрут перед поездом, один сильный городской вид и спокойный возврат."},
-    {"id":"article-suvenir-kak-pamyat","type":"article","title":"Сувенир — память о месте","aspectRatio":"16:9","defaultSrc":"https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg","brief":"Предметы, материалы и вкусы, которые продолжают память о Нижнем Новгороде."},
-    {"id":"article-semeinyi-marshrut","type":"article","title":"Смена впечатлений — основа семейного маршрута","aspectRatio":"16:9","defaultSrc":"https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg","brief":"Семейный досуг, чередование активности и отдыха."},
-    {"id":"article-pereryv-kotoryi-vozvrashchaet-vnimanie","type":"article","title":"Перерыв, который возвращает внимание","aspectRatio":"16:9","defaultSrc":"https://i.archi.ru/i/238294.jpg","brief":"Офисный сотрудник меняет среду на короткое время, возвращая концентрацию."},
-    {"id":"article-univermag-v-povsednevnom-marshrute","type":"article","title":"Универмаг в повседневном маршруте","aspectRatio":"16:9","defaultSrc":"https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg","brief":"Повседневная покупка по пути, физический выбор материала, цвета или размера."},
-    {"id":"article-svet-tkan-i-cvet","type":"article","title":"Свет, ткань и цвет","aspectRatio":"16:9","defaultSrc":"https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg","brief":"Тактильный текстиль, естественный и искусственный свет, нюансы оттенка."},
-    {"id":"article-vechernii-obraz-v-dvizhenii","type":"article","title":"Вечерний образ оценивается в движении","aspectRatio":"16:9","defaultSrc":"https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG","brief":"Вечерний образ в естественном движении и городском свете, не каталог одежды."},
-    {"id":"article-dorozhnaya-avtonomnost","type":"article","title":"Запас энергии — часть дорожной инфраструктуры","aspectRatio":"16:9","defaultSrc":"https://i.archi.ru/i/238294.jpg","brief":"Телефон, кабель, внешний аккумулятор и дорога как единый практический сценарий."}
+    {
+      "id": "hero-csum",
+      "type": "hero",
+      "title": "Главный экран — ЦУМ",
+      "aspectRatio": "16:9",
+      "brief": "Реальный фасад ЦУМа Нижнего Новгорода и главный вход. Архитектура должна сохранять узнаваемость и геометрию.",
+      "sourceReferences": [
+        "https://www.csum.ru/upload/content/max_685126cd7bccf.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "culture",
+      "type": "section",
+      "title": "Культурные события",
+      "aspectRatio": "16:9",
+      "brief": "Городской вечер, культурное событие, спокойная журнальная фотография без рекламной постановки.",
+      "sourceReferences": [
+        "https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "guide",
+      "type": "section",
+      "title": "Путеводитель",
+      "aspectRatio": "16:9",
+      "brief": "Короткий городской маршрут по Нижнему Новгороду перед поездом, ощущение реального времени и дороги.",
+      "sourceReferences": [
+        "https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "gifts",
+      "type": "section",
+      "title": "Подарки и сувениры",
+      "aspectRatio": "16:9",
+      "brief": "Локальные предметы, ремесло и подарки как память о городе. Не сувенирная лавка и не рекламный баннер.",
+      "sourceReferences": [
+        "https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "family",
+      "type": "section",
+      "title": "Семейный маршрут",
+      "aspectRatio": "16:9",
+      "brief": "Живая семейная сцена: любопытство, движение, отдых. Без постановочной рекламы.",
+      "sourceReferences": [
+        "https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "office",
+      "type": "section",
+      "title": "Рабочий день",
+      "aspectRatio": "16:9",
+      "brief": "Короткий городской перерыв офисного сотрудника: кофе, небольшая бытовая задача, спокойный современный лайфстайл.",
+      "sourceReferences": [
+        "https://i.archi.ru/i/238294.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "locals",
+      "type": "section",
+      "title": "Повседневный маршрут",
+      "aspectRatio": "16:9",
+      "brief": "Повседневная городская жизнь рядом с ЦУМом: покупки по пути, люди, детали, без фасада как главного героя.",
+      "sourceReferences": [
+        "https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-vecher-v-gorode",
+      "type": "article",
+      "title": "Вечер в новом городе начинается с паузы",
+      "aspectRatio": "16:9",
+      "brief": "Культурный вечер в Нижнем Новгороде; переход от спокойной паузы к событию.",
+      "sourceReferences": [
+        "https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-dva-chasa-do-poezda",
+      "type": "article",
+      "title": "Два часа до поезда: маршрут без риска опоздать",
+      "aspectRatio": "16:9",
+      "brief": "Короткий маршрут перед поездом, один сильный городской вид и спокойный возврат.",
+      "sourceReferences": [
+        "https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-suvenir-kak-pamyat",
+      "type": "article",
+      "title": "Сувенир — память о месте",
+      "aspectRatio": "16:9",
+      "brief": "Предметы, материалы и вкусы, которые продолжают память о Нижнем Новгороде.",
+      "sourceReferences": [
+        "https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-semeinyi-marshrut",
+      "type": "article",
+      "title": "Смена впечатлений — основа семейного маршрута",
+      "aspectRatio": "16:9",
+      "brief": "Семейный досуг, чередование активности и отдыха.",
+      "sourceReferences": [
+        "https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-pereryv-kotoryi-vozvrashchaet-vnimanie",
+      "type": "article",
+      "title": "Перерыв, который возвращает внимание",
+      "aspectRatio": "16:9",
+      "brief": "Офисный сотрудник меняет среду на короткое время, возвращая концентрацию.",
+      "sourceReferences": [
+        "https://i.archi.ru/i/238294.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-univermag-v-povsednevnom-marshrute",
+      "type": "article",
+      "title": "Универмаг в повседневном маршруте",
+      "aspectRatio": "16:9",
+      "brief": "Повседневная покупка по пути, физический выбор материала, цвета или размера.",
+      "sourceReferences": [
+        "https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-svet-tkan-i-cvet",
+      "type": "article",
+      "title": "Свет, ткань и цвет",
+      "aspectRatio": "16:9",
+      "brief": "Тактильный текстиль, естественный и искусственный свет, нюансы оттенка.",
+      "sourceReferences": [
+        "https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-vechernii-obraz-v-dvizhenii",
+      "type": "article",
+      "title": "Вечерний образ оценивается в движении",
+      "aspectRatio": "16:9",
+      "brief": "Вечерний образ в естественном движении и городском свете, не каталог одежды.",
+      "sourceReferences": [
+        "https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    },
+    {
+      "id": "article-dorozhnaya-avtonomnost",
+      "type": "article",
+      "title": "Запас энергии — часть дорожной инфраструктуры",
+      "aspectRatio": "16:9",
+      "brief": "Телефон, кабель, внешний аккумулятор и дорога как единый практический сценарий.",
+      "sourceReferences": [
+        "https://i.archi.ru/i/238294.jpg"
+      ],
+      "status": "generation_required",
+      "publicationPolicy": "generated_or_explicitly_approved_only"
+    }
   ]
 }

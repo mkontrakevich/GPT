@@ -17,13 +17,13 @@
   };
 
   const editorialRules = [
-    "photorealistic editorial photography",
-    "premium city magazine visual language",
-    "natural human behavior and believable materials",
+    "high-end editorial photography for an international architecture, fashion and culture magazine",
+    "observational magazine photography, cinematic but credible, never commercial advertising",
+    "natural human behavior, authentic skin and fabric texture, believable architecture and materials, subtle real-world imperfections",
     "clean composition with room for HTML typography outside the image",
     "no words, no captions, no poster, no interface, no website mockup, no collage, no watermark, no logos",
     "not an advertising banner, not a marketplace product card, not a stock-photo cliché",
-    "realistic light, restrained color grading, documentary credibility"
+    "realistic available light or motivated practical light, restrained filmic color grading, documentary credibility",\n    "35mm or 50mm full-frame editorial lens language, physically plausible depth of field, no artificial HDR, no excessive bokeh",\n    "composition may be asymmetric, cropped or partially occluded like a deliberately art-directed magazine photograph",\n    "avoid CGI cleanliness, plastic surfaces, hyper-sharp AI texture, luxury-advertising gloss, symmetrical showroom staging and generic influencer imagery"
   ];
 
   const buildPrompt = (item, notes = "") => {
@@ -31,7 +31,7 @@
       ? "Preserve the identity, proportions, facade rhythm, openings and entrance geometry of the supplied reference architecture. Do not redesign the building."
       : "The image must be a self-contained photographic scene, not an image of the CSUM facade unless the story truly requires it.";
     return [
-      "Create a high-end editorial photograph for the digital magazine of CSUM Nizhny Novgorod.",
+      "Create a publication-grade editorial photograph for the digital magazine of CSUM Nizhny Novgorod. The result must look commissioned and photographed for a leading architecture/fashion/culture magazine, not AI-generated advertising.",
       "Subject: " + item.title + ".",
       "Editorial brief: " + item.brief,
       heroRule,

@@ -86,7 +86,8 @@ export default {
         const referenceSources=refs.map(ref=>({url:ref,type:projectRefs.includes(ref)?"project_source":"official_source"}));
         const entity=String(body.entity||visual.entity||body.title||visual.title||"").trim();
         const facts=[...(Array.isArray(body.verified_facts)?body.verified_facts:[]),...(Array.isArray(visual.verifiedFacts)?visual.verifiedFacts:[])].filter(Boolean).slice(0,12);
-        const payload={model:body.model||"bytedance-seed/seedream-4.5",prompt:body.prompt,aspect_ratio:body.aspect_ratio||"16:9",output_format:body.output_format||"webp",n:1,input_references:refs.map(ref=>({type:"image_url",image_url:{url:ref}}))};
+        const factualContext=[entity?("Exact subject: "+entity):"",facts.length?("Verified context: "+facts.join(" | ")):"",body.prompt].filter(Boolean).join("\n");
+        const payload={model:body.model||"bytedance-seed/seedream-4.5",prompt:factualContext,aspect_ratio:body.aspect_ratio||"16:9",output_format:body.output_format||"webp",n:1,input_references:refs.map(ref=>({type:"image_url",image_url:{url:ref}}))};
         const result=await openRouter(env,"/api/v1/images",{method:"POST",body:JSON.stringify(payload)});
         const first=result?.data?.[0]; if(!first?.b64_json)return json({error:"OpenRouter returned no image"},502,cors(env));
         const media=first.media_type||"image/webp", ext=extFor(media), candidateKey="candidates/"+body.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;

@@ -513,3 +513,14 @@ body.is-ready .hero-copy{opacity:1;transform:none;transition:opacity 1s var(--ea
  .magazine-masthead .lead{font-size:15px;line-height:1.5}
  .landing-story{padding-top:76px}
 }
+
+
+/* EDITORIAL CLEAN — hierarchy without decorative microcopy */
+.editorial-cover .hero-copy{max-width:980px}
+.magazine-masthead{border-top:0;padding-top:0}
+.magazine-lead-copy{max-width:880px}
+@media(max-width:740px){
+ .editorial-cover .hero-copy{padding-bottom:34px}
+ .magazine-front{padding-top:54px}
+ .magazine-masthead{gap:14px}
+}

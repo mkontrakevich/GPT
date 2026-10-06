@@ -2,7 +2,7 @@ name: CSUM AI Hero
 on:
   push:
     branches: [main]
-    paths: [".github/csum-hero-trigger.txt"]
+    paths: ["csum-hero-trigger.txt"]
 permissions:
   contents: read
 jobs:

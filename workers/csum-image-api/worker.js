@@ -75,12 +75,13 @@ export default {
         const terms=String([body.title,body.prompt,body.kind].filter(Boolean).join(" ")).toLowerCase().split(/[^a-zа-яё0-9]+/i).filter(x=>x.length>3);
         const ranked=(library.assets||[]).map(a=>{const hay=String((a.title||"")+" "+(a.tags||[]).join(" ")).toLowerCase();return {...a,score:terms.reduce((s,t)=>s+(hay.includes(t)?1:0),0)+(body.kind==="hero"&&a.tags?.includes("architecture")?4:0)};}).sort((a,b)=>b.score-a.score);
         const requested=[...(Array.isArray(body.project_reference_urls)?body.project_reference_urls:[]),body.project_reference_url].filter(Boolean);
+        const suppliedOfficial=[...(Array.isArray(body.reference_urls)?body.reference_urls:[]),body.reference_url].filter(officialReference);
         const manifest=await fetch((env.SITE_URL||"https://mkontrakevich.github.io/GPT/").replace(/\/$/,"")+"/content/visuals.json").then(r=>r.ok?r.json():({items:[]})).catch(()=>({items:[]}));
         const visual=(manifest.items||[]).find(x=>x.id===body.id)||{};
         const manifestRefs=[...(Array.isArray(visual.sourceReferences)?visual.sourceReferences:[]),visual.defaultSrc].filter(Boolean);
         const projectRefs=[...new Set([...requested,...manifestRefs].filter(ref=>projectReference(ref,env)))].slice(0,3);
         const manifestOfficialRefs=[...new Set(manifestRefs.filter(officialReference))];
-        const officialRefs=[...new Set([...manifestOfficialRefs,...ranked.map(x=>x.image_url).filter(officialReference)])].slice(0,3);
+        const officialRefs=[...new Set([...suppliedOfficial,...manifestOfficialRefs,...ranked.map(x=>x.image_url).filter(officialReference)])].slice(0,3);
         const refs=[...projectRefs,...officialRefs.filter(x=>!projectRefs.includes(x))].slice(0,3);
         if(!refs.length) return json({error:"NO_GROUNDED_REFERENCES"},422,cors(env));
         const referenceSources=refs.map(ref=>({url:ref,type:projectRefs.includes(ref)?"project_source":"official_source"}));

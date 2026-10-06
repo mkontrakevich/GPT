@@ -92,7 +92,7 @@ export default {
         const first=result?.data?.[0]; if(!first?.b64_json)return json({error:"OpenRouter returned no image"},502,cors(env));
         const media=first.media_type||"image/webp", ext=extFor(media), candidateKey="candidates/"+body.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
         await env.CSUM_IMAGES.put(candidateKey,bytesFromBase64(first.b64_json),{httpMetadata:{contentType:media}});
-        return json({ok:true,id:body.id,url:new URL("/generated/"+encodeURIComponent(candidateKey),url.origin).toString(),candidate_key:candidateKey,persistent_candidate:true,prompt:body.prompt,model:payload.model,reference_urls:refs,reference_count:refs.length,reference_sources:referenceSources,reference_grounded:true,usage:result.usage||null},200,cors(env));
+        return json({ok:true,id:body.id,url:new URL("/generated/"+encodeURIComponent(candidateKey),url.origin).toString(),candidate_key:candidateKey,persistent_candidate:true,prompt:factualContext,model:payload.model,entity,verified_facts:facts,reference_urls:refs,reference_count:refs.length,reference_sources:referenceSources,reference_grounded:true,generated_derivative:true,usage:result.usage||null},200,cors(env));
       }
 
       if(url.pathname==="/api/generate" && req.method==="POST"){

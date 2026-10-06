@@ -549,3 +549,11 @@ button,.btn,a.btn,.store-chip,.magazine-mini,.magazine-lead,.magazine-card,
 .floor-panel,.search-modal,.search-tags button,.native-note,.route-step,
 .store-window,.debug-panel,.editorial-nav a,.map-button,.search-button,
 .menu-button,.landing-story-caption{border-radius:0!important}
+
+
+/* CSUM EDITORIAL RULE — NO ROUNDED CORNERS */
+.btn,.store-chip,.magazine-lead,.magazine-mini,.magazine-card,.article-card,.feature-story,
+.story-image,.food-card,.cinematic,.map-copy,.floor-panel,.search-modal,.search-tags button,
+.native-note,.time-routes button,.editorial-nav a,.legacy-nav,.store-window{
+  border-radius:0!important;
+}

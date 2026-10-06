@@ -40,6 +40,10 @@ async function loadManifest(env){
 async function saveManifest(env,images){
   await env.CSUM_IMAGES.put("_content/active-images.json",JSON.stringify(images),{httpMetadata:{contentType:"application/json"}});
 }
+async function getJson(env,key,fallback={}){ if(!env.CSUM_IMAGES)return fallback; const o=await env.CSUM_IMAGES.get(key); if(!o)return fallback; try{return await o.json();}catch{return fallback;} }
+async function putJson(env,key,value){ await env.CSUM_IMAGES.put(key,JSON.stringify(value),{httpMetadata:{contentType:"application/json"}}); }
+const qaKey = key => "_qa/"+encodeURIComponent(key)+".json";
+const now = () => new Date().toISOString();
 
 export default {
   async fetch(req,env){
@@ -87,12 +91,14 @@ export default {
         const referenceSources=refs.map(ref=>({url:ref,type:projectRefs.includes(ref)?"project_source":officialReference(ref)?"official_source":"open_source"}));
         const entity=String(body.entity||visual.entity||body.title||visual.title||"").trim();
         const facts=[...(Array.isArray(body.verified_facts)?body.verified_facts:[]),...(Array.isArray(visual.verifiedFacts)?visual.verifiedFacts:[])].filter(Boolean).slice(0,12);
+        const associativeRetail=body.associative_retail===true || body.kind==="associative_retail";
         const factualContext=[entity?("Exact subject: "+entity):"",facts.length?("Verified context: "+facts.join(" | ")):"",body.prompt].filter(Boolean).join("\n");
         const payload={model:body.model||"bytedance-seed/seedream-4.5",prompt:factualContext,aspect_ratio:body.aspect_ratio||"16:9",output_format:body.output_format||"webp",n:1,input_references:refs.map(ref=>({type:"image_url",image_url:{url:ref}}))};
         const result=await openRouter(env,"/api/v1/images",{method:"POST",body:JSON.stringify(payload)});
         const first=result?.data?.[0]; if(!first?.b64_json)return json({error:"OpenRouter returned no image"},502,cors(env));
         const media=first.media_type||"image/webp", ext=extFor(media), candidateKey="candidates/"+body.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
         await env.CSUM_IMAGES.put(candidateKey,bytesFromBase64(first.b64_json),{httpMetadata:{contentType:media}});
+        await putJson(env,qaKey(candidateKey),{id:body.id,candidate_key:candidateKey,status:"pending",created_at:now()});
         return json({ok:true,id:body.id,url:new URL("/generated/"+encodeURIComponent(candidateKey),url.origin).toString(),candidate_key:candidateKey,persistent_candidate:true,prompt:factualContext,model:payload.model,entity,verified_facts:facts,reference_urls:refs,reference_count:refs.length,reference_sources:referenceSources,reference_grounded:true,generated_derivative:true,associative_retail:associativeRetail,brand_lock:body.brand_lock===true,qa_status:"pending",usage:result.usage||null},200,cors(env));
       }
 
@@ -129,6 +135,7 @@ export default {
         let persisted=false;
         if(env.CSUM_IMAGES){
           await env.CSUM_IMAGES.put(candidateKey,bytesFromBase64(first.b64_json),{httpMetadata:{contentType:media}});
+          await putJson(env,qaKey(candidateKey),{id:body.id,candidate_key:candidateKey,status:"pending",created_at:now()});
           imageUrl=new URL("/generated/"+encodeURIComponent(candidateKey),url.origin).toString();
           persisted=true;
         }
@@ -138,6 +145,26 @@ export default {
         },200,cors(env));
       }
 
+      if(url.pathname==="/api/editor/state" && req.method==="GET"){
+        if(!requireAdmin(req,env)) return unauthorized(env);
+        return json({draft:await getJson(env,"_editor/draft.json",{patches:[]}),published:await getJson(env,"_editor/published.json",{version:0,patches:[]}),history:await getJson(env,"_editor/history.json",[])},200,cors(env));
+      }
+      if(url.pathname==="/api/editor/published" && req.method==="GET") return json(await getJson(env,"_editor/published.json",{version:0,patches:[]}),200,cors(env));
+      if(url.pathname==="/api/editor/draft" && req.method==="POST"){
+        if(!requireAdmin(req,env)) return unauthorized(env); const body=await req.json();
+        if(!body.selector || typeof body.text!=="string") return json({error:"selector and text are required"},400,cors(env));
+        const draft=await getJson(env,"_editor/draft.json",{patches:[]}); const patches=(draft.patches||[]).filter(x=>x.selector!==body.selector); patches.push({selector:body.selector,text:body.text,updated_at:now()});
+        const next={patches,updated_at:now()}; await putJson(env,"_editor/draft.json",next); return json(next,200,cors(env));
+      }
+      if(url.pathname==="/api/editor/publish" && req.method==="POST"){
+        if(!requireAdmin(req,env)) return unauthorized(env); const draft=await getJson(env,"_editor/draft.json",{patches:[]}); const prev=await getJson(env,"_editor/published.json",{version:0,patches:[]}); const next={version:(prev.version||0)+1,patches:draft.patches||[],published_at:now()};
+        const history=await getJson(env,"_editor/history.json",[]); if(prev.version) history.unshift(prev); await putJson(env,"_editor/history.json",history.slice(0,25)); await putJson(env,"_editor/published.json",next); await putJson(env,"_editor/draft.json",{patches:[],updated_at:now()}); return json(next,200,cors(env));
+      }
+      if((url.pathname==="/api/approve" || url.pathname==="/api/reject") && req.method==="POST"){
+        if(!requireAdmin(req,env)) return unauthorized(env); const body=await req.json(); if(!body.candidate_key)return json({error:"candidate_key is required"},400,cors(env));
+        const qa=await getJson(env,qaKey(body.candidate_key),null); if(!qa)return json({error:"Candidate QA record not found"},404,cors(env)); const approved=url.pathname==="/api/approve"; const next={...qa,status:approved?"approved":"rejected",qa_reasons:Array.isArray(body.reasons)?body.reasons:[],[approved?"approved_at":"rejected_at"]:now()}; await putJson(env,qaKey(body.candidate_key),next); return json(next,200,cors(env));
+      }
+
       if(url.pathname==="/api/apply" && req.method==="POST"){
         if(!requireAdmin(req,env)) return unauthorized(env);
         if(!env.CSUM_IMAGES) return json({error:"Persistent publishing requires the CSUM_IMAGES R2 binding"},409,cors(env));
@@ -145,6 +172,8 @@ export default {
         if(!body.id || !body.candidate_key) return json({error:"id and candidate_key are required"},400,cors(env));
         const obj=await env.CSUM_IMAGES.head(body.candidate_key);
         if(!obj) return json({error:"Candidate not found"},404,cors(env));
+        const qa=await getJson(env,qaKey(body.candidate_key),null);
+        if(qa?.status!=="approved") return json({error:"QA_APPROVAL_REQUIRED",qa_status:qa?.status||"missing"},409,cors(env));
         const record={
           id:body.id,
           url:new URL("/generated/"+encodeURIComponent(body.candidate_key),url.origin).toString(),

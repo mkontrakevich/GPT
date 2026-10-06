@@ -23,7 +23,10 @@
     "clean composition with room for HTML typography outside the image",
     "no words, no captions, no poster, no interface, no website mockup, no collage, no watermark, no logos",
     "not an advertising banner, not a marketplace product card, not a stock-photo cliché",
-    "realistic available light or motivated practical light, restrained filmic color grading, documentary credibility",\n    "35mm or 50mm full-frame editorial lens language, physically plausible depth of field, no artificial HDR, no excessive bokeh",\n    "composition may be asymmetric, cropped or partially occluded like a deliberately art-directed magazine photograph",\n    "avoid CGI cleanliness, plastic surfaces, hyper-sharp AI texture, luxury-advertising gloss, symmetrical showroom staging and generic influencer imagery"
+    "realistic available light or motivated practical light, restrained filmic color grading, documentary credibility",
+    "35mm or 50mm full-frame editorial lens language, physically plausible depth of field, no artificial HDR, no excessive bokeh",
+    "composition may be asymmetric, cropped or partially occluded like a deliberately art-directed magazine photograph",
+    "avoid CGI cleanliness, plastic surfaces, hyper-sharp AI texture, luxury-advertising gloss, symmetrical showroom staging and generic influencer imagery"
   ];
 
   const buildPrompt = (item, notes = "") => {

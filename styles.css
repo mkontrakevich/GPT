@@ -501,3 +501,15 @@ body.is-ready .hero-copy{opacity:1;transform:none;transition:opacity 1s var(--ea
  .editorial-cover .hero-cta-row{grid-template-columns:1fr}
  .editorial-cover .btn{min-height:50px}
 }
+
+
+/* TOP JOURNAL FLOW FIX */
+#today{scroll-margin-top:calc(var(--header-h) + var(--subnav-h) + 8px)}
+#for-you,#csum-story{scroll-margin-top:calc(var(--header-h) + var(--subnav-h) + 16px)}
+@media(max-width:740px){
+ .magazine-front{padding-top:42px}
+ .magazine-masthead{margin-bottom:28px}
+ .magazine-masthead h2{font-size:clamp(42px,12vw,58px);line-height:.92}
+ .magazine-masthead .lead{font-size:15px;line-height:1.5}
+ .landing-story{padding-top:76px}
+}

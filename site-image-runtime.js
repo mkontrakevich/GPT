@@ -66,7 +66,7 @@
     Object.entries(local).forEach(([id, record]) => applyRecord(id, record));
 
     const published = await window.CSUMImageAPI?.loadPublished?.() || {};
-    Object.entries(published).forEach(([id, record]) => applyRecord(id, record));
+    Object.entries(published).forEach(([id, record]) => applyRecord(id, record));\n\n    try {\n      const cms = await fetch((window.CSUM_CONFIG?.imageApiBase || "") + "/api/editor/published", {cache:"no-store"}).then(r => r.ok ? r.json() : ({patches:[]}));\n      (cms.patches || []).forEach(p => { try { const el=document.querySelector(p.selector); if(el && typeof p.text === "string") el.textContent=p.text; } catch {} });\n    } catch {}
   }
 
   addEventListener("DOMContentLoaded", boot, {once:true});

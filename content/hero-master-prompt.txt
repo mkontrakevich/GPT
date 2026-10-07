@@ -17,6 +17,9 @@ Preserve the exact identity and recognizable architecture of the existing CSUM:
 CITYSCAPE LOCK.
 Preserve geographically credible surrounding city context. Never invent, relocate or redesign recognizable buildings, streets, skyline elements or landmarks. If the source does not reliably establish a distant city feature, prefer a tighter or lower composition rather than hallucinating it.
 
+ORTHO HERO LOCK.
+Use a beautiful front-facing architectural composition that is as orthographic as physically plausible from the verified real source. The camera optical axis should be approximately perpendicular to the principal facade plane. Keep verticals vertical and horizontals level; minimize keystone distortion and dramatic perspective. Do not redesign the building to force symmetry. If the source is oblique, correct perspective conservatively while preserving factual architecture and surroundings. The result should feel like a premium large-format architectural editorial photograph, not a 3D elevation render.
+
 FACADE PRIORITY.
 The facade is the visual protagonist. Compose and grade the photograph so the architecture reads immediately, clearly and beautifully. Secondary urban elements must not compete with or visually cut the facade.
 

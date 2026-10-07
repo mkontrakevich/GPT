@@ -26,12 +26,15 @@ jobs:
           EDITORIAL_URL: https://csum-nn-source-collector.kontrakevich.workers.dev
           IMAGE_URL: https://csum-nn-image-studio.kontrakevich.workers.dev
         run: |
-          package="$(jq -nc '{
+          SOURCE_URL="https://upload.wikimedia.org/wikipedia/commons/d/d7/%D0%A6%D0%A3%D0%9C_%28%D1%81%D1%82%D0%B0%D1%80%D1%8B%D0%B9_%D0%BA%D0%BE%D1%80%D0%BF%D1%83%D1%81%29.jpg"
+          curl -L --fail --retry 3 -A "CSUM-NN-Editorial/1.0 (https://mkontrakevich.github.io/GPT/)" "$SOURCE_URL" -o /tmp/csum-source.jpg
+          SOURCE_DATA="data:image/jpeg;base64,$(base64 -w0 /tmp/csum-source.jpg)"
+          package="$(jq -nc --arg ref "$SOURCE_DATA" '{
             id:"hero-csum",
             entity:"ЦУМ Нижний Новгород, ул. Героя Фильченкова, 10",
             prompt:"Transform the supplied real photograph into a high-end architectural editorial photograph. Preserve the exact existing CSUM building geometry, facade proportions, window rhythm, columns, entrances, roofline, camera viewpoint and every recognizable element of the visible city environment. CITYSCAPE LOCK: do not invent, remove, relocate or redesign any building, skyline feature, street geometry or landmark. Keep the source photograph as the factual spatial truth. Change only photographic qualities: refined natural directional light, restrained cinematic color, believable urban activity, subtle motion, tactile materials, 35mm editorial photography, no CGI gloss, no HDR, no fantasy architecture, no generated logos, no generated signage or typography.",
             aspect_ratio:"16:9",
-            reference_urls:["https://upload.wikimedia.org/wikipedia/commons/d/d7/%D0%A6%D0%A3%D0%9C_%28%D1%81%D1%82%D0%B0%D1%80%D1%8B%D0%B9_%D0%BA%D0%BE%D1%80%D0%BF%D1%83%D1%81%29.jpg"],
+            reference_urls:[$ref],
             verified_facts:["Existing CSUM building at 10 Geroya Filchenkova Street, Nizhny Novgorod","Camera/source geometry and visible cityscape must remain unchanged"]
           }')"
           generated="$(curl --max-time 300 -sS -X POST "$IMAGE_URL/api/reference-generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data "$package")"

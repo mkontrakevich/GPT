@@ -123,12 +123,17 @@ jobs:
           weather=json.load(open("/tmp/weather-state.json",encoding="utf-8"))
           with open("/tmp/csum-source.jpg","rb") as fh:
               ref="data:image/jpeg;base64,"+base64.b64encode(fh.read()).decode("ascii")
-          prompt=(
-              "Transform the supplied verified real photograph of CSUM Nizhny Novgorod into a high-end architectural editorial photograph while preserving the source as factual spatial truth. "
-              "CITYSCAPE LOCK: preserve the exact existing building geometry, facade proportions, window rhythm, columns, entrances, roofline, camera viewpoint, street geometry, neighboring buildings, skyline and every recognizable city element. Do not invent, remove, relocate or redesign architecture, signs, streets or landmarks. "
-              f"WEATHER GROUNDING: the current weather state at the CSUM coordinates is {weather['state']}. Observed local time: {weather['observed_at']}; temperature {weather['temperature_c']} C; cloud cover {weather['cloud_cover_pct']}%; precipitation {weather['precipitation_mm']} mm; snowfall {weather['snowfall_cm']} cm. Near-term forecast weather codes: {weather['forecast_codes']}; precipitation probabilities: {weather['forecast_precipitation_probability']}%. "
-              f"Render only physically plausible photographic atmosphere consistent with this weather: {weather['description']}. Change only weather, light, atmosphere, believable people/traffic motion and restrained editorial color. Keep materials tactile and realistic, 35mm architectural editorial photography. No CGI gloss, no HDR, no fantasy architecture, no generated logos, no generated signage or typography."
+          master=open("content/hero-master-prompt.txt",encoding="utf-8").read().strip()
+          weather_context=(
+              f"\n\nCURRENT WEATHER CONTEXT:\n"
+              f"Weather state: {weather['state']}. Observed local time: {weather['observed_at']}; "
+              f"temperature {weather['temperature_c']} C; cloud cover {weather['cloud_cover_pct']}%; "
+              f"precipitation {weather['precipitation_mm']} mm; snowfall {weather['snowfall_cm']} cm. "
+              f"Near-term forecast weather codes: {weather['forecast_codes']}; "
+              f"precipitation probabilities: {weather['forecast_precipitation_probability']}%. "
+              f"Photographic weather direction: {weather['description']}."
           )
+          prompt=master+weather_context
           payload={
             "id":"hero-csum",
             "entity":"ЦУМ Нижний Новгород, ул. Героя Фильченкова, 10",
@@ -138,7 +143,9 @@ jobs:
             "verified_facts":[
               "Existing CSUM building at 10 Geroya Filchenkova Street, Nizhny Novgorod",
               "Camera/source geometry and visible cityscape must remain unchanged",
-              "Weather appearance must remain consistent with the supplied Open-Meteo current conditions and near-term forecast"
+              "Weather appearance must remain consistent with the supplied Open-Meteo current conditions and near-term forecast",
+              "Obstructive engineering clutter crossing the facade must be removed or minimized naturally",
+              "The facade must remain the clear visual protagonist without changing its verified architecture"
             ]
           }
           json.dump(payload,open("/tmp/package.json","w",encoding="utf-8"),ensure_ascii=False)

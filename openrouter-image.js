@@ -30,11 +30,13 @@
   ];
 
   const buildPrompt = (item, notes = "") => {
+    const sourceRule = "SOURCE-FIRST / IMAGE-TO-IMAGE ONLY. Treat the supplied verified reference image as factual visual ground truth. Preserve the real object, place, materials, spatial relationships and recognizable details. Do not replace the subject with a generic invented alternative.";
     const heroRule = item.type === "hero"
-      ? "Preserve the identity, proportions, facade rhythm, openings and entrance geometry of the supplied reference architecture. Do not redesign the building."
-      : "The image must be a self-contained photographic scene, not an image of the CSUM facade unless the story truly requires it.";
+      ? "ORTHO HERO LOCK: show the real CSUM facade in a beautiful front-facing, near-orthographic architectural view. Camera optical axis approximately perpendicular to the principal facade plane; verticals vertical, horizontals level, minimal keystone and perspective distortion. Preserve exact building identity, massing, floors, facade rhythm, openings, columns, entrances, cornices and roofline. FACADE PRIORITY: architecture is the clear protagonist. Remove or naturally minimize lighting poles, overhead wires, utility lines, masts, barriers and other engineering clutter only when they materially cross or obscure the facade; reconstruct only the newly revealed facade area from verified architectural evidence. CITYSCAPE LOCK: do not invent, relocate or redesign recognizable surrounding buildings, street geometry, skyline or landmarks. Never force symmetry by changing architecture."
+      : "Use the verified source as the factual base for this editorial scene. Preserve the actual place/object/person-independent facts visible in the reference. Do not turn it into a generic stock-photo scene. For non-architectural subjects, do not impose artificial frontal symmetry; retain a natural editorial composition appropriate to the story.";
     return [
       "Create a publication-grade editorial photograph for the digital magazine of CSUM Nizhny Novgorod. The result must look commissioned and photographed for a leading architecture/fashion/culture magazine, not AI-generated advertising.",
+      sourceRule,
       "Subject: " + item.title + ".",
       "Editorial brief: " + item.brief,
       heroRule,

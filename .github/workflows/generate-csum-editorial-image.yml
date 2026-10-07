@@ -37,15 +37,15 @@ jobs:
             "entity":"ЦУМ Нижний Новгород, ул. Героя Фильченкова, 10",
             "prompt":"Transform the supplied real photograph into a high-end architectural editorial photograph. Preserve the exact existing CSUM building geometry, facade proportions, window rhythm, columns, entrances, roofline, camera viewpoint and every recognizable element of the visible city environment. CITYSCAPE LOCK: do not invent, remove, relocate or redesign any building, skyline feature, street geometry or landmark. Keep the source photograph as the factual spatial truth. Change only photographic qualities: refined natural directional light, restrained cinematic color, believable urban activity, subtle motion, tactile materials, 35mm editorial photography, no CGI gloss, no HDR, no fantasy architecture, no generated logos, no generated signage or typography.",
             "aspect_ratio":"16:9",
-            "reference_urls":[ref],
+            "reference_data_url":ref,
             "verified_facts":["Existing CSUM building at 10 Geroya Filchenkova Street, Nizhny Novgorod","Camera/source geometry and visible cityscape must remain unchanged"]
           }
           with open("/tmp/package.json","w",encoding="utf-8") as fh:
               json.dump(payload,fh,ensure_ascii=False)
           PY
-          generated="$(curl --max-time 300 -sS -X POST "$IMAGE_URL/api/reference-generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data-binary @/tmp/package.json)"
-          printf '%s' "$generated" | jq -c '{ok,error,id,generated_derivative,reference_grounded,reference_count}' || true
-          printf '%s' "$generated" | jq -e '.ok == true and .generated_derivative == true and (.candidate_key|length) > 0' >/dev/null
+          generated="$(curl --max-time 300 -sS -X POST "$IMAGE_URL/api/generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data-binary @/tmp/package.json)"
+          printf '%s' "$generated" | jq -c '{ok,error,id,persistent_candidate,candidate_key,url}' || true
+          printf '%s' "$generated" | jq -e '.ok == true and .persistent_candidate == true and (.candidate_key|length) > 0' >/dev/null
           printf '%s' "$generated" | jq -c '{id,entity,usage,reference_count,reference_sources,generated_derivative,candidate_key,url}'
           echo "QA_STATUS=PENDING" >> "$GITHUB_STEP_SUMMARY"
           echo "CANDIDATE=$(printf '%s' "$generated" | jq -r '.url')" >> "$GITHUB_STEP_SUMMARY"

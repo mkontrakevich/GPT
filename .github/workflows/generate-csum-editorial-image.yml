@@ -123,10 +123,12 @@ jobs:
           weather=json.load(open("/tmp/weather-state.json",encoding="utf-8"))
           with open("/tmp/csum-source.jpg","rb") as fh:
               ref="data:image/jpeg;base64,"+base64.b64encode(fh.read()).decode("ascii")
-          prompt=f"""Transform the supplied verified real photograph of CSUM Nizhny Novgorod into a high-end architectural editorial photograph while preserving the source as factual spatial truth.
-CITYSCAPE LOCK: preserve the exact existing building geometry, facade proportions, window rhythm, columns, entrances, roofline, camera viewpoint, street geometry, neighboring buildings, skyline and every recognizable city element. Do not invent, remove, relocate or redesign architecture, signs, streets or landmarks.
-WEATHER GROUNDING: the current weather state at the CSUM coordinates is {weather['state']}. Observed local time: {weather['observed_at']}; temperature {weather['temperature_c']} C; cloud cover {weather['cloud_cover_pct']}%; precipitation {weather['precipitation_mm']} mm; snowfall {weather['snowfall_cm']} cm. Near-term forecast weather codes: {weather['forecast_codes']}; precipitation probabilities: {weather['forecast_precipitation_probability']}%.
-Render only physically plausible photographic atmosphere consistent with this weather: {weather['description']}. Change only weather, light, atmosphere, believable people/traffic motion and restrained editorial color. Keep materials tactile and realistic, 35mm architectural editorial photography. No CGI gloss, no HDR, no fantasy architecture, no generated logos, no generated signage or typography."""
+          prompt=(
+              "Transform the supplied verified real photograph of CSUM Nizhny Novgorod into a high-end architectural editorial photograph while preserving the source as factual spatial truth. "
+              "CITYSCAPE LOCK: preserve the exact existing building geometry, facade proportions, window rhythm, columns, entrances, roofline, camera viewpoint, street geometry, neighboring buildings, skyline and every recognizable city element. Do not invent, remove, relocate or redesign architecture, signs, streets or landmarks. "
+              f"WEATHER GROUNDING: the current weather state at the CSUM coordinates is {weather['state']}. Observed local time: {weather['observed_at']}; temperature {weather['temperature_c']} C; cloud cover {weather['cloud_cover_pct']}%; precipitation {weather['precipitation_mm']} mm; snowfall {weather['snowfall_cm']} cm. Near-term forecast weather codes: {weather['forecast_codes']}; precipitation probabilities: {weather['forecast_precipitation_probability']}%. "
+              f"Render only physically plausible photographic atmosphere consistent with this weather: {weather['description']}. Change only weather, light, atmosphere, believable people/traffic motion and restrained editorial color. Keep materials tactile and realistic, 35mm architectural editorial photography. No CGI gloss, no HDR, no fantasy architecture, no generated logos, no generated signage or typography."
+          )
           payload={
             "id":"hero-csum",
             "entity":"ЦУМ Нижний Новгород, ул. Героя Фильченкова, 10",

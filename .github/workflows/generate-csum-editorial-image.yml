@@ -214,7 +214,7 @@ jobs:
           IMAGE_URL: https://csum-nn-image-studio.kontrakevich.workers.dev
         run: |
           python3 - <<'PY'
-          import base64, json, os, re, sys, time, mimetypes, urllib.request, urllib.error
+          import base64, json, os, re, sys, time, mimetypes, urllib.request, urllib.error, urllib.parse
           from pathlib import Path
           from datetime import datetime, timezone
 

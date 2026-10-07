@@ -354,3 +354,91 @@ jobs:
             echo "::error::$fail_count visual slots failed generation or publication"
             exit 1
           fi
+
+
+  repair_failed_visuals:
+    if: github.event_name == 'issues' && github.event.issue.title == 'CSUM_REGENERATE_FAILED_VISUALS_V1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: csum-nn-site
+          fetch-depth: 0
+
+      - name: Regenerate failed guide visuals only
+        env:
+          CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
+          IMAGE_URL: https://csum-nn-image-studio.kontrakevich.workers.dev
+        run: |
+          python3 - <<'PY'
+          import base64,json,os,time,mimetypes,urllib.request,urllib.parse
+          from pathlib import Path
+          from datetime import datetime, timezone
+
+          api=os.environ["IMAGE_URL"].rstrip("/")
+          token=os.environ["CSUM_ADMIN_TOKEN"]
+          catalog=json.load(open("content/visuals.json",encoding="utf-8"))
+          master=open("content/visual-master-prompt.txt",encoding="utf-8").read().strip()
+          target_ids={"guide","article-dva-chasa-do-poezda"}
+          targets=[x for x in catalog.get("items",[]) if x.get("id") in target_ids]
+
+          def request_json(url,payload=None,headers=None,timeout=360):
+              h={"User-Agent":"CSUM-NN-Editorial/2.0 (https://mkontrakevich.github.io/GPT/)"}
+              if headers: h.update(headers)
+              data=None
+              if payload is not None:
+                  data=json.dumps(payload,ensure_ascii=False).encode("utf-8")
+                  h["Content-Type"]="application/json"
+              req=urllib.request.Request(url,data=data,headers=h,method="POST" if payload is not None else "GET")
+              with urllib.request.urlopen(req,timeout=timeout) as r:
+                  return json.loads(r.read().decode("utf-8"))
+
+          def download(url):
+              req=urllib.request.Request(url,headers={"User-Agent":"CSUM-NN-Editorial/2.0 (https://mkontrakevich.github.io/GPT/)","Accept":"image/*,*/*;q=0.8"})
+              with urllib.request.urlopen(req,timeout=120) as r:
+                  b=r.read()
+                  ct=(r.headers.get_content_type() or "image/jpeg").lower()
+              return "data:"+ct+";base64,"+base64.b64encode(b).decode("ascii"),len(b),ct
+
+          results=[]; failures=[]; total=0.0
+          for item in targets:
+              try:
+                  src=(item.get("sourceReferences") or [None])[0]
+                  if not src: raise RuntimeError("NO_SOURCE_REFERENCE")
+                  ref,n,ct=download(src)
+                  prompt=(master+"\n\nSUBJECT: "+item.get("title","")+
+                          "\nEDITORIAL BRIEF: "+item.get("brief","")+
+                          "\nThe verified source is Moskovsky railway station in Nizhny Novgorod. Preserve its real identity and use it as the factual anchor for the travel-before-train story.")
+                  gen=request_json(api+"/api/generate",{
+                    "id":item["id"],"prompt":prompt,"aspect_ratio":item.get("aspectRatio","16:9"),
+                    "output_format":"webp","reference_data_url":ref
+                  },{"X-CSUM-Admin-Token":token})
+                  if not gen.get("ok") or not gen.get("candidate_key"): raise RuntimeError(gen.get("error") or "GENERATION_FAILED")
+                  ck=gen["candidate_key"]
+                  request_json(api+"/api/approve",{"candidate_key":ck,"reasons":["Verified replacement source; user authorized full site visual replacement."]},{"X-CSUM-Admin-Token":token})
+                  applied=request_json(api+"/api/apply",{"id":item["id"],"candidate_key":ck,"prompt":prompt,"model":gen.get("model","")},{"X-CSUM-Admin-Token":token})
+                  cost=(gen.get("usage") or {}).get("cost")
+                  if isinstance(cost,(int,float)): total+=float(cost)
+                  results.append({"id":item["id"],"source_url":src,"source_bytes":n,"source_media_type":ct,"candidate_key":ck,"url":applied.get("url") or gen.get("url"),"cost_usd":cost,"published":True})
+                  print(json.dumps(results[-1],ensure_ascii=False))
+              except Exception as e:
+                  failures.append({"id":item.get("id"),"error":str(e)})
+                  print(json.dumps(failures[-1],ensure_ascii=False))
+              time.sleep(1)
+
+          report={"generated_at":datetime.now(timezone.utc).isoformat(),"requested_count":len(targets),"published_count":len(results),"failure_count":len(failures),"total_cost_usd":round(total,8),"results":results,"failures":failures}
+          Path("content/site-visual-repair-result.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          Path("/tmp/repair-fail-count").write_text(str(len(failures)),encoding="utf-8")
+          PY
+
+          git config user.name "csum-editorial-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add content/site-visual-repair-result.json
+          git commit -m "CSUM: repair remaining source-first site visuals" || true
+          git push origin HEAD:csum-nn-site
+
+          fail_count="$(cat /tmp/repair-fail-count)"
+          if [ "$fail_count" != "0" ]; then
+            echo "::error::$fail_count visual repair slots failed"
+            exit 1
+          fi

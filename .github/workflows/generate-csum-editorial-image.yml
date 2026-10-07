@@ -1,5 +1,7 @@
 name: Generate CSUM Editorial Image
 on:
+  schedule:
+    - cron: "17 * * * *"
   issues:
     types: [opened]
   workflow_dispatch:
@@ -8,61 +10,181 @@ on:
         description: Article index from production editorial feed
         required: false
         default: "0"
+
 permissions:
   contents: write
+
 jobs:
   generate:
-    if: github.event.issue.title == 'CSUM_GENERATE_HERO_V2'
+    if: github.event_name != 'issues' || github.event.issue.title == 'CSUM_GENERATE_HERO_V2'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: csum-nn-site
           fetch-depth: 0
-      - name: Generate candidate for visual QA
+
+      - name: Resolve weather state
+        id: weather
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          mkdir -p content
+          WEATHER_URL="https://api.open-meteo.com/v1/forecast?latitude=56.3202&longitude=43.9463&current=temperature_2m,precipitation,rain,snowfall,cloud_cover,weather_code,is_day&hourly=weather_code,precipitation_probability,cloud_cover&forecast_hours=6&timezone=Europe%2FMoscow"
+          curl --fail --retry 3 -sS "$WEATHER_URL" -o /tmp/weather.json
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          w=json.load(open("/tmp/weather.json",encoding="utf-8"))
+          cur=w.get("current",{})
+          codes=w.get("hourly",{}).get("weather_code",[])[:6]
+          probs=w.get("hourly",{}).get("precipitation_probability",[])[:6]
+          clouds=w.get("hourly",{}).get("cloud_cover",[])[:6]
+
+          def kind(code):
+              code=int(code or 0)
+              if code==0: return "clear"
+              if code in (1,2): return "partly_cloudy"
+              if code==3: return "overcast"
+              if code in (45,48): return "fog"
+              if code in (71,73,75,77,85,86): return "snow"
+              if code in (95,96,99): return "storm"
+              if code in (51,53,55,56,57,61,63,65,66,67,80,81,82): return "rain"
+              return "overcast"
+
+          current_kind=kind(cur.get("weather_code",0))
+          target=current_kind
+          if current_kind not in ("rain","snow","storm","fog"):
+              for code,prob in zip(codes[:4],probs[:4]):
+                  fk=kind(code)
+                  if fk in ("rain","snow","storm") and (prob or 0)>=50:
+                      target="approaching_"+fk
+                      break
+
+          daylight="day" if int(cur.get("is_day",1) or 0)==1 else "night"
+          state=f"{target}_{daylight}"
+          description={
+              "clear":"clear sky and crisp natural light",
+              "partly_cloudy":"broken cloud with alternating soft sun and shade",
+              "overcast":"soft overcast daylight with restrained contrast",
+              "fog":"credible urban fog or low mist, without hiding building identity",
+              "rain":"realistic wet weather, damp pavement and subdued sky",
+              "snow":"realistic seasonal snowfall or fresh snow appropriate to current conditions",
+              "storm":"dark storm clouds and believable wet-weather atmosphere",
+              "approaching_rain":"rain approaching soon: gathering cloud, cooler light, possible dampness, but no invented heavy rain",
+              "approaching_snow":"snow approaching soon: cold dense sky and wintry light, but no invented heavy snowfall",
+              "approaching_storm":"storm approaching soon: building cloud and changing light, without exaggerated disaster imagery"
+          }.get(target,"natural current weather")
+
+          meta={
+              "state":state,
+              "weather_kind":target,
+              "daylight":daylight,
+              "observed_at":cur.get("time"),
+              "temperature_c":cur.get("temperature_2m"),
+              "cloud_cover_pct":cur.get("cloud_cover"),
+              "precipitation_mm":cur.get("precipitation"),
+              "snowfall_cm":cur.get("snowfall"),
+              "weather_code":cur.get("weather_code"),
+              "forecast_codes":codes,
+              "forecast_precipitation_probability":probs,
+              "forecast_cloud_cover":clouds,
+              "description":description,
+              "source":"Open-Meteo",
+              "coordinates":[56.3202,43.9463]
+          }
+          json.dump(meta,open("/tmp/weather-state.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
+
+          previous={}
+          p=Path("content/hero-weather-state.json")
+          if p.exists():
+              try: previous=json.load(open(p,encoding="utf-8"))
+              except Exception: previous={}
+          force=os.environ.get("EVENT_NAME")!="schedule"
+          changed=force or previous.get("state")!=state
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as out:
+              out.write(f"changed={'true' if changed else 'false'}\n")
+              out.write(f"state={state}\n")
+          print(json.dumps({"previous":previous.get("state"),"current":state,"force":force,"changed":changed},ensure_ascii=False))
+          PY
+
+      - name: Generate weather-aware source-locked HERO
+        if: steps.weather.outputs.changed == 'true'
         env:
           CSUM_ADMIN_TOKEN: ${{ secrets.CSUM_ADMIN_TOKEN }}
-          ARTICLE_INDEX: ${{ inputs.article_index }}
-          EDITORIAL_URL: https://csum-nn-source-collector.kontrakevich.workers.dev
           IMAGE_URL: https://csum-nn-image-studio.kontrakevich.workers.dev
         run: |
           SOURCE_URL="https://upload.wikimedia.org/wikipedia/commons/d/d7/%D0%A6%D0%A3%D0%9C_%28%D1%81%D1%82%D0%B0%D1%80%D1%8B%D0%B9_%D0%BA%D0%BE%D1%80%D0%BF%D1%83%D1%81%29.jpg"
           curl -L --fail --retry 3 -A "CSUM-NN-Editorial/1.0 (https://mkontrakevich.github.io/GPT/)" "$SOURCE_URL" -o /tmp/csum-source.jpg
+
           python3 - <<'PY'
           import base64,json
+          weather=json.load(open("/tmp/weather-state.json",encoding="utf-8"))
           with open("/tmp/csum-source.jpg","rb") as fh:
               ref="data:image/jpeg;base64,"+base64.b64encode(fh.read()).decode("ascii")
+          prompt=f"""Transform the supplied verified real photograph of CSUM Nizhny Novgorod into a high-end architectural editorial photograph while preserving the source as factual spatial truth.
+CITYSCAPE LOCK: preserve the exact existing building geometry, facade proportions, window rhythm, columns, entrances, roofline, camera viewpoint, street geometry, neighboring buildings, skyline and every recognizable city element. Do not invent, remove, relocate or redesign architecture, signs, streets or landmarks.
+WEATHER GROUNDING: the current weather state at the CSUM coordinates is {weather['state']}. Observed local time: {weather['observed_at']}; temperature {weather['temperature_c']} C; cloud cover {weather['cloud_cover_pct']}%; precipitation {weather['precipitation_mm']} mm; snowfall {weather['snowfall_cm']} cm. Near-term forecast weather codes: {weather['forecast_codes']}; precipitation probabilities: {weather['forecast_precipitation_probability']}%.
+Render only physically plausible photographic atmosphere consistent with this weather: {weather['description']}. Change only weather, light, atmosphere, believable people/traffic motion and restrained editorial color. Keep materials tactile and realistic, 35mm architectural editorial photography. No CGI gloss, no HDR, no fantasy architecture, no generated logos, no generated signage or typography."""
           payload={
             "id":"hero-csum",
             "entity":"ЦУМ Нижний Новгород, ул. Героя Фильченкова, 10",
-            "prompt":"Transform the supplied real photograph into a high-end architectural editorial photograph. Preserve the exact existing CSUM building geometry, facade proportions, window rhythm, columns, entrances, roofline, camera viewpoint and every recognizable element of the visible city environment. CITYSCAPE LOCK: do not invent, remove, relocate or redesign any building, skyline feature, street geometry or landmark. Keep the source photograph as the factual spatial truth. Change only photographic qualities: refined natural directional light, restrained cinematic color, believable urban activity, subtle motion, tactile materials, 35mm editorial photography, no CGI gloss, no HDR, no fantasy architecture, no generated logos, no generated signage or typography.",
+            "prompt":prompt,
             "aspect_ratio":"16:9",
             "reference_data_url":ref,
-            "verified_facts":["Existing CSUM building at 10 Geroya Filchenkova Street, Nizhny Novgorod","Camera/source geometry and visible cityscape must remain unchanged"]
+            "verified_facts":[
+              "Existing CSUM building at 10 Geroya Filchenkova Street, Nizhny Novgorod",
+              "Camera/source geometry and visible cityscape must remain unchanged",
+              "Weather appearance must remain consistent with the supplied Open-Meteo current conditions and near-term forecast"
+            ]
           }
-          with open("/tmp/package.json","w",encoding="utf-8") as fh:
-              json.dump(payload,fh,ensure_ascii=False)
+          json.dump(payload,open("/tmp/package.json","w",encoding="utf-8"),ensure_ascii=False)
           PY
+
           generated="$(curl --max-time 300 -sS -X POST "$IMAGE_URL/api/generate" -H "Content-Type: application/json" -H "X-CSUM-Admin-Token: $CSUM_ADMIN_TOKEN" --data-binary @/tmp/package.json)"
-          printf '%s' "$generated" | jq -c '{ok,error,id,persistent_candidate,candidate_key,url}' || true
+          printf '%s' "$generated" | jq -c '{ok,error,id,persistent_candidate,candidate_key,url}'
           printf '%s' "$generated" | jq -e '.ok == true and .persistent_candidate == true and (.candidate_key|length) > 0' >/dev/null
-          printf '%s' "$generated" | jq -c '{id,entity,usage,reference_count,reference_sources,generated_derivative,candidate_key,url}'
-          echo "QA_STATUS=PENDING" >> "$GITHUB_STEP_SUMMARY"
-          echo "CANDIDATE=$(printf '%s' "$generated" | jq -r '.url')" >> "$GITHUB_STEP_SUMMARY"
-          echo "COST_USD=$(printf '%s' "$generated" | jq -r '.usage.cost // 0')" >> "$GITHUB_STEP_SUMMARY"
           candidate="$(printf '%s' "$generated" | jq -r '.url')"
           cost="$(printf '%s' "$generated" | jq -r '.usage.cost // "unavailable"')"
-          jq -nc --arg url "$candidate" --arg cost "$cost" --arg at "$(date -u +%FT%TZ)" '{url:$url,cost_usd:$cost,generated_at:$at,method:"image-to-image",cityscape_lock:true}' > csum-hero-result.json
-          python3 - "$candidate" <<'PY'
-          import re,sys
-          p="index.html"; s=open(p,encoding="utf-8").read(); u=sys.argv[1]
+
+          python3 - "$candidate" "$cost" <<'PY'
+          import json,re,sys,datetime
+          candidate,cost=sys.argv[1],sys.argv[2]
+          weather=json.load(open("/tmp/weather-state.json",encoding="utf-8"))
+
+          p="index.html"
+          s=open(p,encoding="utf-8").read()
           m=re.search(r'<img[^>]+data-ai-key="hero-csum"[^>]*>',s)
           if not m: raise SystemExit("hero-csum img not found")
-          tag=re.sub(r'src="[^"]*"', 'src="'+u+'"', m.group(0), count=1)
+          tag=m.group(0)
+          tag=re.sub(r'data-ai-src="[^"]*"', f'data-ai-src="{candidate}"', tag, count=1)
+          tag=re.sub(r'(?<!data-ai-)src="[^"]*"', f'src="{candidate}"', tag, count=1)
           open(p,"w",encoding="utf-8").write(s[:m.start()]+tag+s[m.end():])
+
+          result={
+            "url":candidate,
+            "cost_usd":cost,
+            "generated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "method":"image-to-image",
+            "cityscape_lock":True,
+            "weather_aware":True,
+            "weather_state":weather
+          }
+          json.dump(result,open("csum-hero-result.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
+          json.dump(weather,open("content/hero-weather-state.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
           PY
+
+          echo "WEATHER_STATE=${{ steps.weather.outputs.state }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "CANDIDATE=$candidate" >> "$GITHUB_STEP_SUMMARY"
+          echo "COST_USD=$cost" >> "$GITHUB_STEP_SUMMARY"
+
           git config user.name "csum-editorial-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add index.html csum-hero-result.json
-          git commit -m "CSUM: publish source-locked AI editorial hero"
+          git add index.html csum-hero-result.json content/hero-weather-state.json
+          git commit -m "CSUM: update weather-aware source-locked HERO"
           git push origin HEAD:csum-nn-site
+
+      - name: Weather unchanged
+        if: steps.weather.outputs.changed != 'true'
+        run: echo "Weather state unchanged; no paid image generation required."

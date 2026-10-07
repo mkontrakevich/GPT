@@ -1,0 +1,34 @@
+CSUM NIZHNY NOVGOROD — GLOBAL VISUAL MASTER PROMPT
+
+SOURCE-FIRST / IMAGE-TO-IMAGE ONLY.
+Every published site image must be generated from a verified real reference image. The source image is factual ground truth for the place, object, architecture, material relationships and recognizable details. Never substitute a generic invented scene when a real source exists.
+
+EDITORIAL QUALITY.
+Create a publication-grade photograph for a high-end international architecture, fashion and culture magazine: observational, credible, tactile and naturally art-directed. Realistic available or motivated light, restrained filmic grading, natural skin/material texture, subtle imperfections, physically plausible depth of field, 35mm/50mm full-frame photographic character.
+
+NO AI ADVERTISING LOOK.
+No CGI gloss, plastic surfaces, artificial HDR, hyper-sharpening, excessive bokeh, marketplace product-card staging, generic influencer imagery, poster layouts, generated captions, watermarks or malformed typography.
+
+FACT LOCK.
+Preserve factual attributes visible in the verified source. Do not invent architecture, landmarks, products, logos, storefront identities or city geometry. If a detail cannot be verified, simplify or crop rather than hallucinate.
+
+BRAND LOCK.
+Do not redraw logos or branded typography. Verified brand marks belong to original assets or separate composited/HTML layers.
+
+ARCHITECTURE MODE.
+When architecture is the main subject, preserve building massing, floor count, openings, facade rhythm, columns, entrances, cornices, roofline and recognizable context. CITYSCAPE LOCK applies to identifiable surroundings.
+
+HERO ORTHO MODE.
+For hero-csum only: beautiful front-facing, near-orthographic architectural composition; camera optical axis approximately perpendicular to the principal facade plane; strict verticals, level horizontals, minimal keystone distortion, minimal dramatic perspective. Do not alter architecture to force symmetry.
+
+FACADE PRIORITY.
+For hero-csum, the facade is the clear protagonist. Remove or naturally minimize lighting poles, overhead electrical/trolley wires, utility cables, technical masts, barriers and other engineering clutter only when they materially cross or obscure the facade. Reconstruct only newly revealed facade portions from verified architectural evidence. Keep the street and city believable.
+
+WEATHER.
+For hero-csum, use supplied current/forecast weather data to control light, sky, atmosphere, wetness, snow and activity. Never exaggerate ordinary conditions.
+
+NON-HERO COMPOSITION.
+For articles, culture, guide, gifts, family, office and locals: preserve the verified source truth but compose naturally for the story. Do not impose frontal architectural symmetry on lifestyle, object or people-oriented scenes.
+
+FINAL QA.
+Reject any image that changes factual architecture, invents recognizable city elements, creates malformed signage/logos, loses source identity, looks like CGI/fantasy, or allows avoidable engineering clutter to dominate the HERO facade.

@@ -1,0 +1,203 @@
+{
+  "generated_at": "2026-10-07T10:19:32.141440+00:00",
+  "requested_count": 16,
+  "published_count": 14,
+  "failure_count": 2,
+  "total_cost_usd": 0.56,
+  "results": [
+    {
+      "id": "hero-csum",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/d/d7/%D0%A6%D0%A3%D0%9C_%28%D1%81%D1%82%D0%B0%D1%80%D1%8B%D0%B9_%D0%BA%D0%BE%D1%80%D0%BF%D1%83%D1%81%29.jpg",
+      "source_bytes": 12661090,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/hero-csum/1791367757600-6b3adb2a-dab6-46c9-8c4d-98ece1238ce6.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Fhero-csum%2F1791367757600-6b3adb2a-dab6-46c9-8c4d-98ece1238ce6.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "culture",
+      "source_url": "https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG",
+      "source_bytes": 199702,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/culture/1791367789228-bb1fead5-d77f-4738-b50f-7a075858c0f6.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Fculture%2F1791367789228-bb1fead5-d77f-4738-b50f-7a075858c0f6.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "gifts",
+      "source_url": "https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg",
+      "source_bytes": 190296,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/gifts/1791367919665-7eb86df6-046b-4749-9b4b-5b9b6bb19010.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Fgifts%2F1791367919665-7eb86df6-046b-4749-9b4b-5b9b6bb19010.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "family",
+      "source_url": "https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg",
+      "source_bytes": 161070,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/family/1791367950579-75d8eac9-462a-44d7-aa9d-87d251d15adb.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Ffamily%2F1791367950579-75d8eac9-462a-44d7-aa9d-87d251d15adb.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "office",
+      "source_url": "https://i.archi.ru/i/238294.jpg",
+      "source_bytes": 232574,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/office/1791367985969-a3b5dff8-aded-4ff9-9249-bae057fc7ea9.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Foffice%2F1791367985969-a3b5dff8-aded-4ff9-9249-bae057fc7ea9.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "locals",
+      "source_url": "https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg",
+      "source_bytes": 203956,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/locals/1791368023294-226bdd35-a367-45a0-82f8-c6bfe62546e5.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Flocals%2F1791368023294-226bdd35-a367-45a0-82f8-c6bfe62546e5.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "article-vecher-v-gorode",
+      "source_url": "https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG",
+      "source_bytes": 199702,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/article-vecher-v-gorode/1791368054743-4d693f38-d90d-4be2-8a1f-40325031dae9.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Farticle-vecher-v-gorode%2F1791368054743-4d693f38-d90d-4be2-8a1f-40325031dae9.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "article-suvenir-kak-pamyat",
+      "source_url": "https://cdn.tripster.ru/photos/39e832dc-2794-4c01-9c86-529c373326b1.jpg",
+      "source_bytes": 190296,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/article-suvenir-kak-pamyat/1791368176031-55c85f33-1e8f-465b-8626-019739389f2a.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Farticle-suvenir-kak-pamyat%2F1791368176031-55c85f33-1e8f-465b-8626-019739389f2a.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "article-semeinyi-marshrut",
+      "source_url": "https://idemvmuzei.ru/storage/blog/c9/b6/fc/9f/81/64/d6/a1/uxiyptimywg.jpg.thumb1180.jpg",
+      "source_bytes": 161070,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/article-semeinyi-marshrut/1791368206451-efb7fce0-dad1-462d-b443-ab14b7e13029.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Farticle-semeinyi-marshrut%2F1791368206451-efb7fce0-dad1-462d-b443-ab14b7e13029.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "article-pereryv-kotoryi-vozvrashchaet-vnimanie",
+      "source_url": "https://i.archi.ru/i/238294.jpg",
+      "source_bytes": 232574,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/article-pereryv-kotoryi-vozvrashchaet-vnimanie/1791368238742-3e76e702-5950-4871-8dd9-e07770ff51d7.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Farticle-pereryv-kotoryi-vozvrashchaet-vnimanie%2F1791368238742-3e76e702-5950-4871-8dd9-e07770ff51d7.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "article-univermag-v-povsednevnom-marshrute",
+      "source_url": "https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg",
+      "source_bytes": 203956,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/article-univermag-v-povsednevnom-marshrute/1791368269538-7577bbf1-ab28-4184-a595-da1b923d1137.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Farticle-univermag-v-povsednevnom-marshrute%2F1791368269538-7577bbf1-ab28-4184-a595-da1b923d1137.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "article-svet-tkan-i-cvet",
+      "source_url": "https://www.malls.ru/upload/resize_cache/iblock/2ee/6yf36bifjf8xxwdghw3mf4u675ubyydw/1200_631_1/photo_2024_10_31_10_15_30.jpg",
+      "source_bytes": 203956,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/article-svet-tkan-i-cvet/1791368301953-85b2a8be-cdb3-4118-bd15-9cfcebf7c32f.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Farticle-svet-tkan-i-cvet%2F1791368301953-85b2a8be-cdb3-4118-bd15-9cfcebf7c32f.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "article-vechernii-obraz-v-dvizhenii",
+      "source_url": "https://xn--80aeeqaabljrdbg6a3ahhcl4ay9hsa.xn--p1ai/upload/sprint.editor/6e6/tu5azxadbydkeh1dcph3ovqtkeaytv2o/IMG_0371.JPG",
+      "source_bytes": 199702,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/article-vechernii-obraz-v-dvizhenii/1791368331128-f1757797-eee1-42aa-94da-f2535056b2f0.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Farticle-vechernii-obraz-v-dvizhenii%2F1791368331128-f1757797-eee1-42aa-94da-f2535056b2f0.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    },
+    {
+      "id": "article-dorozhnaya-avtonomnost",
+      "source_url": "https://i.archi.ru/i/238294.jpg",
+      "source_bytes": 232574,
+      "source_media_type": "image/jpeg",
+      "candidate_key": "candidates/article-dorozhnaya-avtonomnost/1791368368871-6cf1d087-ed1c-41eb-a407-31a4e45ade76.jpg",
+      "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Farticle-dorozhnaya-avtonomnost%2F1791368368871-6cf1d087-ed1c-41eb-a407-31a4e45ade76.jpg",
+      "model": "bytedance-seed/seedream-4.5",
+      "cost_usd": 0.04,
+      "source_locked": true,
+      "generation_method": "image-to-image",
+      "published": true
+    }
+  ],
+  "failures": [
+    {
+      "id": "guide",
+      "source_url": "https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg",
+      "error": "<urlopen error timed out>"
+    },
+    {
+      "id": "article-dva-chasa-do-poezda",
+      "source_url": "https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg",
+      "error": "<urlopen error timed out>"
+    }
+  ]
+}

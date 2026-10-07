@@ -1,0 +1,61 @@
+# CSUM Nizhny Novgorod — HERO MASTER PROMPT
+
+Use the supplied VERIFIED REAL SOURCE PHOTOGRAPH of the existing CSUM Nizhny Novgorod building at 10 Geroya Filchenkova Street as the factual visual source.
+
+SOURCE-FIRST / IMAGE-TO-IMAGE ONLY.
+Never invent the building from text. The supplied source image defines the real architecture, camera relationship and recognizable place.
+
+ARCHITECTURE LOCK.
+Preserve the exact identity and recognizable architecture of the existing CSUM:
+- building massing and proportions;
+- number of floors;
+- facade geometry;
+- rhythm, size and position of windows;
+- columns, entrances, cornices, roofline and characteristic architectural details;
+- overall relationship of the building to the street.
+
+CITYSCAPE LOCK.
+Preserve geographically credible surrounding city context. Never invent, relocate or redesign recognizable buildings, streets, skyline elements or landmarks. If the source does not reliably establish a distant city feature, prefer a tighter or lower composition rather than hallucinating it.
+
+FACADE PRIORITY.
+The facade is the visual protagonist. Compose and grade the photograph so the architecture reads immediately, clearly and beautifully. Secondary urban elements must not compete with or visually cut the facade.
+
+REMOVE OBSTRUCTIVE ENGINEERING CLUTTER.
+When engineering or utility objects obstruct the facade, remove or visually minimize them while keeping the scene physically believable. This specifically includes:
+- lighting poles and lamp posts crossing important facade areas;
+- overhead electrical or trolley wires;
+- utility lines and cables;
+- technical masts, temporary barriers, signs or miscellaneous street hardware that visually slices or masks the architecture.
+Do not remove infrastructure merely because it exists; remove or reposition only elements that materially obstruct the main facade. Reconstruct the newly visible facade area consistently from the verified source architecture.
+
+NATURAL EDITORIAL BEAUTY.
+The result must feel like an exceptional real architectural editorial photograph, not an architectural visualization:
+- natural believable light;
+- physically plausible weather;
+- restrained cinematic colour;
+- tactile real materials;
+- believable pedestrians and traffic where appropriate;
+- subtle motion;
+- 35mm/50mm full-frame editorial photography character;
+- natural contrast and depth.
+Avoid CGI gloss, HDR, excessive sharpening, plastic surfaces, luxury-ad artificiality, perfect synthetic symmetry and generic AI polish.
+
+WEATHER GROUNDING.
+When current weather and near-term forecast data are supplied, reflect them only through plausible light, sky, atmosphere, wetness, snow, haze and human activity. Never change architecture to express weather. Never exaggerate ordinary weather into dramatic or catastrophic conditions.
+
+BRAND / TYPOGRAPHY LOCK.
+Do not generate, redraw or reinterpret logos, brand typography or signage. Brand marks and text belong to separate verified HTML/composited layers unless already factual and legible in the source.
+
+FINAL QA REQUIREMENTS.
+Reject the result if any of the following occurs:
+- facade geometry changes;
+- window/column rhythm changes;
+- entrances or floors are invented;
+- city skyline or neighboring buildings are fabricated;
+- generated signage or malformed text appears;
+- engineering clutter still materially blocks the facade when it can be removed naturally;
+- the image looks like CGI, a fantasy building or a generic department store;
+- weather is inconsistent with supplied conditions.
+
+TARGET RESULT.
+A clean, natural, geographically credible, high-editorial photograph in which the REAL CSUM facade is immediately recognizable, unobstructed and visually strong, while the city remains believable and the photographic atmosphere can change with the actual weather.

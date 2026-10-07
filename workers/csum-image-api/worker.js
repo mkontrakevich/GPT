@@ -108,6 +108,7 @@ export default {
         if(!body.id || !body.prompt) return json({error:"id and prompt are required"},400,cors(env));
 
         const refs=referenceList(body); const ref=body.reference_data_url || refs[0];
+        if(!ref) return json({error:"SOURCE_REFERENCE_REQUIRED",message:"Every site image must be generated from a verified source reference."},422,cors(env));
         const payload={
           model:body.model || "bytedance-seed/seedream-4.5",
           prompt:body.prompt,
@@ -141,7 +142,7 @@ export default {
         }
         return json({
           ok:true,id:body.id,url:imageUrl,candidate_key:persisted?candidateKey:null,
-          persistent_candidate:persisted,prompt:body.prompt,model:payload.model,media_type:media,reference_urls:refs,reference_grounded:refs.length>0,usage:result.usage||null
+          persistent_candidate:persisted,prompt:body.prompt,model:payload.model,media_type:media,reference_urls:refs,reference_grounded:true,reference_count:body.reference_data_url?1:refs.length,source_locked:true,generation_method:"image-to-image",usage:result.usage||null
         },200,cors(env));
       }
 

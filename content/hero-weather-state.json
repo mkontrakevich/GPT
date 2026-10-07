@@ -1,20 +1,20 @@
 {
-  "state": "partly_cloudy_day",
+  "state": "partly_cloudy_night",
   "weather_kind": "partly_cloudy",
-  "daylight": "day",
-  "observed_at": "2026-10-07T12:00",
-  "temperature_c": 13.7,
-  "cloud_cover_pct": 52,
+  "daylight": "night",
+  "observed_at": "2026-10-07T19:30",
+  "temperature_c": 9.7,
+  "cloud_cover_pct": 32,
   "precipitation_mm": 0.0,
   "snowfall_cm": 0.0,
-  "weather_code": 2,
+  "weather_code": 1,
   "forecast_codes": [
-    2,
-    2,
-    3,
-    2,
-    2,
-    2
+    1,
+    1,
+    0,
+    0,
+    0,
+    1
   ],
   "forecast_precipitation_probability": [
     0,
@@ -25,12 +25,12 @@
     0
   ],
   "forecast_cloud_cover": [
-    52,
-    61,
-    97,
-    50,
-    71,
-    49
+    39,
+    25,
+    0,
+    0,
+    0,
+    12
   ],
   "description": "broken cloud with alternating soft sun and shade",
   "source": "Open-Meteo",

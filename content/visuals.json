@@ -41,12 +41,23 @@
       "aspectRatio": "16:9",
       "brief": "Короткий городской маршрут по Нижнему Новгороду перед поездом, ощущение реального времени и дороги.",
       "sourceReferences": [
-        "https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/7/77/Nizhny_Novgorod_railway_station_asv2019-05.jpg"
       ],
       "status": "generation_required",
       "publicationPolicy": "source_locked_generated_only",
       "generationMethod": "image-to-image",
-      "sourceLocked": true
+      "sourceLocked": true,
+      "sourceProvenance": {
+        "provider": "Wikimedia Commons",
+        "title": "Nizhny Novgorod railway station asv2019-05.jpg",
+        "subject": "Moskovsky railway station, Nizhny Novgorod",
+        "author": "A.Savin",
+        "cameraCoordinates": [
+          56.321167,
+          43.946
+        ],
+        "verified": true
+      }
     },
     {
       "id": "gifts",
@@ -125,12 +136,23 @@
       "aspectRatio": "16:9",
       "brief": "Короткий маршрут перед поездом, один сильный городской вид и спокойный возврат.",
       "sourceReferences": [
-        "https://zefirka.club/uploads/posts/2022-11/1667354039_37-zefirka-club-p-fon-dlya-prezentatsii-nizhnii-novgorod-42.jpg"
+        "https://upload.wikimedia.org/wikipedia/commons/7/77/Nizhny_Novgorod_railway_station_asv2019-05.jpg"
       ],
       "status": "generation_required",
       "publicationPolicy": "source_locked_generated_only",
       "generationMethod": "image-to-image",
-      "sourceLocked": true
+      "sourceLocked": true,
+      "sourceProvenance": {
+        "provider": "Wikimedia Commons",
+        "title": "Nizhny Novgorod railway station asv2019-05.jpg",
+        "subject": "Moskovsky railway station, Nizhny Novgorod",
+        "author": "A.Savin",
+        "cameraCoordinates": [
+          56.321167,
+          43.946
+        ],
+        "verified": true
+      }
     },
     {
       "id": "article-suvenir-kak-pamyat",

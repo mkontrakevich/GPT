@@ -1,27 +1,27 @@
 {
-  "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Fhero-csum%2F1791390674815-08b7746c-da00-477c-96ef-ea50ff150be4.jpg",
+  "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Fhero-csum%2F1791450036193-c86d5cf4-1bbc-4139-adcc-595880835885.jpg",
   "cost_usd": "0.04",
-  "generated_at": "2026-10-07T16:31:16.100254+00:00",
+  "generated_at": "2026-10-08T09:00:37.324058+00:00",
   "method": "image-to-image",
   "cityscape_lock": true,
   "weather_aware": true,
   "weather_state": {
-    "state": "partly_cloudy_night",
-    "weather_kind": "partly_cloudy",
-    "daylight": "night",
-    "observed_at": "2026-10-07T19:30",
-    "temperature_c": 9.7,
-    "cloud_cover_pct": 32,
+    "state": "overcast_day",
+    "weather_kind": "overcast",
+    "daylight": "day",
+    "observed_at": "2026-10-08T11:45",
+    "temperature_c": 11.8,
+    "cloud_cover_pct": 99,
     "precipitation_mm": 0.0,
     "snowfall_cm": 0.0,
-    "weather_code": 1,
+    "weather_code": 3,
     "forecast_codes": [
-      1,
-      1,
-      0,
-      0,
-      0,
-      1
+      3,
+      3,
+      3,
+      3,
+      2,
+      3
     ],
     "forecast_precipitation_probability": [
       0,
@@ -32,14 +32,14 @@
       0
     ],
     "forecast_cloud_cover": [
-      39,
-      25,
-      0,
-      0,
-      0,
-      12
+      96,
+      100,
+      100,
+      92,
+      59,
+      93
     ],
-    "description": "broken cloud with alternating soft sun and shade",
+    "description": "soft overcast daylight with restrained contrast",
     "source": "Open-Meteo",
     "coordinates": [
       56.3202,

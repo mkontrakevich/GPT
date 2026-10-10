@@ -1,38 +1,38 @@
 {
-  "state": "overcast_day",
-  "weather_kind": "overcast",
+  "state": "partly_cloudy_day",
+  "weather_kind": "partly_cloudy",
   "daylight": "day",
-  "observed_at": "2026-10-10T10:00",
+  "observed_at": "2026-10-10T16:30",
   "temperature_c": 12.4,
-  "cloud_cover_pct": 83,
+  "cloud_cover_pct": 66,
   "precipitation_mm": 0.0,
   "snowfall_cm": 0.0,
-  "weather_code": 3,
+  "weather_code": 2,
   "forecast_codes": [
-    3,
+    2,
     2,
     3,
-    3,
-    3,
-    2
+    2,
+    1,
+    1
   ],
   "forecast_precipitation_probability": [
-    26,
-    26,
-    26,
-    26,
-    26,
-    25
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
   ],
   "forecast_cloud_cover": [
-    83,
-    55,
-    97,
-    82,
+    68,
+    63,
     100,
-    73
+    69,
+    29,
+    42
   ],
-  "description": "soft overcast daylight with restrained contrast",
+  "description": "broken cloud with alternating soft sun and shade",
   "source": "Open-Meteo",
   "coordinates": [
     56.3202,

@@ -1,28 +1,28 @@
 {
-  "state": "overcast_night",
-  "weather_kind": "overcast",
+  "state": "rain_night",
+  "weather_kind": "rain",
   "daylight": "night",
-  "observed_at": "2026-10-09T19:00",
-  "temperature_c": 15.0,
+  "observed_at": "2026-10-10T03:45",
+  "temperature_c": 14.0,
   "cloud_cover_pct": 100,
-  "precipitation_mm": 0.0,
+  "precipitation_mm": 0.2,
   "snowfall_cm": 0.0,
-  "weather_code": 3,
+  "weather_code": 61,
   "forecast_codes": [
+    61,
+    61,
+    61,
     3,
-    3,
-    3,
-    3,
-    3,
+    61,
     3
   ],
   "forecast_precipitation_probability": [
-    0,
-    0,
-    0,
-    2,
-    5,
-    9
+    80,
+    98,
+    78,
+    80,
+    58,
+    45
   ],
   "forecast_cloud_cover": [
     100,
@@ -30,9 +30,9 @@
     100,
     100,
     100,
-    100
+    97
   ],
-  "description": "soft overcast daylight with restrained contrast",
+  "description": "realistic wet weather, damp pavement and subdued sky",
   "source": "Open-Meteo",
   "coordinates": [
     56.3202,

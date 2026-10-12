@@ -1,12 +1,12 @@
 {
   "name": "Personal Sign",
   "short_name": "Personal Sign",
-  "description": "Локальная подпись PDF, DOCX и DOC на устройстве",
+  "description": "Подписание PDF и документов Word прямо на устройстве",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f2f6fb",
-  "theme_color": "#f2f6fb",
+  "background_color": "#f3f7fc",
+  "theme_color": "#f3f7fc",
   "icons": [
     {
       "src": "./icon.svg",

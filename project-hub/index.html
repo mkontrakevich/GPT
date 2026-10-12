@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f7fb">
+<title>Projects — Kontrakevich</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#102033;--muted:#687b90;--line:#dde6f0;--blue:#0b63ce;--soft:#eaf3ff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+body{background:radial-gradient(circle at 90% -10%,rgba(64,137,255,.14),transparent 32rem),linear-gradient(180deg,#fbfdff,#f3f7fb 62%,#edf3f8)}
+.wrap{width:min(100%,920px);margin:auto;padding:max(18px,env(safe-area-inset-top)) 16px 36px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:58px}
+.brand{font-size:15px;font-weight:800;letter-spacing:-.02em}.domain{font-size:12px;color:var(--muted)}
+.hero{max-width:690px;margin-bottom:28px}.eyebrow{display:inline-flex;padding:7px 10px;border-radius:999px;background:var(--soft);color:var(--blue);font-size:12px;font-weight:750}
+h1{font-size:clamp(38px,9vw,64px);line-height:.98;letter-spacing:-.055em;margin:17px 0 13px}p{margin:0;color:var(--muted);font-size:16px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:28px}
+.card{display:grid;gap:16px;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:24px;padding:19px;box-shadow:0 10px 30px rgba(30,68,111,.06);transition:transform .14s ease,box-shadow .14s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 15px 36px rgba(30,68,111,.10)}.icon{width:52px;height:52px;border-radius:15px;overflow:hidden;background:linear-gradient(145deg,#31b9f3,#0b63ce);display:grid;place-items:center;color:#fff;font-weight:800}.icon img{width:100%;height:100%;display:block}
+.card h2{font-size:21px;margin:0;letter-spacing:-.025em}.card p{font-size:14px}.go{color:var(--blue);font-size:13px;font-weight:750}
+footer{margin-top:50px;color:#8a99aa;font-size:12px}
+@media(max-width:520px){header{margin-bottom:38px}.wrap{padding-left:13px;padding-right:13px}h1{font-size:42px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header><div class="brand">KONTRAKEVICH · PROJECTS</div><div class="domain">projects.kontrakevich.com</div></header>
+<section class="hero"><div class="eyebrow">Public projects</div><h1>Рабочие цифровые продукты</h1><p>Небольшие самостоятельные приложения и инструменты. Открываются прямо в браузере.</p></section>
+<section class="grid">
+<a class="card" href="./personal-sign/">
+  <div class="icon"><img src="./personal-sign/icon.svg" alt=""></div>
+  <div><h2>Personal Sign</h2><p>Подпишите PDF или Word-документ прямо на устройстве без загрузки файла на сервер.</p></div>
+  <div class="go">Открыть →</div>
+</a>
+</section>
+<footer>© Kontrakevich · Projects</footer>
+</main>
+</body>
+</html>

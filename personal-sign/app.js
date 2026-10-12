@@ -392,6 +392,21 @@ async function finalize(){
   }
 }
 
+document.querySelectorAll(".help-link").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    $("helpImage").src=btn.dataset.help;
+    $("helpImage").alt=btn.dataset.title||"Инструкция";
+    $("helpModal").hidden=false;
+  });
+});
+function closeHelp(){
+  $("helpModal").hidden=true;
+  $("helpImage").removeAttribute("src");
+}
+$("helpClose").onclick=closeHelp;
+$("helpModal").addEventListener("click",e=>{if(e.target===$("helpModal"))closeHelp()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpModal").hidden)closeHelp()});
+
 $("start").onclick=()=>$("picker").click();
 $("picker").onchange=e=>{choose(e.target.files[0]);e.target.value=""};
 

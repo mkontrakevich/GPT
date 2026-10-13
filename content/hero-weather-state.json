@@ -1,38 +1,38 @@
 {
-  "state": "clear_night",
-  "weather_kind": "clear",
+  "state": "partly_cloudy_night",
+  "weather_kind": "partly_cloudy",
   "daylight": "night",
-  "observed_at": "2026-10-12T20:45",
-  "temperature_c": 15.2,
-  "cloud_cover_pct": 8,
+  "observed_at": "2026-10-13T03:30",
+  "temperature_c": 13.1,
+  "cloud_cover_pct": 66,
   "precipitation_mm": 0.0,
   "snowfall_cm": 0.0,
-  "weather_code": 0,
+  "weather_code": 2,
   "forecast_codes": [
-    1,
-    0,
-    0,
-    0,
-    0,
-    0
+    2,
+    2,
+    3,
+    3,
+    3,
+    3
   ],
   "forecast_precipitation_probability": [
-    15,
-    13,
-    11,
-    10,
-    9,
-    9
-  ],
-  "forecast_cloud_cover": [
-    16,
-    5,
+    0,
+    0,
     0,
     0,
     0,
     0
   ],
-  "description": "clear sky and crisp natural light",
+  "forecast_cloud_cover": [
+    62,
+    69,
+    87,
+    100,
+    90,
+    82
+  ],
+  "description": "broken cloud with alternating soft sun and shade",
   "source": "Open-Meteo",
   "coordinates": [
     56.3202,

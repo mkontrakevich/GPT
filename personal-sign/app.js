@@ -7,8 +7,9 @@ const $=id=>document.getElementById(id);
 const screens=[...document.querySelectorAll(".screen")];
 const S={
   file:null,format:null,bytes:null,pdf:null,page:1,count:1,place:null,tap:null,final:null,base:null,
-  signature:null,wordType:null,wordScale:1
+  signature:null,wordType:null,wordScale:1,pageDims:{}
 };
+let savedTextRange=null;
 
 let strokes=[],curStroke=null,penDown=false,move=null;
 
@@ -24,7 +25,8 @@ function cloneStrokes(src){return src.map(st=>st.map(p=>({...p})))}
 
 async function wipeSession(){
   try{if(S.pdf)await S.pdf.destroy()}catch(_){}
-  Object.assign(S,{file:null,format:null,bytes:null,pdf:null,page:1,count:1,place:null,tap:null,final:null,base:null,signature:null,wordType:null,wordScale:1});
+  Object.assign(S,{file:null,format:null,bytes:null,pdf:null,page:1,count:1,place:null,tap:null,final:null,base:null,signature:null,wordType:null,wordScale:1,pageDims:{}});
+  savedTextRange=null;
   strokes=[];curStroke=null;penDown=false;move=null;
   $("sig").hidden=true;$("sigimg").removeAttribute("src");
   $("pdfc").width=1;$("pdfc").height=1;
@@ -73,6 +75,46 @@ function fitWordEditor(){
   wrap.style.zoom=String(scale);
   S.wordScale=scale;
 }
+
+function rememberTextSelection(){
+  const sel=window.getSelection();
+  if(!sel||!sel.rangeCount)return false;
+  const range=sel.getRangeAt(0),host=$("docEditor");
+  if(!host.contains(range.commonAncestorContainer))return false;
+  savedTextRange=range.cloneRange();
+  return true;
+}
+function restoreTextSelection(){
+  if(!savedTextRange)return false;
+  const sel=window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(savedTextRange);
+  return true;
+}
+function updateFormatButtons(){
+  document.querySelectorAll(".format-btn").forEach(btn=>{
+    let active=false;
+    try{active=document.queryCommandState(btn.dataset.cmd)}catch(_){}
+    btn.classList.toggle("active",!!active);
+  });
+}
+document.addEventListener("selectionchange",()=>{
+  if(!$("editDoc").classList.contains("on"))return;
+  if(rememberTextSelection())updateFormatButtons();
+});
+document.querySelectorAll(".format-btn").forEach(btn=>{
+  const apply=e=>{
+    e.preventDefault();
+    if(!restoreTextSelection())return;
+    try{document.execCommand("styleWithCSS",false,true)}catch(_){}
+    try{document.execCommand(btn.dataset.cmd,false,null)}catch(_){}
+    rememberTextSelection();
+    updateFormatButtons();
+  };
+  btn.addEventListener("pointerdown",apply);
+  btn.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){apply(e)}});
+  btn.addEventListener("click",e=>e.preventDefault());
+});
 
 async function openEditableDocx(file){
   if(!window.docx)throw Error("Не удалось открыть документ Word.");
@@ -139,7 +181,7 @@ async function wordEditorToPdf(){
 async function openPdf(bytes,file,format){
   const pdf=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
   try{if(S.pdf)await S.pdf.destroy()}catch(_){}
-  Object.assign(S,{file,format,bytes,pdf,page:1,count:pdf.numPages,place:null,tap:null,final:null,base:null,signature:null,wordType:null,wordScale:1});
+  Object.assign(S,{file,format,bytes,pdf,page:1,count:pdf.numPages,place:null,tap:null,final:null,base:null,signature:null,wordType:null,wordScale:1,pageDims:{}});
   $("fname").textContent=file.name;$("sigWidth").value="2.6";$("sigBallpoint").checked=true;
   screen("sign");updateStep();await render();
 }
@@ -166,6 +208,7 @@ function updateStep(){
 async function render(){
   if(!S.pdf)return;
   const page=await S.pdf.getPage(S.page),baseViewport=page.getViewport({scale:1});
+  S.pageDims[S.page]={w:baseViewport.width,h:baseViewport.height};
   const viewer=document.querySelector(".viewer"),width=Math.max(260,Math.min(760,viewer.clientWidth-14));
   const viewport=page.getViewport({scale:width/baseViewport.width}),dpr=Math.min(devicePixelRatio||1,2),canvas=$("pdfc");
   canvas.width=Math.round(viewport.width*dpr);canvas.height=Math.round(viewport.height*dpr);
@@ -176,18 +219,24 @@ async function render(){
   drawSignature();updateStep();
 }
 
-function signatureHeightFrac(rect){
-  if(!S.place||!S.signature||!S.signature.aspect)return 0;
-  return (S.place.w*rect.width/S.signature.aspect)/rect.height;
+function syncPlaceAspect(){
+  if(!S.place||!S.signature||!S.signature.aspect)return;
+  const d=S.pageDims[S.place.page];
+  if(!d)return;
+  S.place.h=(S.place.w*d.w/S.signature.aspect)/d.h;
+  S.place.x=clamp(0,Math.max(0,1-S.place.w),S.place.x);
+  S.place.y=clamp(0,Math.max(0,1-S.place.h),S.place.y);
 }
 
 function drawSignature(){
   const el=$("sig");
   if(!S.place||!S.signature||S.place.page!==S.page){el.hidden=true;return}
-  const r=$("stage").getBoundingClientRect(),h=signatureHeightFrac(r);
-  S.place.x=clamp(0,Math.max(0,1-S.place.w),S.place.x);
-  S.place.y=clamp(0,Math.max(0,1-h),S.place.y);
-  el.hidden=false;el.style.left=(S.place.x*100)+"%";el.style.top=(S.place.y*100)+"%";el.style.width=(S.place.w*100)+"%";el.style.height=(h*100)+"%";
+  if(!Number.isFinite(S.place.h))syncPlaceAspect();
+  el.hidden=false;
+  el.style.left=(S.place.x*100)+"%";
+  el.style.top=(S.place.y*100)+"%";
+  el.style.width=(S.place.w*100)+"%";
+  el.style.height=(S.place.h*100)+"%";
   $("sigimg").src=S.signature.url;
 }
 
@@ -281,8 +330,8 @@ $("okPad").onclick=()=>{
   const asset=renderSignatureAsset(model);model.url=asset.url;model.aspect=asset.aspect;S.signature=model;
   $("sigWidth").value=String(model.width);$("sigBallpoint").checked=model.ballpoint;
   if(!S.place){
-    const stage=$("stage").getBoundingClientRect(),w=.32,h=(w*stage.width/model.aspect)/stage.height,t=S.tap||{x:.65,y:.72};
-    S.place={page:S.page,x:clamp(0,1-w,t.x-w/2),y:clamp(0,Math.max(0,1-h),t.y-h/2),w};
+    const d=S.pageDims[S.page],w=.32,h=d?(w*d.w/model.aspect)/d.h:.10,t=S.tap||{x:.65,y:.72};
+    S.place={page:S.page,x:clamp(0,1-w,t.x-w/2),y:clamp(0,Math.max(0,1-h),t.y-h/2),w,h};
   }
   closePad();S.tap=null;drawSignature();updateStep();
 };
@@ -290,7 +339,7 @@ $("okPad").onclick=()=>{
 function refreshSignatureStyle(){
   if(!S.signature)return;
   S.signature.width=Number($("sigWidth").value)||2.6;S.signature.ballpoint=$("sigBallpoint").checked;
-  const asset=renderSignatureAsset(S.signature);S.signature.url=asset.url;S.signature.aspect=asset.aspect;drawSignature();
+  const asset=renderSignatureAsset(S.signature);S.signature.url=asset.url;S.signature.aspect=asset.aspect;syncPlaceAspect();drawSignature();
 }
 $("sigWidth").oninput=refreshSignatureStyle;
 $("sigBallpoint").onchange=refreshSignatureStyle;
@@ -320,16 +369,16 @@ $("handle").onpointerdown=e=>{
 window.addEventListener("pointermove",e=>{
   if(!move||!S.place||!S.signature)return;
   if(move.type==="m"){
-    const h=signatureHeightFrac(move.r);
     S.place.x=clamp(0,1-S.place.w,move.x+(e.clientX-move.sx)/move.r.width);
-    S.place.y=clamp(0,Math.max(0,1-h),move.y+(e.clientY-move.sy)/move.r.height);
+    S.place.y=clamp(0,Math.max(0,1-S.place.h),move.y+(e.clientY-move.sy)/move.r.height);
   }else{
-    const dx=e.clientX-move.sx,dy=e.clientY-move.sy;
-    const delta=(dx+dy*S.signature.aspect)/2,start=move.w*move.r.width;
-    S.place.w=clamp(.10,.78,(start+delta)/move.r.width);
-    const h=signatureHeightFrac(move.r);
-    S.place.x=clamp(0,1-S.place.w,S.place.x);
-    S.place.y=clamp(0,Math.max(0,1-h),S.place.y);
+    const d=S.pageDims[S.place.page];
+    const dx=(e.clientX-move.sx)/move.r.width;
+    const dy=(e.clientY-move.sy)/move.r.height;
+    const dyAsWidth=d?dy*S.signature.aspect*d.h/d.w:dy;
+    const delta=Math.abs(dx)>=Math.abs(dyAsWidth)?dx:dyAsWidth;
+    S.place.w=clamp(.10,.78,move.w+delta);
+    syncPlaceAspect();
   }
   drawSignature();
 });
@@ -340,7 +389,7 @@ async function finalize(){
   prog(true,"Подписываем документ","Добавляем подпись в PDF");
   try{
     const originalName=S.file.name,doc=await PDFLib.PDFDocument.load(S.bytes.slice()),page=doc.getPages()[S.place.page-1];
-    const image=await doc.embedPng(S.signature.url),size=page.getSize(),w=S.place.w*size.width,h=w/S.signature.aspect;
+    const image=await doc.embedPng(S.signature.url),size=page.getSize(),w=S.place.w*size.width,h=S.place.h*size.height;
     page.drawImage(image,{x:S.place.x*size.width,y:size.height-S.place.y*size.height-h,width:w,height:h});
     S.final=new Uint8Array(await doc.save());S.base=base(originalName)+"_signed";
     try{if(S.pdf)await S.pdf.destroy()}catch(_){}

@@ -1,6 +1,6 @@
-const CACHE="personal-sign-2.3.0";
+const CACHE="personal-sign-2.4.0";
 const APP=[
-"./","./index.html","./app.js","./manifest.webmanifest","./icon.svg","./favicon.ico","./apple-touch-icon.png","./help/how-to-use.webp","./help/add-to-home-screen.webp",
+"./","./index.html","./app.js","./manifest.webmanifest","./icon.svg","./favicon.ico","./apple-touch-icon.png",
 "./vendor/jszip-3.10.1.min.js",
 "./vendor/docx-preview-0.4.1.min.js",
 "./vendor/html2canvas-1.4.1.min.js",

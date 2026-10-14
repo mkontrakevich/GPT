@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#f3f7fc">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none';">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="./favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<title>Personal Sign 2.1</title>
+<style>
+:root{
+  --bg:#f3f7fc;--card:#fff;--ink:#102033;--muted:#66788d;--line:#dbe5f0;
+  --blue:#0b63ce;--blue2:#217cf2;--soft:#eaf3ff;--green:#168554;
+  --shadow:0 12px 38px rgba(30,68,111,.08)
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+body{overflow:hidden;overscroll-behavior:none;background:linear-gradient(180deg,#f9fbfe 0,#f3f7fc 55%,#edf3f9 100%)}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{width:min(100%,820px);height:100dvh;min-height:100svh;margin:0 auto;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));overflow:hidden}
+.screen{display:none;height:100%;min-height:0}
+.screen.on{display:grid}
+#home{grid-template-rows:auto 1fr auto}
+#sign{grid-template-rows:auto minmax(0,1fr) auto}
+#done{grid-template-rows:auto 1fr auto}
+.brand{display:flex;align-items:center;gap:10px;min-height:46px}
+.brand-mark{display:block;width:38px;height:38px;border-radius:12px;overflow:hidden;box-shadow:0 5px 14px rgba(11,99,206,.18)}.brand-mark img{display:block;width:100%;height:100%}
+.brand b{font-size:16px}
+.home-main{display:grid;align-content:center;gap:14px;padding:8px 2px 22px}
+.step{font-size:12px;font-weight:750;color:var(--blue);text-transform:uppercase;letter-spacing:.04em}
+h1,h2,p{margin:0}
+h1{font-size:clamp(32px,9vw,46px);line-height:1.02;letter-spacing:-.045em}
+h2{font-size:22px;line-height:1.1;letter-spacing:-.025em}
+.help{font-size:15px;line-height:1.42;color:var(--muted)}
+.home-main .help{max-width:540px;font-size:16px}
+.btn{appearance:none;border:0;border-radius:15px;min-height:52px;padding:0 16px;background:#eaf0f6;color:#21364e;font-size:15px;font-weight:750}
+.btn.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 9px 22px rgba(11,99,206,.2)}
+.btn.block{width:100%}
+.btn.ghost{background:transparent;color:var(--blue);min-height:42px;padding:0 8px}
+.btn:disabled{opacity:.42;cursor:default}
+.home-main .primary{min-height:58px;font-size:17px;margin-top:4px}
+.privacy-line{display:flex;align-items:center;justify-content:center;gap:9px;min-height:34px;color:#60758d;font-size:12px;text-align:center}
+.privacy-line:before{content:"";width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:#1aa368;box-shadow:0 0 0 4px #e5f7ed}
+.home-footer{display:grid;gap:3px}.help-links{display:flex;justify-content:center;gap:18px;min-height:30px;align-items:center}.help-link{appearance:none;border:0;background:transparent;padding:5px 0;color:var(--blue);font-size:12px;font-weight:700;text-decoration:underline;text-decoration-color:rgba(11,99,206,.28);text-underline-offset:3px}
+.help-modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:rgba(5,16,32,.9);padding:max(12px,env(safe-area-inset-top)) 10px max(12px,env(safe-area-inset-bottom));backdrop-filter:blur(8px)}
+.help-modal[hidden]{display:none}.help-sheet{position:relative;height:min(calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),920px);max-width:100%;aspect-ratio:9/16;display:grid;place-items:center}.help-sheet img{display:block;width:100%;height:100%;object-fit:contain;border-radius:18px;box-shadow:0 18px 60px #0007;background:#fff}.help-close{position:absolute;right:8px;top:8px;z-index:2;width:40px;height:40px;border:0;border-radius:50%;background:rgba(14,27,44,.82);color:#fff;font-size:26px;line-height:1;box-shadow:0 4px 12px #0004}
+
+#picker{display:none}
+.stage-head{display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;align-items:start;padding-bottom:10px}
+.back{width:42px;height:42px;padding:0;border:1px solid var(--line);background:#fff;border-radius:13px;font-size:20px}
+.stage-copy{min-width:0;padding-top:2px}
+.stage-copy .help{margin-top:4px;font-size:13px}
+.filename{display:block;margin-top:5px;color:#8a9aab;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.viewer-wrap{position:relative;min-height:0;overflow:hidden}
+.viewer{height:100%;overflow:auto;-webkit-overflow-scrolling:touch;background:#dfe7f0;border:1px solid #d2dce7;border-radius:17px;padding:7px}
+.page{position:relative;margin:auto;background:#fff;box-shadow:0 2px 10px #0002;touch-action:none}
+#pdfc{display:block;max-width:100%;height:auto}
+.sig{position:absolute;border:1.5px dashed #3979c5;border-radius:7px;touch-action:none;user-select:none}
+.sig img{width:100%;height:100%;display:block;pointer-events:none}
+.handle{position:absolute;right:-9px;bottom:-9px;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--blue);box-shadow:0 2px 8px #0002}
+.nav{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:5px;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;box-shadow:0 6px 18px rgba(30,68,111,.14);backdrop-filter:blur(8px)}
+.nav .btn{min-height:36px;width:38px;padding:0;border-radius:999px;background:#eef3f8}
+.nav span{min-width:54px;text-align:center;color:#5d7187;font-size:12px;font-variant-numeric:tabular-nums}
+.sign-footer{padding-top:10px}
+.sign-actions{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px}
+.sign-actions .primary{min-height:54px}
+.sign-hint{min-height:28px;display:flex;align-items:center;justify-content:center;color:#687b90;font-size:12px;text-align:center;padding:0 10px}
+.modal{position:fixed;inset:0;z-index:50;display:none;background:#0e1b2c;color:#fff;padding:max(12px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+.modal.on{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px}
+.pad-head{display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;align-items:start}
+.pad-head .back{background:#17283c;border-color:#29405a;color:#fff}
+.pad-head h2{color:#fff}
+.pad-head .help{color:#b9c6d5;font-size:13px;margin-top:4px}
+#pad{display:block;width:100%;height:100%;min-height:0;background:#fff;border-radius:18px;touch-action:none}
+.padbar{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px}
+.padbar .btn{background:#1a2b40;color:#fff}
+.padbar .primary{background:linear-gradient(135deg,#1c70d8,#348cf4)}
+.penctl{display:none}
+.result-main{display:grid;align-content:center;justify-items:center;text-align:center;gap:10px;padding:12px}
+.result-icon{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#e7f7ef;color:var(--green);font-size:32px;font-weight:850}
+.result-main h1{font-size:34px}
+.result-main .help{max-width:420px}
+.done-footer{display:grid;gap:6px}
+.done-footer .primary{min-height:58px;font-size:17px}
+.progress{position:fixed;inset:0;z-index:80;display:none;place-items:center;background:rgba(14,27,44,.52);padding:20px;backdrop-filter:blur(5px)}
+.progress.on{display:grid}
+.progress-card{width:min(300px,90vw);background:#fff;border-radius:20px;padding:20px;text-align:center;box-shadow:var(--shadow)}
+.progress-card b{display:block;font-size:17px}
+.progress-card p{margin-top:6px;color:var(--muted);font-size:13px}
+.sandbox{position:fixed;left:-20000px;top:0;width:794px;background:#fff}
+.legacy{width:794px;min-height:1123px;padding:72px 74px;background:#fff;color:#111;font-family:"Times New Roman",serif;font-size:16px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-height:700px){
+  .app{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(8px,env(safe-area-inset-bottom))}
+  .brand{min-height:40px}.brand-mark{width:34px;height:34px;border-radius:10px}
+  h1{font-size:31px}.home-main{gap:10px;padding-bottom:10px}.home-main .help{font-size:14px}.home-main .primary{min-height:52px}
+  .stage-head{padding-bottom:7px}.stage-copy .help{font-size:12px}.filename{margin-top:3px}
+  .sign-footer{padding-top:7px}.sign-actions .primary{min-height:48px}
+  .result-icon{width:54px;height:54px;font-size:27px}.result-main h1{font-size:29px}.done-footer .primary{min-height:52px}
+}
+@media(orientation:landscape) and (max-height:520px){
+  .modal{grid-template-columns:minmax(210px,.38fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+  .pad-head{grid-column:1;grid-row:1;align-content:start}
+  #pad{grid-column:2;grid-row:1/3}
+  .padbar{grid-column:1;grid-row:2}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="home" class="screen on">
+    <header class="brand"><div class="brand-mark"><img src="./icon.svg" alt=""></div><b>Personal Sign</b></header>
+    <div class="home-main">
+      <div class="step">Шаг 1 из 3</div>
+      <h1>Выберите документ</h1>
+      <p class="help">Откройте PDF или документ Word, который нужно подписать.</p>
+      <button class="btn primary block" id="start">Выбрать документ</button>
+    </div>
+    <footer class="home-footer">
+      <div class="privacy-line">Файл обрабатывается только на этом устройстве</div>
+      <nav class="help-links" aria-label="Помощь">
+        <button class="help-link" data-help="./help/how-to-use.webp" data-title="Как пользоваться?">Как пользоваться?</button>
+        <button class="help-link" data-help="./help/add-to-home-screen.webp" data-title="Добавить на главный экран">Добавить на главный экран</button>
+      </nav>
+    </footer>
+  </section>
+
+  <input id="picker" type="file" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/msword,.doc">
+
+  <section id="sign" class="screen">
+    <header class="stage-head">
+      <button class="back" id="homeBtn" aria-label="Назад">←</button>
+      <div class="stage-copy">
+        <h2 id="stepTitle">Укажите место подписи</h2>
+        <p class="help" id="stepHelp">Проверьте документ и коснитесь места, где должна стоять подпись.</p>
+        <span class="filename" id="fname">Документ</span>
+      </div>
+    </header>
+    <div class="viewer-wrap">
+      <div class="viewer"><div id="stage" class="page"><canvas id="pdfc"></canvas><div id="sig" class="sig" hidden><img id="sigimg" alt=""><div class="handle" id="handle"></div></div></div></div>
+      <div class="nav" id="pageNav" hidden><button class="btn" id="prev" aria-label="Предыдущая страница">←</button><span id="counter"></span><button class="btn" id="next" aria-label="Следующая страница">→</button></div>
+    </div>
+    <footer class="sign-footer">
+      <div class="sign-hint" id="signHint">Коснитесь документа, чтобы поставить подпись</div>
+      <div class="sign-actions" id="signActions" hidden>
+        <button class="btn ghost" id="redraw">Перерисовать</button>
+        <button class="btn primary" id="finish">Подписать документ</button>
+      </div>
+    </footer>
+  </section>
+
+  <section id="done" class="screen">
+    <header class="brand"><div class="brand-mark"><img src="./icon.svg" alt=""></div><b>Personal Sign</b></header>
+    <div class="result-main">
+      <div class="result-icon">✓</div>
+      <div class="step">Шаг 3 из 3</div>
+      <h1>Документ подписан</h1>
+      <p class="help">Скачайте готовый PDF с вашей подписью.</p>
+    </div>
+    <footer class="done-footer">
+      <button class="btn primary block" id="getPdf">Скачать подписанный PDF</button>
+      <button class="btn ghost block" id="doneHome">Подписать другой документ</button>
+    </footer>
+  </section>
+</main>
+
+<div class="modal" id="modal">
+  <header class="pad-head">
+    <button class="back" id="cancelPad" aria-label="Назад">←</button>
+    <div>
+      <h2>Поставьте подпись</h2>
+      <p class="help">Распишитесь пальцем в белом поле.</p>
+    </div>
+  </header>
+  <canvas id="pad"></canvas>
+  <div class="penctl" aria-hidden="true"><input id="penWidth" type="range" min="1" max="5" step="0.2" value="2.6"><span id="penWidthVal">2.6</span><input id="ballpoint" type="checkbox" checked></div>
+  <footer class="padbar"><button class="btn" id="clearPad">Очистить</button><button class="btn primary" id="okPad" disabled>Готово</button></footer>
+</div>
+
+<div class="help-modal" id="helpModal" hidden role="dialog" aria-modal="true" aria-label="Инструкция">
+  <div class="help-sheet">
+    <button class="help-close" id="helpClose" aria-label="Закрыть">×</button>
+    <img id="helpImage" alt="">
+  </div>
+</div>
+
+<div class="progress" id="progress"><div class="progress-card"><b id="ptitle">Готовим документ</b><p id="pdetail">Это происходит на вашем устройстве</p></div></div>
+<div id="sandbox" class="sandbox"></div>
+
+<script src="./vendor/jszip-3.10.1.min.js"></script>
+<script src="./vendor/docx-preview-0.4.1.min.js"></script>
+<script src="./vendor/html2canvas-1.4.1.min.js"></script>
+<script src="./vendor/pdf-lib-1.17.1.min.js"></script>
+<script src="./vendor/pdfjs-2.9.359.min.js"></script>
+<script src="./vendor/docToText-0.1.0.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>

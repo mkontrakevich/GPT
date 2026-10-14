@@ -1,9 +1,9 @@
 {
-  "state": "overcast_day",
+  "state": "overcast_night",
   "weather_kind": "overcast",
-  "daylight": "day",
-  "observed_at": "2026-10-14T09:00",
-  "temperature_c": 13.5,
+  "daylight": "night",
+  "observed_at": "2026-10-14T20:00",
+  "temperature_c": 14.9,
   "cloud_cover_pct": 100,
   "precipitation_mm": 0.0,
   "snowfall_cm": 0.0,
@@ -17,12 +17,12 @@
     3
   ],
   "forecast_precipitation_probability": [
-    0,
     3,
-    3,
-    0,
-    0,
-    0
+    8,
+    18,
+    43,
+    40,
+    38
   ],
   "forecast_cloud_cover": [
     100,

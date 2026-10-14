@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="./favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<title>Personal Sign 2.2</title>
+<title>Personal Sign 2.3</title>
 <style>
 :root{
   --bg:#f3f7fc;--card:#fff;--ink:#102033;--muted:#66788d;--line:#dbe5f0;
@@ -28,7 +28,7 @@ button{cursor:pointer}
 .screen{display:none;height:100%;min-height:0}
 .screen.on{display:grid}
 #home{grid-template-rows:auto 1fr auto}
-#editDoc{grid-template-rows:auto minmax(0,1fr) auto}
+#editDoc{grid-template-rows:auto auto minmax(0,1fr) auto}
 #sign{grid-template-rows:auto minmax(0,1fr) auto}
 #done{grid-template-rows:auto 1fr auto}
 .brand{display:flex;align-items:center;gap:10px;min-height:46px}
@@ -64,7 +64,7 @@ h2{font-size:22px;line-height:1.1;letter-spacing:-.025em}
 .page{position:relative;margin:auto;background:#fff;box-shadow:0 2px 10px #0002;touch-action:none}
 #pdfc{display:block;max-width:100%;height:auto}
 .sig{position:absolute;border:1.5px dashed #3979c5;border-radius:7px;touch-action:none;user-select:none}
-.sig img{width:100%;height:100%;display:block;pointer-events:none}
+.sig img{width:100%;height:100%;display:block;pointer-events:none;object-fit:contain}
 .handle{position:absolute;right:-9px;bottom:-9px;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--blue);box-shadow:0 2px 8px #0002}
 .nav{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:5px;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;box-shadow:0 6px 18px rgba(30,68,111,.14);backdrop-filter:blur(8px)}
 .nav .btn{min-height:36px;width:38px;padding:0;border-radius:999px;background:#eef3f8}
@@ -85,6 +85,7 @@ h2{font-size:22px;line-height:1.1;letter-spacing:-.025em}
 .padbar .primary{background:linear-gradient(135deg,#1c70d8,#348cf4)}
 .penctl{display:grid;grid-template-columns:auto minmax(90px,1fr) auto;gap:8px;align-items:center;padding:2px}.penctl label,.penctl span{font-size:12px;color:#c6d3e0}.penctl input[type="range"]{width:100%;accent-color:#59a6ff}.toggle{display:flex;align-items:center;gap:5px;white-space:nowrap}
 .sig-controls{display:grid;grid-template-columns:auto minmax(90px,1fr) auto auto;gap:7px;align-items:center;margin-bottom:6px;padding:6px 8px;border:1px solid var(--line);border-radius:13px;background:#fff}.sig-controls label{font-size:11px;color:#566b82;font-weight:700}.sig-controls input[type="range"]{width:100%;accent-color:var(--blue)}
+.formatbar{display:flex;gap:6px;align-items:center;padding:0 0 7px 52px}.format-btn{appearance:none;width:38px;height:34px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#233a53;font-size:15px;font-weight:800;line-height:1}.format-btn em{font-family:Georgia,serif}.format-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}.format-btn[data-cmd="underline"]{text-decoration:underline}.format-btn[data-cmd="strikeThrough"]{text-decoration:line-through}
 .editor-wrap{min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:#dfe7f0;border:1px solid #d2dce7;border-radius:17px;padding:7px}.doc-editor-host{min-height:100%;width:max-content;min-width:100%}.doc-editor-host .docx-wrapper{background:transparent!important;padding:0!important}.doc-editor-host section.docx,.doc-editor-host .legacy{margin:0 auto 10px!important;box-shadow:0 2px 10px #0002;outline:none}.doc-editor-host [contenteditable="true"]:focus{outline:none}.edit-footer{padding-top:8px;display:grid;gap:5px}.edit-note{font-size:11px;color:var(--muted);text-align:center}
 .result-main{display:grid;align-content:center;justify-items:center;text-align:center;gap:10px;padding:12px}
 .result-icon{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#e7f7ef;color:var(--green);font-size:32px;font-weight:850}
@@ -145,10 +146,16 @@ h2{font-size:22px;line-height:1.1;letter-spacing:-.025em}
         <span class="filename" id="editName">Документ Word</span>
       </div>
     </header>
+    <div class="formatbar" id="formatbar" aria-label="Форматирование текста">
+      <button class="format-btn" type="button" data-cmd="bold" aria-label="Жирный" title="Жирный"><b>B</b></button>
+      <button class="format-btn" type="button" data-cmd="italic" aria-label="Курсив" title="Курсив"><em>I</em></button>
+      <button class="format-btn" type="button" data-cmd="underline" aria-label="Подчёркнутый" title="Подчёркнутый">U</button>
+      <button class="format-btn" type="button" data-cmd="strikeThrough" aria-label="Зачёркнутый" title="Зачёркнутый">S</button>
+    </div>
     <div class="editor-wrap"><div id="docEditor" class="doc-editor-host"></div></div>
     <footer class="edit-footer">
       <div class="edit-note">Оформление и шрифт берутся из самого документа.</div>
-      <button class="btn primary block" id="editContinue">Продолжить к подписи</button>
+      <button class="btn primary block" id="editContinue">Перейти к подписи</button>
     </footer>
   </section>
 

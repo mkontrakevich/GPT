@@ -1,0 +1,71 @@
+name: Package Personal Sign
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "personal-sign/**"
+      - ".github/workflows/package-personal-sign.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build clean site package
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf package Personal-Sign-site-v2.5.1.zip
+          mkdir -p package/vendor package/help
+
+          cp personal-sign/index.html package/
+          cp personal-sign/app.js package/
+          cp personal-sign/sw.js package/
+          cp personal-sign/manifest.webmanifest package/
+          cp personal-sign/icon.svg package/
+          cp personal-sign/favicon.ico package/
+          cp personal-sign/apple-touch-icon.png package/
+          cp personal-sign/help/how-to-use.webp package/help/
+          cp personal-sign/help/add-to-home-screen.webp package/help/
+          cp personal-sign/vendor/*.js package/vendor/
+
+          cat > package/_headers <<'EOF'
+          /*
+            Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+            X-Frame-Options: DENY
+            X-Content-Type-Options: nosniff
+            Referrer-Policy: no-referrer
+            Permissions-Policy: camera=(), microphone=(), geolocation=()
+          EOF
+
+          python3 - <<'PY'
+          import os, zipfile
+          root="package"
+          out="Personal-Sign-site-v2.5.1.zip"
+          with zipfile.ZipFile(out,"w",zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for base, _, files in os.walk(root):
+                  for name in sorted(files):
+                      p=os.path.join(base,name)
+                      arc=os.path.relpath(p,root)
+                      z.write(p,arc)
+          PY
+
+          sha256sum Personal-Sign-site-v2.5.1.zip > Personal-Sign-site-v2.5.1.zip.sha256
+          unzip -t Personal-Sign-site-v2.5.1.zip
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: personal-sign-site-2.5.1
+          path: |
+            Personal-Sign-site-v2.5.1.zip
+            Personal-Sign-site-v2.5.1.zip.sha256
+          if-no-files-found: error
+          compression-level: 0

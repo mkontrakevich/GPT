@@ -1,4 +1,4 @@
-const CACHE="personal-sign-2.4.1";
+const CACHE="personal-sign-2.5.0";
 const APP=[
 "./","./index.html","./app.js","./manifest.webmanifest","./icon.svg","./favicon.ico","./apple-touch-icon.png",
 "./vendor/jszip-3.10.1.min.js",

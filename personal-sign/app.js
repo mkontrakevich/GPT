@@ -429,94 +429,24 @@ async function finalize(){
   finally{prog(false)}
 }
 
-function psRound(ctx,x,y,w,h,r,fill,stroke){
-  ctx.beginPath();
-  const rr=Math.min(r,w/2,h/2);
-  ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
-  if(fill){ctx.fillStyle=fill;ctx.fill()} if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}
+const HELP_IMAGES={
+  use:"./help/how-to-use.webp",
+  home:"./help/add-to-home-screen.webp"
+};
+function closeHelp(){
+  $("helpModal").hidden=true;
+  $("helpImage").removeAttribute("src");
 }
-function psWrap(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
-  const words=String(text).split(/\s+/);let line="",lines=[];
-  for(const word of words){
-    const t=line?line+" "+word:word;
-    if(ctx.measureText(t).width>maxWidth&&line){lines.push(line);line=word}else line=t;
-  }
-  if(line)lines.push(line);
-  lines=lines.slice(0,maxLines);
-  lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineHeight));
-  return y+lines.length*lineHeight;
-}
-function psDocIcon(ctx,cx,cy,s){
-  ctx.save();ctx.translate(cx,cy);ctx.lineWidth=5*s;ctx.strokeStyle="#1677f2";ctx.fillStyle="#fff";
-  psRound(ctx,-34*s,-44*s,68*s,88*s,10*s,"#fff","#1677f2");
-  ctx.beginPath();ctx.moveTo(-20*s,-18*s);ctx.lineTo(16*s,-18*s);ctx.moveTo(-20*s,-2*s);ctx.lineTo(11*s,-2*s);ctx.strokeStyle="#9ec7ff";ctx.stroke();
-  ctx.beginPath();ctx.moveTo(-22*s,24*s);ctx.bezierCurveTo(-5*s,4*s,0*s,38*s,25*s,12*s);ctx.strokeStyle="#0b63ce";ctx.lineWidth=4*s;ctx.stroke();ctx.restore();
-}
-function psMiniIllustration(ctx,type,x,y,w,h){
-  ctx.save();ctx.translate(x,y);
-  ctx.strokeStyle="#0b63ce";ctx.fillStyle="#eaf3ff";ctx.lineWidth=5;
-  if(type==="file"){psDocIcon(ctx,w/2,h/2,1.15);ctx.beginPath();ctx.arc(w*.76,h*.65,22,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(w*.76-10,h*.65);ctx.lineTo(w*.76+10,h*.65);ctx.moveTo(w*.76,h*.65-10);ctx.lineTo(w*.76,h*.65+10);ctx.stroke()}
-  if(type==="place"){psRound(ctx,w*.16,h*.18,w*.68,h*.62,18,"#fff","#b7c7d9");ctx.strokeStyle="#c5d1de";ctx.lineWidth=7;for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(w*.25,h*(.30+i*.11));ctx.lineTo(w*.70,h*(.30+i*.11));ctx.stroke()}ctx.strokeStyle="#1677f2";ctx.setLineDash([12,9]);ctx.strokeRect(w*.52,h*.58,w*.22,h*.12);ctx.setLineDash([])}
-  if(type==="sign"){psRound(ctx,w*.12,h*.14,w*.76,h*.67,20,"#fff","#b7c7d9");ctx.beginPath();ctx.moveTo(w*.25,h*.65);ctx.bezierCurveTo(w*.40,h*.35,w*.42,h*.78,w*.58,h*.50);ctx.bezierCurveTo(w*.63,h*.42,w*.64,h*.69,w*.78,h*.45);ctx.strokeStyle="#1677f2";ctx.lineWidth=7;ctx.lineCap="round";ctx.stroke()}
-  if(type==="pdf"){psDocIcon(ctx,w*.48,h*.46,1.12);ctx.beginPath();ctx.arc(w*.72,h*.28,30,0,Math.PI*2);ctx.fillStyle="#e7f7ef";ctx.fill();ctx.strokeStyle="#27b96f";ctx.stroke();ctx.beginPath();ctx.moveTo(w*.61,h*.28);ctx.lineTo(w*.69,h*.37);ctx.lineTo(w*.84,h*.19);ctx.strokeStyle="#27b96f";ctx.lineWidth=7;ctx.stroke()}
-  if(type==="link"){psRound(ctx,w*.15,h*.26,w*.70,h*.38,22,"#fff","#b7c7d9");psDocIcon(ctx,w*.34,h*.45,.72);ctx.fillStyle="#0b63ce";ctx.font="700 24px Arial";ctx.fillText("Personal Sign",w*.47,h*.46)}
-  if(type==="menu"){psRound(ctx,w*.18,h*.18,w*.64,h*.64,26,"#fff","#b7c7d9");ctx.fillStyle="#eaf3ff";psRound(ctx,w*.26,h*.51,w*.48,h*.22,18,"#eaf3ff");ctx.strokeStyle="#1677f2";ctx.beginPath();ctx.moveTo(w*.36,h*.62);ctx.lineTo(w*.36,h*.45);ctx.moveTo(w*.30,h*.51);ctx.lineTo(w*.36,h*.45);ctx.lineTo(w*.42,h*.51);ctx.stroke()}
-  if(type==="home"){psRound(ctx,w*.18,h*.17,w*.64,h*.66,24,"#fff","#b7c7d9");for(let i=0;i<3;i++){psRound(ctx,w*(.28+i*.15),h*.36,w*.10,h*.10,10,"#eaf3ff");psRound(ctx,w*(.28+i*.15),h*.53,w*.10,h*.10,10,"#eaf3ff")}ctx.strokeStyle="#1677f2";ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(w*.40,h*.72);ctx.lineTo(w*.50,h*.62);ctx.lineTo(w*.60,h*.72);ctx.stroke()}
-  if(type==="confirm"){psRound(ctx,w*.17,h*.16,w*.66,h*.67,25,"#fff","#b7c7d9");psDocIcon(ctx,w*.42,h*.48,.72);ctx.beginPath();ctx.arc(w*.68,h*.40,31,0,Math.PI*2);ctx.fillStyle="#1677f2";ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(w*.57,h*.40);ctx.lineTo(w*.65,h*.49);ctx.lineTo(w*.80,h*.30);ctx.stroke()}
-  ctx.restore();
-}
-async function buildInstructionPdf(kind){
-  const c=document.createElement("canvas");c.width=1080;c.height=1920;const ctx=c.getContext("2d");
-  const blue="#0b63ce",ink="#071b45",muted="#7186a4",line="#dce8f5";
-  ctx.fillStyle="#f9fcff";ctx.fillRect(0,0,c.width,c.height);
-  const grad=ctx.createRadialGradient(100,60,20,100,60,620);grad.addColorStop(0,"#dceeff");grad.addColorStop(1,"rgba(220,238,255,0)");ctx.fillStyle=grad;ctx.fillRect(0,0,700,680);
-  psDocIcon(ctx,382,105,.72);ctx.fillStyle=ink;ctx.font="800 48px Arial";ctx.fillText("Personal",440,121);ctx.fillStyle=blue;ctx.fillText("Sign",650,121);
-  const home=kind==="home";
-  ctx.fillStyle=ink;ctx.textAlign="center";ctx.font="800 68px Arial";
-  ctx.fillText(home?"Как добавить на экран телефона":"Как подписать документ",540,245);
-  ctx.fillStyle=muted;ctx.font="400 31px Arial";
-  ctx.fillText(home?"Чтобы открывать Personal Sign как приложение.":"Короткий путь: документ → подпись → PDF.",540,300);
-  ctx.textAlign="left";
-  const data=home?[
-    ["Откройте ссылку","Запустите Personal Sign в браузере телефона.","link"],
-    ["Откройте меню","Нажмите «Поделиться» или кнопку меню браузера.","menu"],
-    ["Добавьте на экран","Выберите «На экран Домой» или «Установить приложение».","home"],
-    ["Подтвердите","Нажмите «Добавить», и иконка появится на экране.","confirm"]
-  ]:[
-    ["Выберите документ","Откройте PDF, DOCX или DOC.","file"],
-    ["Укажите место подписи","Коснитесь нужного места в документе.","place"],
-    ["Поставьте подпись","Распишитесь пальцем в белом поле.","sign"],
-    ["Скачайте PDF","Получите готовый подписанный файл.","pdf"]
-  ];
-  const xs=[48,554],ys=[360,1024],cw=478,ch=620;
-  data.forEach((it,i)=>{
-    const x=xs[i%2],y=ys[Math.floor(i/2)];
-    psRound(ctx,x,y,cw,ch,30,"#fff",line);
-    ctx.fillStyle="#e5f2ff";ctx.beginPath();ctx.arc(x+54,y+58,38,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=blue;ctx.font="800 40px Arial";ctx.textAlign="center";ctx.fillText(String(i+1),x+54,y+72);
-    ctx.textAlign="left";ctx.fillStyle=ink;ctx.font="800 34px Arial";psWrap(ctx,it[0],x+106,y+55,cw-132,40,2);
-    ctx.fillStyle=muted;ctx.font="400 27px Arial";psWrap(ctx,it[1],x+106,y+110,cw-132,34,3);
-    psMiniIllustration(ctx,it[2],x+34,y+205,cw-68,365);
-  });
-  psRound(ctx,48,1690,984,140,28,home?"#eaf3ff":"#e7f7ef",null);
-  ctx.fillStyle=home?blue:"#168554";ctx.font="800 42px Arial";ctx.textAlign="center";ctx.fillText(home?"⌂":"✓",108,1776);
-  ctx.fillStyle=ink;ctx.font="700 26px Arial";ctx.textAlign="left";
-  psWrap(ctx,home?"После добавления Personal Sign открывается как обычное приложение.":"Документ обрабатывается только на вашем устройстве.",165,1742,815,35,2);
-  const png=c.toDataURL("image/png");
-  const doc=await PDFLib.PDFDocument.create(),img=await doc.embedPng(png),page=doc.addPage([540,960]);
-  page.drawImage(img,{x:0,y:0,width:540,height:960});
-  return new Uint8Array(await doc.save());
-}
-function openInstructionPdf(kind){
-  const popup=window.open("about:blank","_blank");
-  prog(true,"Готовим инструкцию","Создаём PDF на вашем устройстве");
-  buildInstructionPdf(kind).then(bytes=>{
-    const blob=new Blob([bytes],{type:"application/pdf"}),url=URL.createObjectURL(blob);
-    if(popup)popup.location.href=url;else dl(bytes,kind==="home"?"personal-sign-add-to-home-screen.pdf":"personal-sign-how-to-use.pdf","application/pdf");
-    setTimeout(()=>URL.revokeObjectURL(url),60000);
-  }).catch(e=>{try{popup?.close()}catch(_){};alert(e.message||"Не удалось открыть инструкцию.")}).finally(()=>prog(false));
-}
-document.querySelectorAll(".help-link").forEach(btn=>btn.addEventListener("click",()=>openInstructionPdf(btn.dataset.instruction)));
+document.querySelectorAll(".help-link").forEach(btn=>btn.addEventListener("click",()=>{
+  const src=HELP_IMAGES[btn.dataset.instruction];
+  if(!src)return;
+  $("helpImage").src=src;
+  $("helpImage").alt=btn.dataset.instruction==="home"?"Как добавить Personal Sign на главный экран":"Как пользоваться Personal Sign";
+  $("helpModal").hidden=false;
+}));
+$("helpClose").onclick=closeHelp;
+$("helpModal").addEventListener("click",e=>{if(e.target===$("helpModal"))closeHelp()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpModal").hidden)closeHelp()});
 
 $("start").onclick=()=>$("picker").click();
 $("picker").onchange=e=>{choose(e.target.files[0]);e.target.value=""};

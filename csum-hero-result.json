@@ -1,27 +1,27 @@
 {
-  "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Fhero-csum%2F1792076642906-e187df5f-1d2a-4f29-a794-c3a3bf363356.jpg",
+  "url": "https://csum-nn-image-studio.kontrakevich.workers.dev/generated/candidates%2Fhero-csum%2F1792102909882-d9215060-43d6-4a3e-ae0b-64a845736982.jpg",
   "cost_usd": "0.04",
-  "generated_at": "2026-10-15T15:04:03.911153+00:00",
+  "generated_at": "2026-10-15T22:21:50.863682+00:00",
   "method": "image-to-image",
   "cityscape_lock": true,
   "weather_aware": true,
   "weather_state": {
-    "state": "overcast_night",
-    "weather_kind": "overcast",
+    "state": "partly_cloudy_night",
+    "weather_kind": "partly_cloudy",
     "daylight": "night",
-    "observed_at": "2026-10-15T18:00",
-    "temperature_c": 17.5,
-    "cloud_cover_pct": 100,
+    "observed_at": "2026-10-16T01:15",
+    "temperature_c": 13.1,
+    "cloud_cover_pct": 75,
     "precipitation_mm": 0.0,
     "snowfall_cm": 0.0,
-    "weather_code": 3,
+    "weather_code": 2,
     "forecast_codes": [
+      2,
+      2,
       3,
       3,
       3,
-      3,
-      3,
-      2
+      3
     ],
     "forecast_precipitation_probability": [
       0,
@@ -32,14 +32,14 @@
       0
     ],
     "forecast_cloud_cover": [
+      78,
+      67,
       100,
       100,
       100,
-      94,
-      92,
-      71
+      100
     ],
-    "description": "soft overcast daylight with restrained contrast",
+    "description": "broken cloud with alternating soft sun and shade",
     "source": "Open-Meteo",
     "coordinates": [
       56.3202,

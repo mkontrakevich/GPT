@@ -107,7 +107,7 @@ function applyTextCommand(cmd){
 function insertEditorContent(kind){
   if(!restoreTextSelection())return;
   try{
-    if(kind==="zws")document.execCommand("insertText",false,"\u00A0");
+    if(kind==="nbsp")document.execCommand("insertText",false,"\u00A0");
     if(kind==="tab")document.execCommand("insertHTML",false,'<span class="ps-tab" contenteditable="false">&nbsp;</span>');
   }catch(_){}
   rememberTextSelection();

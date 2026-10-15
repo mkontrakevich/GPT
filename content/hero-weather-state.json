@@ -1,19 +1,19 @@
 {
-  "state": "overcast_day",
+  "state": "overcast_night",
   "weather_kind": "overcast",
-  "daylight": "day",
-  "observed_at": "2026-10-15T12:45",
-  "temperature_c": 19.5,
-  "cloud_cover_pct": 86,
+  "daylight": "night",
+  "observed_at": "2026-10-15T18:00",
+  "temperature_c": 17.5,
+  "cloud_cover_pct": 100,
   "precipitation_mm": 0.0,
   "snowfall_cm": 0.0,
   "weather_code": 3,
   "forecast_codes": [
-    2,
     3,
     3,
-    1,
-    2,
+    3,
+    3,
+    3,
     2
   ],
   "forecast_precipitation_probability": [
@@ -25,12 +25,12 @@
     0
   ],
   "forecast_cloud_cover": [
-    45,
     100,
-    82,
-    20,
-    63,
-    76
+    100,
+    100,
+    94,
+    92,
+    71
   ],
   "description": "soft overcast daylight with restrained contrast",
   "source": "Open-Meteo",

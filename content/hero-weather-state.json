@@ -1,16 +1,16 @@
 {
-  "state": "partly_cloudy_night",
-  "weather_kind": "partly_cloudy",
+  "state": "overcast_night",
+  "weather_kind": "overcast",
   "daylight": "night",
-  "observed_at": "2026-10-16T01:15",
-  "temperature_c": 13.1,
-  "cloud_cover_pct": 75,
+  "observed_at": "2026-10-16T04:15",
+  "temperature_c": 12.2,
+  "cloud_cover_pct": 100,
   "precipitation_mm": 0.0,
   "snowfall_cm": 0.0,
-  "weather_code": 2,
+  "weather_code": 3,
   "forecast_codes": [
-    2,
-    2,
+    3,
+    3,
     3,
     3,
     3,
@@ -25,14 +25,14 @@
     0
   ],
   "forecast_cloud_cover": [
-    78,
-    67,
+    100,
+    100,
     100,
     100,
     100,
     100
   ],
-  "description": "broken cloud with alternating soft sun and shade",
+  "description": "soft overcast daylight with restrained contrast",
   "source": "Open-Meteo",
   "coordinates": [
     56.3202,

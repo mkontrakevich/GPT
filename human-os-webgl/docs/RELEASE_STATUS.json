@@ -23,7 +23,9 @@
   },
   "evidence": {
     "ci": "https://github.com/mkontrakevich/GPT/actions/runs/40407956142",
-    "artifact": "https://github.com/mkontrakevich/GPT/actions/runs/40407956142/artifacts/12691299478"
+    "artifact": "https://github.com/mkontrakevich/GPT/actions/runs/40407956142/artifacts/12691299478",
+    "latestCI": "https://github.com/mkontrakevich/GPT/actions/runs/40408517082",
+    "latestArtifact": "https://github.com/mkontrakevich/GPT/actions/runs/40408517082/artifacts/12691593735"
   },
   "effort": {
     "humanHours": null,
@@ -33,5 +35,6 @@
     "purpose": "Reusable visual navigation demo; reduced render overhead",
     "revenueEvidence": null
   },
-  "paidMediaGenerationCalls": 0
+  "paidMediaGenerationCalls": 0,
+  "validatedRuntimeCommit": "77c77d74cc9bce2601466177002116dd2cf24049"
 }

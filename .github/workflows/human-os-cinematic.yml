@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - "human-os-webgl/**"
+      - "!human-os-webgl/docs/**"
+      - ".github/workflows/human-os-cinematic.yml"
   workflow_dispatch:
 permissions:
   contents: read

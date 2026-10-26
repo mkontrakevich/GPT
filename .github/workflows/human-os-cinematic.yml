@@ -1,6 +1,7 @@
 name: Human OS Cinematic Visual QA
 on:
-  pull_request:
+  push:
+    branches: ["feat/human-os-cinematic-assets"]
     paths:
       - "human-os-webgl/**"
       - "!human-os-webgl/docs/**"

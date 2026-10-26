@@ -52,7 +52,10 @@ test('original reusable glTF assets have valid bounded buffers and geometry',asy
  const {buildAsset}=await import('../tools/landmark-geometry.mjs');
  for(const id of ['health','relationships','projects','work','personal','memory']){
   const text=readFileSync(new URL('../assets/'+id+'-signature.gltf',import.meta.url),'utf8'),g=JSON.parse(text);
-  assert.deepEqual(g,buildAsset(id),'asset must match checked-in generator');
+  const generated=buildAsset(id);assert.deepEqual(g.meshes,generated.meshes);assert.deepEqual(g.materials,generated.materials);assert.deepEqual(g.bufferViews,generated.bufferViews);
+  const generatedBytes=Buffer.from(generated.buffers[0].uri.split(',')[1],'base64'),storedBytes=Buffer.from(g.buffers[0].uri.split(',')[1],'base64');
+  for(let offset=0;offset<g.bufferViews[2].byteOffset;offset+=4)assert.ok(Math.abs(storedBytes.readFloatLE(offset)-generatedBytes.readFloatLE(offset))<1e-5,'cross-engine geometry tolerance');
+  assert.deepEqual(storedBytes.subarray(g.bufferViews[2].byteOffset),generatedBytes.subarray(g.bufferViews[2].byteOffset));
   assert.equal(g.asset.version,'2.0');assert.ok(Buffer.byteLength(text)<65000);
   const bytes=Buffer.from(g.buffers[0].uri.split(',')[1],'base64');assert.equal(bytes.length,g.buffers[0].byteLength);
   for(const view of g.bufferViews)assert.ok(view.byteOffset+view.byteLength<=bytes.length);

@@ -31,3 +31,19 @@ test('demo explicitly prohibits real health data syncing',()=>{
 test('art preset and count are inspectable for QA',()=>{
  assert.match(html,/__WORLD_QA/);assert.match(html,/meshCount/);assert.match(html,/detailTier/);
 });
+
+test('quiet interface removes promotional overlays without deleting content',()=>{
+ assert.match(html,/HUMAN OS quiet HUD v0\.4/);
+ assert.match(html,/\.mobileIntro,\.mobileFoot,\.legend,\.toast,\.subtitle,\.mobileTitle\{display:none !important\}/);
+ assert.match(html,/\.worldTag\{[\s\S]*?font-size:0;/);
+ assert.match(html,/aria-label','Открыть '/);
+});
+test('all six mobile controls fit without horizontal scroll',()=>{
+ assert.match(html,/\.bottom button\{min-width:0;flex:1 1 0;/);
+ assert.match(html,/\.bottom\{left:6px;right:6px;/);
+ assert.match(html,/\#worldTags/);
+});
+test('golden 3D visuals and interaction survive interface reduction',()=>{
+ for(const marker of ['strataCliffs','cityFacadeTexture','flushPineInstances','cameraFly','positionLabels','waterfall(','meshes','__WORLD_QA'])
+  assert.ok(html.includes(marker),'Visual floor regression: '+marker);
+});

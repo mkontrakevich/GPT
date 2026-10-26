@@ -104,7 +104,7 @@ let starSeed=23;const rnd=()=>{starSeed=(starSeed*1664525+1013904223)>>>0;return
 function labelGlow(hex){const sprite=document.createElement('canvas');sprite.width=sprite.height=64;const ctx=sprite.getContext('2d');const g=ctx.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,.87)');g.addColorStop(.22,'rgba(170,237,255,.35)');g.addColorStop(1,'rgba(70,170,220,0)');ctx.fillStyle=g;ctx.fillRect(0,0,64,64);const tex=new THREE.CanvasTexture(sprite);return new THREE.SpriteMaterial({map:tex,color:hex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})}
 const halos=areas.map(a=>labelGlow(a.color));
 function halo(p,x,y,z,size,material){const s=new THREE.Sprite(material);s.position.set(x,y,z);s.scale.set(size,size,size);p.add(s);return s}
-function pine(p,x,z,h=1.15){cyl(.06,.09,h*.58,palette.bark,p,x,.66,z,5);for(let k=0;k<3;k++)cyl(.03,.44-k*.11,.62,palette.fir,p,x,1+k*.27,z,7)}
+function pine(p,x,z,h=1.15){(p.userData.pineInstances ||= []).push({x,z,h})}
 function broad(p,x,z,h=1,color=palette.pine){cyl(.075,.1,h*.8,palette.bark,p,x,.64,z,6);sphere(h*.45,color,p,x,1.45*h,z);sphere(h*.33,color,p,x-h*.25,1.26*h,z+h*.1);sphere(h*.31,color,p,x+h*.25,1.24*h,z-h*.12)}
 function flowerPoints(p,r,color){const pos=[];for(let j=0;j<(mobile?24:52);j++){let a=rnd()*6.283,rad=1.45+rnd()*(r-1.76);pos.push(Math.cos(a)*rad,.61+rnd()*.07,Math.sin(a)*rad)}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));p.add(new THREE.Points(geo,new THREE.PointsMaterial({color,size:.095,transparent:true,opacity:.89,sizeAttenuation:true})))}
 function waterfall(p,a,r,idx){const x=Math.cos(a)*r,z=Math.sin(a)*r;let w=.3+rnd()*.34;let falls=mesh(new THREE.PlaneGeometry(w,3.0,1,6),new THREE.MeshBasicMaterial({color:0x8eeaf7,transparent:true,opacity:.33,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending}),p,x,-1.0,z);falls.rotation.y=-a+Math.PI/2;let splash=halo(p,x,-2.5,z,.75,halos[idx]);animated.push(splash);return falls}
@@ -181,6 +181,28 @@ function isle(a,i){
 }
 
 const groups=areas.map(isle);
+
+/* GPU instanced vegetation: hundreds of tree meshes => 4 batches per island */
+function flushPineInstances(groups){
+ const dummy=new THREE.Object3D();
+ for(const p of groups){
+  const rows=p.userData.pineInstances||[], n=rows.length;if(!n)continue;
+  const batches=[
+   new THREE.InstancedMesh(new THREE.CylinderGeometry(.06,.09,.58,5),palette.bark,n),
+   ...[0,1,2].map(k=>new THREE.InstancedMesh(new THREE.CylinderGeometry(.03,.44-k*.11,.62,7),palette.fir,n))
+  ];
+  for(const b of batches){b.instanceMatrix.setUsage(THREE.StaticDrawUsage);b.frustumCulled=false;p.add(b)}
+  for(let i=0;i<n;i++){
+   const v=rows[i];
+   dummy.position.set(v.x,.66,v.z);dummy.rotation.set(0,0,0);dummy.scale.set(1,v.h,1);dummy.updateMatrix();batches[0].setMatrixAt(i,dummy.matrix);
+   for(let k=0;k<3;k++){dummy.position.set(v.x,1+k*.27,v.z);dummy.scale.set(1,1,1);dummy.updateMatrix();batches[k+1].setMatrixAt(i,dummy.matrix)}
+  }
+  for(const b of batches)b.instanceMatrix.needsUpdate=true;
+  delete p.userData.pineInstances;
+ }
+}
+flushPineInstances(groups);
+
 
 /* CINEMATIC DETAIL PASS V3 - procedural reusable architectural asset families */
 const detailTier=(navigator.hardwareConcurrency||4)<=4||innerWidth<620?'mobile':'desktop';
@@ -363,7 +385,7 @@ canvas.addEventListener('wheel',e=>{e.preventDefault();dist=Math.max(10,Math.min
 canvas.addEventListener('touchmove',e=>{if(e.touches.length===2){let a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);if(pinch)dist=Math.max(10,Math.min(43,dist+(pinch-d)*.035));pinch=d;cam();e.preventDefault()}},{passive:false});
 canvas.addEventListener('touchend',()=>pinch=0);
 canvas.addEventListener('pointerup',e=>{down=false;if(moved>10)return;const box=canvas.getBoundingClientRect(),pointer=new THREE.Vector2((e.clientX-box.left)/box.width*2-1,-((e.clientY-box.top)/box.height*2-1));const ray=new THREE.Raycaster();ray.setFromCamera(pointer,camera);let hits=ray.intersectObjects(allPick);if(hits.length)choose(hits[0].object.userData.area)});
-$('#loader').remove();window.__WORLD_QA={version:'v0.3-cinematic-details',detailTier,areas:areas.length,meshCount:(()=>{let n=0;S.traverse(o=>{if(o.isMesh)n++});return n})(),hasCameraFocus:true};$('#engine').textContent='ACTIVE';$('#hint').textContent=innerWidth<650?'ПОПРОБУЙ ПОВЕРНУТЬ ТЕЛЕФОН':'ЖИВОЙ МИР · 6 ОБЛАСТЕЙ';const t0=clock.getElapsedTime();let frames=0;function loop(){requestAnimationFrame(loop);if(document.hidden)return;const t=clock.getElapsedTime();cameraFly();for(let j=0;j<animated.length;j++){const o=animated[j];if(o.geometry?.type==='OctahedronGeometry')o.rotation.y=t*.21;}coreOrb.position.y=3.25+Math.sin(t*.75)*.13;if(frames++%3===0)positionLabels();R.render(S,camera)}loop();
+$('#loader').remove();window.__WORLD_QA={version:'v0.3-cinematic-details',detailTier,instancedVegetation:true,areas:areas.length,meshCount:(()=>{let n=0;S.traverse(o=>{if(o.isMesh)n++});return n})(),hasCameraFocus:true};$('#engine').textContent='ACTIVE';$('#hint').textContent=innerWidth<650?'ПОПРОБУЙ ПОВЕРНУТЬ ТЕЛЕФОН':'ЖИВОЙ МИР · 6 ОБЛАСТЕЙ';const t0=clock.getElapsedTime();let frames=0;function loop(){requestAnimationFrame(loop);if(document.hidden)return;const t=clock.getElapsedTime();cameraFly();for(let j=0;j<animated.length;j++){const o=animated[j];if(o.geometry?.type==='OctahedronGeometry')o.rotation.y=t*.21;}coreOrb.position.y=3.25+Math.sin(t*.75)*.13;if(frames++%3===0)positionLabels();R.render(S,camera)}loop();
 }catch(err){console.error('WEBGL_RUNTIME_ERROR',err);$('#engine').textContent='FALLBACK';$('#fallback').style.display='flex';$('#loader').remove();canvas.style.display='none'}
 }
 </script></body></html>

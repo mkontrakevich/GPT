@@ -1,6 +1,46 @@
 <!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#060d20"><title>HUMAN OS · Living World</title><style>
 *{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;background:#040914;color:#ecf7ff;font:13px system-ui,Segoe UI,Arial,sans-serif}canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:none}#back{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 34%,#1b3555,#050b19 75%);z-index:0}#fallback{display:none;position:fixed;inset:0;z-index:1;align-items:center;justify-content:center;text-align:center;padding:20px}#fallback p{max-width:320px;color:#9db5c3}.hud{position:fixed;z-index:4;pointer-events:none}.top{left:0;right:0;top:0;padding:calc(15px + env(safe-area-inset-top)) 24px 15px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(#060e20e9,#060e2077,transparent)}.logo{font-size:19px;letter-spacing:2px;font-weight:750}.logo b{color:#6ddfeb}.subtitle{font-size:10px;color:#9cb5cb;letter-spacing:2px;margin-top:4px}.topRight{font-size:10px;letter-spacing:1px;color:#7ddef0}.topRight span{color:#ddae66}.bottom{bottom:calc(16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;gap:5px;max-width:calc(100vw - 20px);overflow:auto;pointer-events:auto;padding:7px;background:#07182be5;border:1px solid #2d6075;border-radius:32px;box-shadow:0 0 35px #00baff20}.bottom button{min-width:78px;flex:0 0 auto;border:0;background:transparent;border-radius:22px;color:#aac8d8;font-size:10px;padding:10px 9px;cursor:pointer}.bottom button.on,.bottom button:hover{background:#1a495b;color:#c6fcff}.bottom strong{display:block;font-size:20px;font-weight:400;margin-bottom:3px}.panel{top:50%;right:20px;transform:translateY(-50%);width:245px;max-width:40vw;pointer-events:auto;background:#071728d9;border:1px solid #3e7585;border-radius:13px;padding:20px;box-shadow:0 10px 45px #010a1899;backdrop-filter:blur(15px)}.eyebrow{font-size:9px;letter-spacing:2px;color:#6bdfe8}.panel h2{font-size:23px;margin:10px 0}.panel p{color:#a1c1ca;line-height:1.55}.panel a{display:block;text-align:center;margin-top:12px;padding:13px;background:#58d7d8;color:#04212c;font-weight:750;border-radius:7px;text-decoration:none}.panel button{position:absolute;right:8px;top:8px;border:0;background:transparent;color:#9db2c3;font-size:24px;cursor:pointer}.legend{left:22px;bottom:106px;letter-spacing:1px;font-size:10px;color:#8ab9cc;line-height:1.7}.loader{position:fixed;left:50%;top:52%;transform:translate(-50%,-50%);font-size:12px;letter-spacing:3px;color:#7ce8f2;z-index:2}.toast{top:90px;left:50%;transform:translateX(-50%);background:#0a2137dc;padding:9px 16px;border-radius:20px;color:#8fe3f0;font-size:10px;white-space:nowrap}.mobileTitle{display:none}@media(max-width:650px){.top{padding:calc(12px + env(safe-area-inset-top)) 12px 10px}.logo{font-size:15px}.subtitle,.topRight{font-size:8px}.bottom{left:8px;right:8px;transform:none;border-radius:18px;justify-content:flex-start;scrollbar-width:none}.bottom button{min-width:65px;padding:7px 5px;font-size:9px}.bottom strong{font-size:17px}.panel{top:auto;right:10px;left:10px;bottom:calc(92px + env(safe-area-inset-bottom));transform:none;width:auto;max-width:none;padding:16px}.panel h2{font-size:19px}.legend{left:12px;bottom:106px;font-size:9px}.toast{top:calc(77px + env(safe-area-inset-top))}.mobileTitle{display:block}}
-</style></head><body><div id="back"></div><canvas id="world" aria-label="Интерактивная трехмерная карта мира Human OS"></canvas><div id="fallback"><div><h2>HUMAN OS</h2><p>3D временно недоступно. Выберите область жизни в меню ниже.</p></div></div><div id="loader" class="loader">ЗАГРУЗКА МИРА…</div><header class="hud top"><div><div class="logo">HUMAN <b>OS</b> <span style="opacity:.45;font-size:10px">/ WORLD</span></div><div class="subtitle">ЖИВАЯ КАРТА ТВОЕЙ ЖИЗНИ</div></div><div class="topRight">◉ <span>WEBGL</span> · <span id="engine">INIT</span><div style="margin-top:5px;text-align:right">DEMO · БЕЗ ЛИЧНЫХ ДАННЫХ</div></div></header><aside class="hud panel" id="panel" hidden><button id="close" aria-label="Закрыть">×</button><div class="eyebrow">LIFE DOMAIN / EXPLORE</div><h2 id="title"></h2><p id="desc"></p><div class="eyebrow" id="sub"></div><a id="go" href="#" target="_blank" rel="noopener">ОТКРЫТЬ МОДУЛЬ</a></aside><div class="hud legend">Вращение: палец / мышь<br>Приближение: два пальца / колесо<br>Выбрать остров: касание</div><div class="hud toast" id="hint">Выберите остров или значок внизу</div><nav class="hud bottom" id="menu" aria-label="Области жизни"></nav>
+
+/* HUMAN OS v0.2 · cinematic atlas */
+body{background:#080d1b}
+#back{background:radial-gradient(ellipse 90% 65% at 50% 46%,#263357 0%,#11182d 55%,#070915 100%)}
+.top{background:linear-gradient(180deg,rgba(6,10,23,.94),rgba(9,16,33,.42) 70%,transparent);padding-top:calc(23px + env(safe-area-inset-top));padding-bottom:24px}
+.logo{font-size:22px;letter-spacing:.17em;font-weight:700;text-shadow:0 2px 20px #020912}
+.logo b{color:#b7fff7}
+.subtitle{font-size:9px;letter-spacing:.23em;color:#abc8d6}
+.topRight{color:#c4d3dc}.topRight span{color:#d9b477}
+.bottom{bottom:calc(22px + env(safe-area-inset-bottom));background:linear-gradient(140deg,#101b31ea,#0a1828df);border:1px solid #6590a266;border-radius:21px;box-shadow:0 22px 80px #0009,0 0 30px #69bce017;backdrop-filter:blur(28px);padding:8px 13px}
+.bottom button{font-size:9px;letter-spacing:.08em;min-width:87px;padding:10px 9px}
+.bottom button strong{font-size:19px;color:#c5e8e5}
+.bottom button.on{background:linear-gradient(#3166748a,#11343dbd);border:1px solid #96efdc66;box-shadow:inset 0 1px #8dfdea33}
+.panel{width:300px;max-width:33vw;background:linear-gradient(130deg,#112238f0,#091625e8);border:1px solid #659ba58c;box-shadow:0 24px 90px #000b,0 0 45px #63bfee16;border-radius:18px;padding:23px}
+.panel h2{letter-spacing:.02em;font-size:26px}.panel p{font-size:13px;line-height:1.7;color:#bed6dd}
+.panel a{background:linear-gradient(100deg,#d7f0df,#66c9c9);letter-spacing:.06em;border-radius:9px}
+.legend{bottom:118px;color:#94adc1;font-size:10px;opacity:.78}
+.toast{top:110px;background:#101a2be8;border:1px solid #6d8ca353;color:#d6e7ec;font-size:10px;letter-spacing:.1em;padding:11px 19px;box-shadow:0 16px 30px #0008}
+#worldTags{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+.worldTag{position:absolute;transform:translate(-50%,-50%);border:1px solid #d1e7df52;border-radius:9px;background:linear-gradient(130deg,#192b3dbf,#09182ccc);box-shadow:0 12px 35px #0205139e,0 0 23px var(--a);color:#eef7f6;padding:9px 15px 9px 12px;font-size:10px;letter-spacing:.16em;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .25s,background .25s;backdrop-filter:blur(9px);pointer-events:auto;cursor:pointer}
+.worldTag::before{content:'◇';color:var(--a);margin-right:8px}
+.worldTag:hover{border-color:var(--a);background:#152f3cea}
+.worldTag.hidden{display:none}
+.mobileTitle{display:block;position:fixed;z-index:3;left:50%;top:calc(87px + env(safe-area-inset-top));transform:translateX(-50%);font:600 10px system-ui;color:#bbdfdf;letter-spacing:.25em;text-align:center;text-shadow:0 2px 20px #0009;pointer-events:none}
+@media(max-width:650px){
+ .top{padding:calc(14px + env(safe-area-inset-top)) 12px 10px}
+ .logo{font-size:15px}.subtitle{font-size:8px}
+ .topRight{font-size:9px}
+ .bottom{bottom:calc(7px + env(safe-area-inset-bottom));padding:6px;left:7px;right:7px;border-radius:17px}
+ .bottom button{font-size:8px;min-width:64px;padding:7px 5px}
+ .bottom button strong{font-size:16px;margin:0}
+ .worldTag{font-size:8px;letter-spacing:.08em;padding:6px 8px;max-width:125px}
+ .worldTag::before{margin-right:4px}
+ .toast{top:calc(78px + env(safe-area-inset-top));font-size:9px;max-width:90vw;overflow:hidden;text-overflow:ellipsis;padding:9px 12px}
+ .legend{display:none}
+ .panel{top:auto;left:10px;right:10px;bottom:calc(90px + env(safe-area-inset-bottom));width:auto;max-width:none;transform:none;max-height:44vh;overflow:auto}
+ .panel h2{font-size:20px}.panel p{font-size:12px}
+ .mobileTitle{display:none}
+}
+@media(prefers-reduced-motion:reduce){.worldTag{transition:none}}
+</style></head><body><div id="back"></div><div id="worldTags"></div><canvas id="world" aria-label="Интерактивная трехмерная карта мира Human OS"></canvas><div id="fallback"><div><h2>HUMAN OS</h2><p>3D временно недоступно. Выберите область жизни в меню ниже.</p></div></div><div id="loader" class="loader">ЗАГРУЗКА МИРА…</div><header class="hud top"><div><div class="logo">HUMAN <b>OS</b> <span style="opacity:.45;font-size:10px">/ WORLD</span></div><div class="subtitle">ЖИВАЯ КАРТА ТВОЕЙ ЖИЗНИ</div></div><div class="topRight">◉ <span>WEBGL</span> · <span id="engine">INIT</span><div style="margin-top:5px;text-align:right">DEMO · БЕЗ ЛИЧНЫХ ДАННЫХ</div></div></header><aside class="hud panel" id="panel" hidden><button id="close" aria-label="Закрыть">×</button><div class="eyebrow">LIFE DOMAIN / EXPLORE</div><h2 id="title"></h2><p id="desc"></p><div class="eyebrow" id="sub"></div><a id="go" href="#" target="_blank" rel="noopener">ОТКРЫТЬ МОДУЛЬ</a></aside><div class="hud legend">Вращение: палец / мышь<br>Приближение: два пальца / колесо<br>Выбрать остров: касание</div><div class="hud toast" id="hint">Выберите остров или значок внизу</div><nav class="hud bottom" id="menu" aria-label="Области жизни"></nav>
 <script type="module">
 const $=s=>document.querySelector(s),areas=[
 {id:'health',title:'ЗДОРОВЬЕ',icon:'♡',color:0x59f0e7,p:[-5,0,-4.8],description:'Сон, дыхание, восстановление, активность, походка и настроение.',url:'https://health-game-console-mvp.kontrakevich.workers.dev/',hint:'Health Game Console · демонстрация'},
@@ -16,10 +56,10 @@ function choose(a){selected=a;$('#title').textContent=a.title;$('#desc').textCon
 const canvas=$('#world');let THREE;try{THREE=await Promise.race([import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js'),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),9000))])}catch(e){$('#engine').textContent='2D';$('#fallback').style.display='flex';$('#loader').remove();canvas.style.display='none';}
 if(THREE){
 try{
-const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,1.7));R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.25;
-const S=new THREE.Scene();S.fog=new THREE.FogExp2(0x060d22,.025);
-const camera=new THREE.PerspectiveCamera(48,1,.1,120);camera.position.set(0,17,25);
-S.add(new THREE.HemisphereLight(0x9accff,0x101126,2.1));const sun=new THREE.DirectionalLight(0xffdfbc,3.2);sun.position.set(-8,19,3);S.add(sun);
+const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,innerWidth<700?1.2:1.6));R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.25;
+const S=new THREE.Scene();S.fog=new THREE.FogExp2(0x0b1022,.012);
+const camera=new THREE.PerspectiveCamera(48,1,.1,120);camera.position.set(0,18,27);
+S.add(new THREE.HemisphereLight(0x9accff,0x101126,2.1));const sun=new THREE.DirectionalLight(0xffcf9c,4.0);sun.position.set(-8,19,3);S.add(sun);
 const mat=(c,metal=0,rough=.65)=>new THREE.MeshStandardMaterial({color:c,metalness:metal,roughness:rough});
 const rock=mat(0x27334e),rock2=mat(0x39445b),grass=mat(0x245b4b),forest=mat(0x2c685e),trunk=mat(0x735343),gold=mat(0xefa76d,.25),blue=mat(0x8ae5f2,.4,.3),glass=mat(0x376d89,.3,.28),stone=mat(0x998676),snow=mat(0xc4e4ff);
 const allPick=[];const clock=new THREE.Clock(),animated=[];
@@ -27,35 +67,146 @@ function mesh(g,m,parent=S,x=0,y=0,z=0){let o=new THREE.Mesh(g,m);o.position.set
 const cube=(sx,sy,sz,m,p,x,y,z)=>mesh(new THREE.BoxGeometry(sx,sy,sz),m,p,x,y,z);
 function cyl(rt,rb,h,m,p,x,y,z,n=9){return mesh(new THREE.CylinderGeometry(rt,rb,h,n),m,p,x,y,z)}
 function sphere(r,m,p,x,y,z){return mesh(new THREE.SphereGeometry(r,12,8),m,p,x,y,z)}
-function tree(p,x,z,color=grass,h=1){cyl(.09,.13,h*.7,trunk,p,x,.85,z,6);cyl(.08,h*.47,h*.95,color,p,x,1.55+h*.32,z,7)}
-function isle(a,i){const p=new THREE.Group();p.position.set(...a.p);S.add(p);const r=i===0?3.35:3.05;const base=cyl(r*.96,r*.74,.5,rock2,p,0,-.08,0,11);base.userData.area=a;allPick.push(base);cyl(r*.83,r*1.05,.46,grass,p,0,.2,0,11);
-const cone=mesh(new THREE.ConeGeometry(r*.86,3.15,11),rock,p,0,-2.0,0);cone.rotation.z=Math.PI;cone.userData.area=a;allPick.push(cone);
-const rim=new THREE.MeshBasicMaterial({color:a.color,transparent:true,opacity:.75});const tor=mesh(new THREE.TorusGeometry(r*.85,.026,4,66),rim,p,0,.49,0);tor.rotation.x=-Math.PI/2;animated.push(tor);
-for(let j=0;j<14;j++){const ang=(j*137.5)*Math.PI/180,rad=.9+(j%5)*.35;let x=Math.cos(ang)*rad,z=Math.sin(ang)*rad;if(i===3&&j<7)continue;if(i===5&&j<7)continue;tree(p,x,z,forest,.65+(j%3)*.12)}
-if(i===0){const pool=cyl(1.4,1.4,.08,blue,p,0,.55,0,40);pool.material=new THREE.MeshStandardMaterial({color:0x46b4d3,metalness:.5,roughness:.18,emissive:0x0a394a});const ring=mesh(new THREE.TorusGeometry(1.43,.07,8,40),mat(0x63ddef,.7,.18),p,0,.65,0);ring.rotation.x=-Math.PI/2;cyl(.13,.2,1.25,blue,p,0,1.1,0);sphere(.45,blue,p,0,1.95,0);}
-if(i===1){cyl(.33,.5,2.4,trunk,p,0,1.35,0);for(let k=0;k<9;k++){const an=k*2.399;let s=sphere(.83,mat(0xe289b2),p,Math.sin(an)*.65,2.7+Math.cos(an*.7)*.48,Math.cos(an)*.6);s.scale.set(1,.7,1)}for(let k=0;k<8;k++){const an=k*6.28/8,c=cyl(.25,.32,.35,gold,p,Math.cos(an)*1.7,.66,Math.sin(an)*1.7,8);}}
-if(i===2){const crystal=mesh(new THREE.OctahedronGeometry(.9,0),new THREE.MeshStandardMaterial({color:0xfaa96f,emissive:0x953d13,emissiveIntensity:.45,metalness:.65,roughness:.17}),p,0,1.55,0);animated.push(crystal);for(let k=0;k<6;k++){const a=k*Math.PI/3;cube(.45,.7,.6,glass,p,Math.sin(a)*1.4,.7,Math.cos(a)*1.4)}}
-if(i===3){for(let k=0;k<12;k++){const a=k*2.399,rr=.8+(k%3)*.65,x=Math.sin(a)*rr,z=Math.cos(a)*rr,h=1+(k%4)*.55;const b=cube(.42,h,.48,glass,p,x,.5+h/2,z);cube(.46,.09,.51,blue,p,x,.55+h,z)}}
-if(i===4){const home=cube(1.55,.9,1.2,stone,p,0,.95,0);const roof=mesh(new THREE.ConeGeometry(1.23,.85,4),mat(0x223748),p,0,1.8,0);roof.rotation.y=Math.PI/4;for(let k=0;k<7;k++)sphere(.55,mat(0xec98be),p,Math.sin(k*2.7)*1.9,1.2,Math.cos(k*2.7)*1.7)}
-if(i===5){for(let k=0;k<5;k++){const ang=k*Math.PI/2.5;const pillar=cyl(.15,.17,1.65,stone,p,Math.sin(ang)*1.5,1.3,Math.cos(ang)*1.5);sphere(.2,gold,p,pillar.position.x,2.2,pillar.position.z)}cube(1.35,.13,1.1,stone,p,0,.65,0);const pages=cube(.9,.06,.6,snow,p,0,.76,0);}
-const beacon=sphere(.23,new THREE.MeshBasicMaterial({color:a.color}),p,0,3.2,0);animated.push(beacon);
-return p}
+
+// Rich 3D islands · deterministic geometry, mobile-aware detail
+const mobile=innerWidth<680;
+const palette={
+ basalt:[mat(0x33475d),mat(0x4b5069),mat(0x5c6277)], meadow:[mat(0x386b5b),mat(0x3c785e),mat(0x49755e)],
+ bark:mat(0x6d4c4b), cream:mat(0xd7be9b), lantern:mat(0xffcc9d,.2,.24),
+ coral:mat(0xf4a7b9),blossom:mat(0xeaa0c4),rose:mat(0xdc81ab),
+ pine:mat(0x3b8579), fir:mat(0x286875), aqua:mat(0x68cbd6,.3,.22),
+ ocean:new THREE.MeshStandardMaterial({color:0x2c9aab,metalness:.35,roughness:.17,emissive:0x125266,emissiveIntensity:.5}),
+ brick:mat(0x9d8f81),quartz:mat(0xf3dfb0),metal:mat(0x587b96,.5,.28),
+ light:new THREE.MeshBasicMaterial({color:0x8dfbff}),white:new THREE.MeshBasicMaterial({color:0xffebc2})
+};
+let starSeed=23;const rnd=()=>{starSeed=(starSeed*1664525+1013904223)>>>0;return starSeed/4294967296};
+function labelGlow(hex){const sprite=document.createElement('canvas');sprite.width=sprite.height=64;const ctx=sprite.getContext('2d');const g=ctx.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,.87)');g.addColorStop(.22,'rgba(170,237,255,.35)');g.addColorStop(1,'rgba(70,170,220,0)');ctx.fillStyle=g;ctx.fillRect(0,0,64,64);const tex=new THREE.CanvasTexture(sprite);return new THREE.SpriteMaterial({map:tex,color:hex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})}
+const halos=areas.map(a=>labelGlow(a.color));
+function halo(p,x,y,z,size,material){const s=new THREE.Sprite(material);s.position.set(x,y,z);s.scale.set(size,size,size);p.add(s);return s}
+function pine(p,x,z,h=1.15){cyl(.06,.09,h*.58,palette.bark,p,x,.66,z,5);for(let k=0;k<3;k++)cyl(.03,.44-k*.11,.62,palette.fir,p,x,1+k*.27,z,7)}
+function broad(p,x,z,h=1,color=palette.pine){cyl(.075,.1,h*.8,palette.bark,p,x,.64,z,6);sphere(h*.45,color,p,x,1.45*h,z);sphere(h*.33,color,p,x-h*.25,1.26*h,z+h*.1);sphere(h*.31,color,p,x+h*.25,1.24*h,z-h*.12)}
+function flowerPoints(p,r,color){const pos=[];for(let j=0;j<(mobile?24:52);j++){let a=rnd()*6.283,rad=1.45+rnd()*(r-1.76);pos.push(Math.cos(a)*rad,.61+rnd()*.07,Math.sin(a)*rad)}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));p.add(new THREE.Points(geo,new THREE.PointsMaterial({color,size:.095,transparent:true,opacity:.89,sizeAttenuation:true})))}
+function waterfall(p,a,r,idx){const x=Math.cos(a)*r,z=Math.sin(a)*r;let w=.3+rnd()*.34;let falls=mesh(new THREE.PlaneGeometry(w,3.0,1,6),new THREE.MeshBasicMaterial({color:0x8eeaf7,transparent:true,opacity:.33,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending}),p,x,-1.0,z);falls.rotation.y=-a+Math.PI/2;let splash=halo(p,x,-2.5,z,.75,halos[idx]);animated.push(splash);return falls}
+function stoneWalk(p){const walk=mesh(new THREE.CylinderGeometry(.9,1.1,.15,20),palette.cream,p,0,.59,0);for(let k=0;k<4;k++){let ring=mesh(new THREE.TorusGeometry(.8+k*.1,.012,5,48),palette.light,p,0,.69+k*.012,0);ring.rotation.x=Math.PI/2}}
+function rockBase(p,r,a,idx){
+  const sides=19;const g=new THREE.CylinderGeometry(r*.97,r*.8,.69,sides,2);
+  const ar=g.attributes.position;for(let k=0;k<ar.count;k++){const x=ar.getX(k),y=ar.getY(k),z=ar.getZ(k);const ang=Math.atan2(z,x),s=1+.06*Math.sin(ang*4+idx)+.035*Math.cos(ang*9);ar.setXYZ(k,x*s,y,z*s)}g.computeVertexNormals();
+  const solid=mesh(g,palette.basalt[idx%3],p,0,-.04,0);solid.userData.area=a;allPick.push(solid);
+  const soil=mesh(new THREE.CylinderGeometry(r*.98,r*.98,.16,30),palette.meadow[idx%3],p,0,.34,0);
+  soil.userData.area=a;allPick.push(soil);
+  const lip=mesh(new THREE.CylinderGeometry(r*.98,r*.95,.16,26),palette.meadow[(idx+1)%3],p,0,.48,0);lip.userData.area=a;allPick.push(lip);
+  const bottom=mesh(new THREE.ConeGeometry(r*.87,3.25,13,2),palette.basalt[(idx+1)%3],p,0,-2.15,0);bottom.rotation.z=Math.PI;bottom.userData.area=a;allPick.push(bottom);
+  for(let j=0;j<8;j++){const angle=j*Math.PI/4+.25,rad=r*(.44+.31*rnd()),h=.8+rnd()*1.75;const rock=mesh(new THREE.ConeGeometry(.28+rnd()*.3,h,5),palette.basalt[j%3],p,Math.cos(angle)*rad,-.68-h*.46,Math.sin(angle)*rad);rock.rotation.z=Math.PI}
+  for(let j=0;j<5;j++){let angle=(j+.6)*Math.PI*2/5;let edge=sphere(.18+rnd()*.18,palette.basalt[j%3],p,Math.cos(angle)*(r*.88),.48,Math.sin(angle)*(r*.88));edge.scale.y=.7}
+  const ribbon=mesh(new THREE.TorusGeometry(r*.98,.017,4,80),new THREE.MeshBasicMaterial({color:a.color,transparent:true,opacity:.65}),p,0,.51,0);ribbon.rotation.x=Math.PI/2;
+}
+function isle(a,i){
+  const p=new THREE.Group();p.position.set(...a.p);S.add(p);let r=i===0?3.35:3.12;rockBase(p,r,a,i);
+  // Undergrowth scattered around the landmark, preserving navigable central arena
+  const n=mobile?13:24;
+  for(let j=0;j<n;j++){let th=rnd()*Math.PI*2,rad=1.55+rnd()*1.14;let x=Math.cos(th)*rad,z=Math.sin(th)*rad,h=.67+rnd()*.36;
+   if(i===1 && j%3===0) broad(p,x,z,h,palette.blossom);
+   else if(i===4 && j%3===0) broad(p,x,z,h,palette.pine);
+   else if(i===3 && j%3===0) continue;
+   else pine(p,x,z,h);
+  }
+  flowerPoints(p,r,[0x90d9bc,0xf3b2d3,0xf5c26a,0x8cdfff,0xbdd9a5,0xe8c892][i]);
+  // Landmark architecture per life domain
+  if(i===0){
+    const terr=cyl(1.72,1.8,.25,palette.cream,p,0,.6,0,42);terr.userData.area=a;allPick.push(terr);
+    cyl(1.48,1.48,.08,palette.ocean,p,0,.75,0,44);
+    let t=mesh(new THREE.TorusGeometry(1.5,.055,8,64),palette.light,p,0,.82,0);t.rotation.x=Math.PI/2;
+    for(let j=0;j<7;j++){let q=j*Math.PI*2/7;cyl(.11,.15,.45,palette.cream,p,Math.cos(q)*1.74,.89,Math.sin(q)*1.74)}
+    cyl(.16,.23,1.07,palette.aqua,p,0,1.35,0,11);sphere(.42,palette.aqua,p,0,2.22,0);halo(p,0,2.26,0,2.5,halos[i]);
+    for(const q of [-1,1])waterfall(p,q*2.35,r,i);
+  }
+  if(i===1){
+    const terrace=cyl(1.75,1.84,.27,palette.brick,p,0,.65,0,32);
+    cyl(.32,.5,2.0,palette.bark,p,0,1.8,0);
+    for(let j=0;j<9;j++){let ang=j*2.399,rad=.3+rnd()*.95;let c=sphere(.74+rnd()*.12,j%3?palette.blossom:palette.coral,p,Math.cos(ang)*rad,3.24+rnd()*.44,Math.sin(ang)*rad);c.scale.y=.78}
+    for(let j=0;j<9;j++){let th=j*Math.PI*2/9;const l=cyl(.085,.13,.34,palette.cream,p,Math.sin(th)*1.5,.92,Math.cos(th)*1.5);sphere(.11,palette.lantern,p,l.position.x,1.16,l.position.z)}
+    halo(p,0,3.6,0,3,halos[i]);waterfall(p,2.3,r,i);
+  }
+  if(i===2){
+    cyl(1.7,1.8,.24,palette.brick,p,0,.64,0,30);
+    for(let j=0;j<7;j++){let angle=j*Math.PI*2/7,rad=1.35;const desk=cube(.43,.41,.72,palette.metal,p,Math.cos(angle)*rad,.95,Math.sin(angle)*rad);desk.rotation.y=angle}
+    const cryst=mesh(new THREE.OctahedronGeometry(.92,0),new THREE.MeshStandardMaterial({color:0xf7c37c,emissive:0xf38b38,emissiveIntensity:.65,roughness:.12,metalness:.18}),p,0,2.05,0);cryst.scale.y=1.55;animated.push(cryst);halo(p,0,2.25,0,3.2,halos[i]);waterfall(p,1.3,r,i);
+  }
+  if(i===3){
+    cyl(2.0,2.08,.22,palette.brick,p,0,.63,0,40);
+    for(let j=0;j<15;j++){let ang=j*2.399,rad=.36+rnd()*1.5,x=Math.cos(ang)*rad,z=Math.sin(ang)*rad,h=.65+rnd()*1.7;
+      cube(.39,h,.46,j%3===0?palette.aqua:palette.metal,p,x,.77+h/2,z);
+      cube(.45,.09,.52,palette.light,p,x,.85+h,z);
+    }
+    cyl(.63,.7,.16,palette.cream,p,0,.77,0,26);sphere(.23,palette.aqua,p,0,1.46,0);halo(p,0,2.25,0,2.4,halos[i]);
+  }
+  if(i===4){
+    cyl(1.82,1.93,.21,palette.brick,p,0,.66,0,30);
+    const home=cube(1.54,1.06,1.2,palette.cream,p,0,1.33,0);
+    const roof=mesh(new THREE.ConeGeometry(1.17,.81,4),palette.basalt[2],p,0,2.28,0);roof.rotation.y=Math.PI/4;
+    cube(.51,.62,.05,palette.lantern,p,0,1.28,.63);
+    for(let j=0;j<5;j++){let th=j*Math.PI*2/5;const tree=sphere(.41,j%2?palette.blossom:palette.pine,p,Math.cos(th)*1.65,1.18,Math.sin(th)*1.65);tree.scale.y=1.15}
+    const pool=cyl(.74,.77,.07,palette.ocean,p,1.2,.76,-.4,28);halo(p,0,1.7,0,2,halos[i]);waterfall(p,3.1,r,i);
+  }
+  if(i===5){
+    cyl(1.86,1.95,.28,palette.brick,p,0,.67,0,34);
+    for(let j=0;j<8;j++){let ang=j*Math.PI*2/8,x=Math.sin(ang)*1.55,z=Math.cos(ang)*1.55;cyl(.15,.18,1.45,palette.cream,p,x,1.45,z);sphere(.11,palette.lantern,p,x,2.29,z)}
+    const lintel=mesh(new THREE.TorusGeometry(1.54,.16,8,40,Math.PI),palette.cream,p,0,2.24,0);lintel.rotation.x=-Math.PI/2;
+    cube(1.18,.12,.87,palette.cream,p,0,.94,0);const page=cube(.91,.09,.64,palette.quartz,p,0,1.05,0);page.rotation.z=.06;
+    halo(p,0,2.6,0,2.1,halos[i]);waterfall(p,3.0,r,i);
+  }
+  const jewel=sphere(.135,new THREE.MeshBasicMaterial({color:a.color}),p,0,3.95,0);halo(p,0,3.95,0,1.35,halos[i]);
+  return p;
+}
+
 const groups=areas.map(isle);
-const hub=new THREE.Group();S.add(hub);cyl(2.1,2.45,.5,rock2,hub,0,.15,0,32);cyl(1.7,1.7,.1,glass,hub,0,.46,0,44);const ringmat=new THREE.MeshBasicMaterial({color:0x5be3f9});for(let r of [1.1,1.65,2.2]){let t=mesh(new THREE.TorusGeometry(r,.027,6,80),ringmat,hub,0,.58,0);t.rotation.x=-Math.PI/2;animated.push(t)}const character=cyl(.13,.18,1.15,blue,hub,0,1.16,0);sphere(.23,blue,hub,0,1.9,0);const orb=sphere(.63,new THREE.MeshStandardMaterial({color:0x309bf1,emissive:0x0b68a0,emissiveIntensity:.9,transparent:true,opacity:.76,metalness:.25,roughness:.15}),hub,0,3.4,0);animated.push(orb);
-const bridgeMat=mat(0x6b8da5,.35,.35);
-function bridge(x,z){const len=Math.hypot(x,z),angle=Math.atan2(x,z),b=cube(.53,.17,len-3.1,bridgeMat,S,x/2,.5,z/2);b.rotation.y=angle;for(let n=1;n<6;n++){let t=n/6,light=sphere(.06,new THREE.MeshBasicMaterial({color:0x79deff}),S,x*t,.7,z*t);animated.push(light)}}
+const hub=new THREE.Group();S.add(hub);cyl(2.1,2.48,.48,palette.basalt[1],hub,0,.14,0,36);
+cyl(1.74,1.85,.23,palette.cream,hub,0,.46,0,48);
+cyl(1.37,1.37,.1,palette.ocean,hub,0,.61,0,48);
+for(let r of [1.15,1.7,2.08]){let t=mesh(new THREE.TorusGeometry(r,.027,7,100),palette.light,hub,0,.73,0);t.rotation.x=Math.PI/2;animated.push(t)}
+const central=cyl(.14,.2,1.05,palette.aqua,hub,0,1.30,0);sphere(.23,palette.aqua,hub,0,1.99,0);
+for(let q of [-1,1]){let arm=cyl(.055,.07,.72,palette.aqua,hub,.27*q,1.43,0);arm.rotation.z=q*.64;let leg=cyl(.075,.095,.71,palette.aqua,hub,q*.13,.67,0);leg.rotation.z=q*.19}
+const coreOrb=sphere(.58,new THREE.MeshStandardMaterial({color:0x8dd7f5,emissive:0x307ebb,emissiveIntensity:.78,metalness:.4,roughness:.14,transparent:true,opacity:.88}),hub,0,3.25,0);
+halo(hub,0,3.28,0,3.6,labelGlow(0x60d9ff));const beam=mesh(new THREE.CylinderGeometry(.035,.20,2.3,10),new THREE.MeshBasicMaterial({color:0x75c5ff,transparent:true,opacity:.21,depthWrite:false}),hub,0,2.3,0);
+const bridgeMat=mat(0x8ea1a8,.42,.41),railMat=mat(0x6f91a1,.45,.33);
+function bridge(x,z){
+ const len=Math.hypot(x,z),angle=Math.atan2(x,z),from=2.02,to=len-2.43;
+ if(to<=from)return;
+ const distance=to-from,center=(to+from)/2;
+ const carrier=cube(.48,.11,distance,bridgeMat,S,(x/len)*center,.65,(z/len)*center);carrier.rotation.y=angle;
+ for(let n=0;n<Math.floor(distance/.28);n++){let a=from+(n+.5)*.28;const step=cube(.59,.045,.24,n%3?bridgeMat:palette.cream,S,x/len*a,.735,z/len*a);step.rotation.y=angle}
+ for(const sign of [-1,1]){
+  const rail=cube(.047,.07,distance,railMat,S,x/len*center+sign*z/len*.30,1.0,z/len*center-sign*x/len*.30);rail.rotation.y=angle;
+  for(let n=0;n<5;n++){let t=(n+.5)/5,rr=from+distance*t,sx=x/len*rr+sign*z/len*.30,sz=z/len*rr-sign*x/len*.30;cyl(.042,.052,.40,railMat,S,sx,.88,sz,6);
+   const lamp=sphere(.065,palette.lantern,S,sx,1.12,sz);
+   if(n===2)halo(S,sx,1.13,sz,.45,labelGlow(0xfdd89e));
+  }
+ }
+}
 areas.forEach(a=>bridge(a.p[0],a.p[2]));
-const starsMat=new THREE.PointsMaterial({color:0x9cdeff,size:.06,transparent:true,opacity:.7});const pos=[];for(let k=0;k<520;k++)pos.push((Math.random()-.5)*85,(Math.random()-.5)*50+9,(Math.random()-.5)*85);let starGeo=new THREE.BufferGeometry();starGeo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));S.add(new THREE.Points(starGeo,starsMat));
-let yaw=0,pitch=.64,dist=25,down=false,lastX=0,lastY=0, moved=0,pinch=0, target=new THREE.Vector3(0,0,0);
+// Starfield, clouds and distant luminous planetary crescent
+const starsMat=new THREE.PointsMaterial({color:0xd4eaff,size:.12,transparent:true,opacity:.8,sizeAttenuation:true});const pos=[];
+for(let k=0;k<(mobile?430:1050);k++)pos.push((rnd()-.5)*110,3+rnd()*64,-38-rnd()*55);
+const starGeo=new THREE.BufferGeometry();starGeo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));S.add(new THREE.Points(starGeo,starsMat));
+const moonMat=new THREE.MeshBasicMaterial({color:0x9fbce8,transparent:true,opacity:.14,depthWrite:false});
+const moon=sphere(12,moonMat,S,-23,8,-72);
+const outer=mesh(new THREE.TorusGeometry(14,.14,8,112),new THREE.MeshBasicMaterial({color:0x659ae6,transparent:true,opacity:.28}),S,-23,8,-72);outer.rotation.x=-.18;
+for(let i=0;i<(mobile?8:16);i++){const c=new THREE.Group();S.add(c);c.position.set((rnd()-.5)*40,-4-rnd()*3,-12-rnd()*25);
+ for(let j=0;j<3;j++){let s=sphere(2+rnd()*2.3,new THREE.MeshBasicMaterial({color:i%3?0x365075:0x6d668f,transparent:true,opacity:.035,depthWrite:false}),c,(j-1)*1.4,rnd()*.4,0);s.scale.y=.25}
+}
+
+const tags=areas.map((a,i)=>{const el=document.createElement('button');el.className='worldTag';el.type='button';el.textContent=a.title.toUpperCase();el.style.setProperty('--a','#'+a.color.toString(16).padStart(6,'0'));el.onclick=()=>choose(a);document.querySelector('#worldTags').append(el);return el});
+function positionLabels(){const w=innerWidth,h=innerHeight;areas.forEach((a,i)=>{const v=new THREE.Vector3(a.p[0],4.15,a.p[2]).project(camera);const screenX=(v.x*.5+.5)*w,screenY=(-v.y*.5+.5)*h;const visible=v.z<1&&v.z>-1&&screenX>35&&screenX<w-35&&screenY>100&&screenY<h-90;tags[i].style.opacity=visible?'1':'0';tags[i].style.pointerEvents=visible?'auto':'none';tags[i].style.left=screenX+'px';tags[i].style.top=screenY+'px';})}
+let yaw=.06,pitch=.83,dist=innerWidth<700?35:27,down=false,lastX=0,lastY=0, moved=0,pinch=0, target=new THREE.Vector3(0,0,0);
 function cam(){const p=Math.max(.28,Math.min(1.18,pitch));camera.position.set(Math.sin(yaw)*Math.cos(p)*dist,Math.sin(p)*dist,Math.cos(yaw)*Math.cos(p)*dist);camera.lookAt(target)}
-function resize(){let w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<700?65:48;camera.updateProjectionMatrix();R.setSize(w,h,false)}resize();addEventListener('resize',resize);cam();
+function resize(){let w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<700?71:50;camera.updateProjectionMatrix();R.setSize(w,h,false)}resize();addEventListener('resize',resize);cam();
 canvas.addEventListener('pointerdown',e=>{down=true;lastX=e.clientX;lastY=e.clientY;moved=0;canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!down)return;let dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;moved+=Math.abs(dx)+Math.abs(dy);yaw-=dx*.006;pitch=Math.max(.28,Math.min(1.18,pitch+dy*.004));cam()});
 canvas.addEventListener('wheel',e=>{e.preventDefault();dist=Math.max(10,Math.min(43,dist+e.deltaY*.025));cam()},{passive:false});
 canvas.addEventListener('touchmove',e=>{if(e.touches.length===2){let a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);if(pinch)dist=Math.max(10,Math.min(43,dist+(pinch-d)*.035));pinch=d;cam();e.preventDefault()}},{passive:false});
 canvas.addEventListener('touchend',()=>pinch=0);
 canvas.addEventListener('pointerup',e=>{down=false;if(moved>10)return;const box=canvas.getBoundingClientRect(),pointer=new THREE.Vector2((e.clientX-box.left)/box.width*2-1,-((e.clientY-box.top)/box.height*2-1));const ray=new THREE.Raycaster();ray.setFromCamera(pointer,camera);let hits=ray.intersectObjects(allPick);if(hits.length)choose(hits[0].object.userData.area)});
-$('#loader').remove();$('#engine').textContent='ACTIVE';$('#hint').textContent='3D активен · выберите остров';const t0=clock.getElapsedTime();function loop(){requestAnimationFrame(loop);const t=clock.getElapsedTime();for(let j=0;j<animated.length;j++){const o=animated[j];if(o.geometry.type==='OctahedronGeometry')o.rotation.y=t*.35;else if(o.geometry.type==='SphereGeometry')o.position.y+=Math.sin(t*.9+j)*.00035;}R.render(S,camera)}loop();
+$('#loader').remove();$('#engine').textContent='ACTIVE';$('#hint').textContent='ЖИВОЙ МИР · 6 ОБЛАСТЕЙ';const t0=clock.getElapsedTime();let frames=0;function loop(){requestAnimationFrame(loop);if(document.hidden)return;const t=clock.getElapsedTime();for(let j=0;j<animated.length;j++){const o=animated[j];if(o.geometry?.type==='OctahedronGeometry')o.rotation.y=t*.21;}coreOrb.position.y=3.25+Math.sin(t*.75)*.13;if(frames++%3===0)positionLabels();R.render(S,camera)}loop();
 }catch(err){console.error('WEBGL_RUNTIME_ERROR',err);$('#engine').textContent='FALLBACK';$('#fallback').style.display='flex';$('#loader').remove();canvas.style.display='none'}
 }
 </script></body></html>

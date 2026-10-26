@@ -17,7 +17,7 @@ body{background:#080d1b}
 .panel h2{letter-spacing:.02em;font-size:26px}.panel p{font-size:13px;line-height:1.7;color:#bed6dd}
 .panel a{background:linear-gradient(100deg,#d7f0df,#66c9c9);letter-spacing:.06em;border-radius:9px}
 .legend{bottom:118px;color:#94adc1;font-size:10px;opacity:.78}
-.toast{top:110px;background:#101a2be8;border:1px solid #6d8ca353;color:#d6e7ec;font-size:10px;letter-spacing:.1em;padding:11px 19px;box-shadow:0 16px 30px #0008}
+.toast{display:none;top:110px;background:#101a2be8;border:1px solid #6d8ca353;color:#d6e7ec;font-size:10px;letter-spacing:.1em;padding:11px 19px;box-shadow:0 16px 30px #0008}
 #worldTags{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
 .worldTag{position:absolute;transform:translate(-50%,-50%);border:1px solid #d1e7df52;border-radius:9px;background:linear-gradient(130deg,#192b3dbf,#09182ccc);box-shadow:0 12px 35px #0205139e,0 0 23px var(--a);color:#eef7f6;padding:9px 15px 9px 12px;font-size:10px;letter-spacing:.16em;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .25s,background .25s;backdrop-filter:blur(9px);pointer-events:auto;cursor:pointer}
 .worldTag::before{content:'◇';color:var(--a);margin-right:8px}
@@ -56,10 +56,10 @@ function choose(a){selected=a;$('#title').textContent=a.title;$('#desc').textCon
 const canvas=$('#world');let THREE;try{THREE=await Promise.race([import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js'),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),9000))])}catch(e){$('#engine').textContent='2D';$('#fallback').style.display='flex';$('#loader').remove();canvas.style.display='none';}
 if(THREE){
 try{
-const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,innerWidth<700?1.2:1.6));R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.73;
+const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,innerWidth<700?1.2:1.6));R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.28;
 const S=new THREE.Scene();S.fog=new THREE.FogExp2(0x0b1022,.009);
 const camera=new THREE.PerspectiveCamera(48,1,.1,120);camera.position.set(0,18,27);
-S.add(new THREE.HemisphereLight(0xd9ecff,0x394a75,3.6));const sun=new THREE.DirectionalLight(0xffd7b5,4.8);sun.position.set(-8,19,3);S.add(sun);
+S.add(new THREE.HemisphereLight(0xd9ecff,0x394a75,2.6));const sun=new THREE.DirectionalLight(0xffd7b5,3.5);sun.position.set(-8,19,3);S.add(sun);
 const mat=(c,metal=0,rough=.65)=>new THREE.MeshStandardMaterial({color:c,metalness:metal,roughness:rough});
 const rock=mat(0x27334e),rock2=mat(0x39445b),grass=mat(0x245b4b),forest=mat(0x2c685e),trunk=mat(0x735343),gold=mat(0xefa76d,.25),blue=mat(0x8ae5f2,.4,.3),glass=mat(0x376d89,.3,.28),stone=mat(0x998676),snow=mat(0xc4e4ff);
 const allPick=[];const clock=new THREE.Clock(),animated=[];
@@ -196,10 +196,10 @@ for(let i=0;i<(mobile?8:16);i++){const c=new THREE.Group();S.add(c);c.position.s
 }
 
 const tags=areas.map((a,i)=>{const el=document.createElement('button');el.className='worldTag';el.type='button';el.textContent=a.title.toUpperCase();el.style.setProperty('--a','#'+a.color.toString(16).padStart(6,'0'));el.onclick=()=>choose(a);document.querySelector('#worldTags').append(el);return el});
-function positionLabels(){const w=innerWidth,h=innerHeight;areas.forEach((a,i)=>{const v=new THREE.Vector3(a.p[0],4.75,a.p[2]).project(camera);const screenX=(v.x*.5+.5)*w,screenY=(-v.y*.5+.5)*h;const visible=v.z<1&&v.z>-1&&screenX>35&&screenX<w-35&&screenY>100&&screenY<h-90;tags[i].style.opacity=visible?'1':'0';tags[i].style.pointerEvents=visible?'auto':'none';tags[i].style.left=screenX+'px';tags[i].style.top=screenY+'px';})}
-let yaw=.06,pitch=.83,dist=innerWidth<700?(innerWidth>innerHeight?20:29):20,down=false,lastX=0,lastY=0, moved=0,pinch=0, target=new THREE.Vector3(0,0,0);
+function positionLabels(){const w=innerWidth,h=innerHeight;areas.forEach((a,i)=>{const v=new THREE.Vector3(a.p[0],2.78,a.p[2]).project(camera);const screenX=(v.x*.5+.5)*w,screenY=(-v.y*.5+.5)*h;const visible=v.z<1&&v.z>-1&&screenX>35&&screenX<w-35&&screenY>100&&screenY<h-90;tags[i].style.opacity=visible?'1':'0';tags[i].style.pointerEvents=visible?'auto':'none';tags[i].style.left=screenX+'px';tags[i].style.top=screenY+'px';})}
+let yaw=.06,pitch=.83,dist=innerWidth<700?(innerWidth>innerHeight?23.5:30):24,down=false,lastX=0,lastY=0, moved=0,pinch=0, target=new THREE.Vector3(0,0,0);
 function cam(){const p=Math.max(.28,Math.min(1.18,pitch));camera.position.set(Math.sin(yaw)*Math.cos(p)*dist,Math.sin(p)*dist,Math.cos(yaw)*Math.cos(p)*dist);camera.lookAt(target)}
-function resize(){let w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<700?(w>h?49:64):47;camera.updateProjectionMatrix();R.setSize(w,h,false)}resize();addEventListener('resize',resize);cam();
+function resize(){let w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<700?(w>h?53:67):48;camera.updateProjectionMatrix();R.setSize(w,h,false)}resize();addEventListener('resize',resize);cam();
 canvas.addEventListener('pointerdown',e=>{down=true;lastX=e.clientX;lastY=e.clientY;moved=0;canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!down)return;let dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;moved+=Math.abs(dx)+Math.abs(dy);yaw-=dx*.006;pitch=Math.max(.28,Math.min(1.18,pitch+dy*.004));cam()});
 canvas.addEventListener('wheel',e=>{e.preventDefault();dist=Math.max(10,Math.min(43,dist+e.deltaY*.025));cam()},{passive:false});

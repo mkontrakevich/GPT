@@ -23,6 +23,8 @@ jobs:
         run: node human-os-webgl/tools/build-worker.mjs
       - name: Install isolated browser QA
         run: npm install --prefix human-os-webgl/qa --ignore-scripts --no-audit --no-fund
+      - name: Validate actual glTF binary buffers with Khronos validator
+        run: node human-os-webgl/qa/gltf.mjs
       - name: Install browser engines
         run: cd human-os-webgl/qa && npx playwright install --with-deps chromium firefox webkit
       - name: Real browser runtime matrix (software GPU, not physical devices)

@@ -108,6 +108,12 @@ body{background:#080d1b}
  .panel{width:245px;right:10px;left:auto;bottom:calc(64px + env(safe-area-inset-bottom));max-height:50vh}
 }
 
+@media(max-height:500px) and (orientation:landscape){
+ .bottom{bottom:calc(6px + env(safe-area-inset-bottom));padding:3px 8px;border-radius:13px}
+ .bottom button{padding:4px 7px;min-width:68px;font-size:8px}
+ .bottom button strong{font-size:15px}
+ .panel{top:auto;transform:none;bottom:60px;max-height:65vh}
+}
 </style></head><body><div id="back"></div><button id="homeWorld" hidden aria-label="Вернуться к общей карте">◈ ВСЯ КАРТА</button><div id="worldTags"></div><section class="mobileIntro"><div class="miKicker">EXPLORE YOUR LIVING WORLD</div><div class="miTitle">ТВОЯ<br><span>ВСЕЛЕННАЯ</span></div><p>Шесть направлений жизни.<br>Один живой 3D-мир.</p><div class="miChips"><span>06 ОСТРОВОВ</span><span>REAL-TIME WEBGL</span></div></section><div class="mobileFoot">ПРОВЕДИ ПАЛЬЦЕМ ПО МИРУ <span>◇</span> ВЫБЕРИ ОСТРОВ</div><canvas id="world" aria-label="Интерактивная трехмерная карта мира Human OS"></canvas><div id="fallback"><div><h2>HUMAN OS</h2><p>3D временно недоступно. Выберите область жизни в меню ниже.</p></div></div><div id="loader" class="loader">ЗАГРУЗКА МИРА…</div><header class="hud top"><div><div class="logo">HUMAN <b>OS</b> <span style="opacity:.45;font-size:10px">/ WORLD</span></div><div class="subtitle">ЖИВАЯ КАРТА ТВОЕЙ ЖИЗНИ</div></div><div class="topRight">◉ <span>WEBGL</span> · <span id="engine">INIT</span><div style="margin-top:5px;text-align:right">DEMO · БЕЗ ЛИЧНЫХ ДАННЫХ</div></div></header><aside class="hud panel" id="panel" hidden><button id="close" aria-label="Закрыть">×</button><div class="eyebrow">LIFE DOMAIN / EXPLORE</div><h2 id="title"></h2><p id="desc"></p><div class="eyebrow" id="sub"></div><a id="go" href="#" target="_blank" rel="noopener">ОТКРЫТЬ МОДУЛЬ</a></aside><div class="hud legend">Вращение: палец / мышь<br>Приближение: два пальца / колесо<br>Выбрать остров: касание</div><div class="hud toast" id="hint">Выберите остров или значок внизу</div><nav class="hud bottom" id="menu" aria-label="Области жизни"></nav>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}</script>
 <script type="module">
@@ -417,19 +423,19 @@ for(let i=0;i<(mobile?8:16);i++){const c=new THREE.Group();S.add(c);c.position.s
 
 const tags=areas.map((a,i)=>{const el=document.createElement('button');el.className='worldTag';el.type='button';el.textContent=a.title.toUpperCase();el.setAttribute('aria-label','Открыть '+a.title);el.title=a.title;el.style.setProperty('--a','#'+a.color.toString(16).padStart(6,'0'));el.onclick=()=>choose(a);document.querySelector('#worldTags').append(el);return el});
 function positionLabels(){const w=innerWidth,h=innerHeight;areas.forEach((a,i)=>{const v=new THREE.Vector3(a.p[0],2.78,a.p[2]).project(camera);const screenX=(v.x*.5+.5)*w,screenY=(-v.y*.5+.5)*h;const visible=v.z<1&&v.z>-1&&screenX>35&&screenX<w-35&&screenY>60&&screenY<h-90;tags[i].style.opacity=visible?'1':'0';tags[i].style.pointerEvents=visible?'auto':'none';tags[i].style.left=screenX+'px';tags[i].style.top=screenY+'px';})}
-let yaw=.06,pitch=.83,dist=innerWidth<700?(innerWidth>innerHeight?23.5:38):24,down=false,lastX=0,lastY=0, moved=0,pinch=0, target=new THREE.Vector3(0,0,0);
+let yaw=.06,pitch=.83,dist=Math.min(innerWidth,innerHeight)<700?(innerWidth>innerHeight?30:38):24,down=false,lastX=0,lastY=0, moved=0,pinch=0, target=new THREE.Vector3(0,0,0);
 function cam(){const p=Math.max(.28,Math.min(1.18,pitch));camera.position.set(target.x+Math.sin(yaw)*Math.cos(p)*dist,target.y+Math.sin(p)*dist,target.z+Math.cos(yaw)*Math.cos(p)*dist);camera.lookAt(target)}
-function homeDistance(){return innerWidth<700?(innerWidth>innerHeight?23.5:38):24}
-function resize(){let w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<700?(w>h?53:67):48;camera.updateProjectionMatrix();R.setPixelRatio(Math.min(devicePixelRatio||1,w<700?1.2:1.6));R.setSize(w,h,false)}
+function homeDistance(){return Math.min(innerWidth,innerHeight)<700?(innerWidth>innerHeight?30:38):24}
+function resize(){let w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=Math.min(w,h)<700?(w>h?53:67):48;camera.updateProjectionMatrix();R.setPixelRatio(Math.min(devicePixelRatio||1,w<700?1.2:1.6));R.setSize(w,h,false)}
 resize();addEventListener('resize',()=>{resize();if(!selected){dist=homeDistance();pitch=.83;target.set(0,0,0);flight.dest=null;cam()}positionLabels()});cam();
 
 /* smooth cinematic island-focus camera, never writes data */
 const cameraHome={x:0,z:0,y:0,dist:dist,pitch:pitch},flight={dest:null};
 window.__focusArea=(a)=>{flight.dest={x:a.p[0],y:0,z:a.p[2],dist:innerWidth<700?12.4:10.8,pitch:.64};const btn=document.getElementById('homeWorld');if(btn)btn.hidden=false};
-window.__worldHome=()=>{flight.dest={x:0,y:0,z:0,dist:innerWidth<700?(innerWidth>innerHeight?23.5:38):24,pitch:.83};const btn=document.getElementById('homeWorld');if(btn)btn.hidden=true};
+window.__worldHome=()=>{flight.dest={x:0,y:0,z:0,dist:homeDistance(),pitch:.83};const btn=document.getElementById('homeWorld');if(btn)btn.hidden=true};
 document.getElementById('homeWorld')?.addEventListener('click',()=>{document.getElementById('close').click();window.__worldHome()});
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-function cameraFly(dt=1/60){if(!flight.dest)return;const d=flight.dest,k=reducedMotion?1:1-Math.exp(-4.68*Math.min(dt,.1));target.x+=(d.x-target.x)*k;target.y+=(d.y-target.y)*k;target.z+=(d.z-target.z)*k;dist+=(d.dist-dist)*k;pitch+=(d.pitch-pitch)*k;cam();if(Math.abs(dist-d.dist)<.012&&Math.abs(target.x-d.x)+Math.abs(target.z-d.z)<.02)flight.dest=null}
+function cameraFly(dt=1/60){if(!flight.dest)return;const d=flight.dest,k=reducedMotion?1:1-Math.exp(-4.68*Math.min(dt,1));target.x+=(d.x-target.x)*k;target.y+=(d.y-target.y)*k;target.z+=(d.z-target.z)*k;dist+=(d.dist-dist)*k;pitch+=(d.pitch-pitch)*k;cam();if(Math.abs(dist-d.dist)<.012&&Math.abs(target.x-d.x)+Math.abs(target.z-d.z)<.02)flight.dest=null}
 const pointers=new Map();let gesture=false;
 canvas.addEventListener('pointerdown',e=>{
  flight.dest=null;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});down=true;
@@ -472,7 +478,7 @@ function batchStaticScene(){
   const attrs=Object.keys(o.geometry.attributes).sort();
   if(attrs.some(k=>!['position','normal','uv'].includes(k)))return;
   let root=o;while(root.parent&&root.parent!==S)root=root.parent;
-  const key=root.uuid+':'+o.material.uuid+':'+attrs.join(',');
+  const key=(groups.includes(root)?root.uuid:'world')+':'+o.material.uuid+':'+attrs.join(',');
   if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(o);
  });
  let removed=0,batches=0;const oldGeometries=new Set();
@@ -508,7 +514,7 @@ function loop(now){
  requestAnimationFrame(loop);
  if(document.hidden||!contextReady){previous=now;sampleStart=now;samples.length=0;return}
  const rawMs=now-previous,dt=Math.min(rawMs/1000,.1);previous=now;
- const t=clock.getElapsedTime();cameraFly(dt);
+ const t=clock.getElapsedTime();cameraFly(rawMs/1000);
  if(!reducedMotion){for(const o of animated)if(o.geometry?.type==='OctahedronGeometry')o.rotation.y=t*.21;coreOrb.position.y=3.25+Math.sin(t*.75)*.13}
  if(frames++%3===0)positionLabels();
  R.render(S,camera);

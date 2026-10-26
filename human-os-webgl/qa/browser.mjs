@@ -28,7 +28,7 @@ try{
      if(engine==='ACTIVE'){assert.equal(await page.evaluate(()=>window.__WORLD_QA.inspect().selected),id);await page.locator('#homeWorld').click()}else await page.locator('#close').click();
     }
     if(engine==='ACTIVE'){
-     await page.locator('#menu [data-area="health"]').click();await page.waitForTimeout(1500);
+     await page.locator('#menu [data-area="health"]').click();await page.waitForFunction(()=>!window.__WORLD_QA.inspect().camera.flying,{},{timeout:15000});
      const focus=await page.evaluate(()=>window.__WORLD_QA.inspect().camera);
      assert.ok(Math.abs(focus.target[0]+5)<.15&&Math.abs(focus.target[2]+4.8)<.15);
      assert.ok(Math.abs(Math.hypot(...focus.position.map((v,i)=>v-focus.target[i]))-focus.distance)<.02);

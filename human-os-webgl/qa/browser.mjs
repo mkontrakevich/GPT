@@ -20,7 +20,7 @@ try{
     const engine=await page.locator('#engine').textContent();
     // Software headless engines are reported separately; unavailable GPU is never a WebGL PASS.
     assert.equal(await page.locator('#menu button').count(),6);
-    const item={browser:name,width,height,engine,webglPass:false};
+    const item={browser:name,width,height,engine,webglPass:false};evidence.push(item);
     for(const id of ['health','relationships','projects','work','personal','memory']){
      await page.locator('#menu [data-area="'+id+'"]').click();
      await page.waitForTimeout(100);
@@ -39,17 +39,22 @@ try{
      assert.equal(await page.evaluate(()=>window.__WORLD_QA.inspect().pointers),0);
      const qa=await page.evaluate(()=>({version:__WORLD_QA.version,meshCount:__WORLD_QA.meshCount,batching:__WORLD_QA.batching,assets:__WORLD_QA.assets,performance:__WORLD_QA.performance,state:__WORLD_QA.inspect()}));
      assert.equal(qa.assets.loaded.length,6);assert.equal(qa.assets.failed.length,0);assert.ok(qa.batching.netReduction>300);assert.ok(qa.meshCount<917);
-     item.webglPass=true;item.qa=qa;
-     await page.evaluate(()=>{const gl=document.querySelector('#world').getContext('webgl2');gl.getExtension('WEBGL_lose_context')?.loseContext()});
-     await page.waitForTimeout(150);
-     await page.evaluate(()=>{const gl=document.querySelector('#world').getContext('webgl2');gl.getExtension('WEBGL_lose_context')?.restoreContext()});
-     await page.waitForTimeout(1200);
-     item.recovery=await page.evaluate(()=>__WORLD_QA.context);
-     assert.equal(item.recovery.lost,1);assert.equal(item.recovery.restored,1);assert.equal(await page.locator('#engine').textContent(),'ACTIVE');
+     item.qa=qa;
+     const canLose=await page.evaluate(()=>!!document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context'));
+     if(canLose){
+      await page.evaluate(()=>document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
+      await page.waitForFunction(()=>__WORLD_QA.context.lost===1,{},{timeout:10000});
+      await page.waitForTimeout(1000);
+      await page.evaluate(()=>document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context').restoreContext());
+      await page.waitForFunction(()=>__WORLD_QA.context.restored===1,{},{timeout:15000});
+      item.recovery=await page.evaluate(()=>__WORLD_QA.context);
+      assert.equal(await page.locator('#engine').textContent(),'ACTIVE');
+     }else item.recovery={supported:false,verified:false};
+     item.webglPass=true;
     }
     if(name==='chromium')assert.equal(engine,'ACTIVE','Chromium WebGL must actually render');
     assert.deepEqual(errors,[]);
-    await page.screenshot({path:'human-os-webgl/qa/artifacts/'+name+'-'+width+'x'+height+'.png'});evidence.push(item);await page.close();
+    await page.screenshot({path:'human-os-webgl/qa/artifacts/'+name+'-'+width+'x'+height+'.png'});await page.close();
    }
    const fallback=await browser.newPage();await fallback.route('**/cdn.jsdelivr.net/**',route=>route.abort());await fallback.goto('http://127.0.0.1:8799/');await fallback.waitForFunction(()=>document.querySelector('#engine').textContent==='2D');await fallback.locator('[data-area="health"]').click();assert.equal(await fallback.locator('#go').getAttribute('href'),'https://health-game-console-mvp.kontrakevich.workers.dev/');evidence.push({browser:name,fallbackPass:true});await fallback.close();
   }finally{await browser.close()}

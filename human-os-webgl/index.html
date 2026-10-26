@@ -57,6 +57,10 @@ body{background:#080d1b}
 #homeWorld{position:fixed;z-index:5;left:22px;top:calc(106px + env(safe-area-inset-top));font:700 10px system-ui;letter-spacing:.13em;border:1px solid #a4ece17a;border-radius:9px;background:#12263ce0;color:#d5f6ec;padding:12px 14px;cursor:pointer;box-shadow:0 10px 30px #0018}
 #homeWorld[hidden]{display:none}
 @media(max-width:650px){#homeWorld{top:calc(87px + env(safe-area-inset-top));left:12px;padding:9px 12px}}
+
+@media(max-width:650px) and (orientation:landscape){
+.mobileIntro,.mobileFoot{display:none}
+}
 </style></head><body><div id="back"></div><button id="homeWorld" hidden aria-label="Вернуться к общей карте">◈ ВСЯ КАРТА</button><div id="worldTags"></div><section class="mobileIntro"><div class="miKicker">EXPLORE YOUR LIVING WORLD</div><div class="miTitle">ТВОЯ<br><span>ВСЕЛЕННАЯ</span></div><p>Шесть направлений жизни.<br>Один живой 3D-мир.</p><div class="miChips"><span>06 ОСТРОВОВ</span><span>REAL-TIME WEBGL</span></div></section><div class="mobileFoot">ПРОВЕДИ ПАЛЬЦЕМ ПО МИРУ <span>◇</span> ВЫБЕРИ ОСТРОВ</div><canvas id="world" aria-label="Интерактивная трехмерная карта мира Human OS"></canvas><div id="fallback"><div><h2>HUMAN OS</h2><p>3D временно недоступно. Выберите область жизни в меню ниже.</p></div></div><div id="loader" class="loader">ЗАГРУЗКА МИРА…</div><header class="hud top"><div><div class="logo">HUMAN <b>OS</b> <span style="opacity:.45;font-size:10px">/ WORLD</span></div><div class="subtitle">ЖИВАЯ КАРТА ТВОЕЙ ЖИЗНИ</div></div><div class="topRight">◉ <span>WEBGL</span> · <span id="engine">INIT</span><div style="margin-top:5px;text-align:right">DEMO · БЕЗ ЛИЧНЫХ ДАННЫХ</div></div></header><aside class="hud panel" id="panel" hidden><button id="close" aria-label="Закрыть">×</button><div class="eyebrow">LIFE DOMAIN / EXPLORE</div><h2 id="title"></h2><p id="desc"></p><div class="eyebrow" id="sub"></div><a id="go" href="#" target="_blank" rel="noopener">ОТКРЫТЬ МОДУЛЬ</a></aside><div class="hud legend">Вращение: палец / мышь<br>Приближение: два пальца / колесо<br>Выбрать остров: касание</div><div class="hud toast" id="hint">Выберите остров или значок внизу</div><nav class="hud bottom" id="menu" aria-label="Области жизни"></nav>
 <script type="module">
 const $=s=>document.querySelector(s),areas=[
@@ -73,10 +77,10 @@ function choose(a){selected=a;window.__focusArea?.(a);$('#title').textContent=a.
 const canvas=$('#world');let THREE;try{THREE=await Promise.race([import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js'),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),9000))])}catch(e){$('#engine').textContent='2D';$('#fallback').style.display='flex';$('#loader').remove();canvas.style.display='none';}
 if(THREE){
 try{
-const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,innerWidth<700?1.2:1.6));R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.28;
+const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,innerWidth<700?1.2:1.6));R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.16;
 const S=new THREE.Scene();S.fog=new THREE.FogExp2(0x0b1022,.009);
 const camera=new THREE.PerspectiveCamera(48,1,.1,120);camera.position.set(0,18,27);
-S.add(new THREE.HemisphereLight(0xd9ecff,0x394a75,2.6));const sun=new THREE.DirectionalLight(0xffd7b5,3.5);sun.position.set(-8,19,3);S.add(sun);
+S.add(new THREE.HemisphereLight(0xc4dafa,0x364565,1.75));const sun=new THREE.DirectionalLight(0xffdbad,3.35);sun.position.set(-8,19,3);S.add(sun);
 const mat=(c,metal=0,rough=.65)=>new THREE.MeshStandardMaterial({color:c,metalness:metal,roughness:rough});
 const rock=mat(0x27334e),rock2=mat(0x39445b),grass=mat(0x245b4b),forest=mat(0x2c685e),trunk=mat(0x735343),gold=mat(0xefa76d,.25),blue=mat(0x8ae5f2,.4,.3),glass=mat(0x376d89,.3,.28),stone=mat(0x998676),snow=mat(0xc4e4ff);
 const allPick=[];const clock=new THREE.Clock(),animated=[];
@@ -214,15 +218,25 @@ function bookshelf(p,x,z,rot=0){
   for(let b=0;b<6;b++){const col=[0x8a5262,0x426c8d,0xa68e72,0x7c828e][(s+b)%4];cube(.09,.29,.18,mat(col),g,-.37+b*.145,.38+s*.4,.29)}
  }
 }
+
+// One textured façade replaces dozens of per-floor meshes (mobile draw-call budget)
+const cityFacadeTexture=(()=>{
+ const c=document.createElement('canvas');c.width=128;c.height=256;const cx=c.getContext('2d');
+ cx.fillStyle='#425e76';cx.fillRect(0,0,128,256);
+ for(let y=5;y<250;y+=23)for(let x=8;x<120;x+=24){
+  const lit=rnd()>.19;cx.fillStyle=lit?'#d5c6ab':'#273c50';cx.fillRect(x,y,15,11);
+  if(lit){cx.fillStyle='rgba(255,224,170,.30)';cx.fillRect(x+1,y+1,13,2)}
+ }
+ cx.fillStyle='rgba(8,17,27,.20)';for(let x=0;x<128;x+=24)cx.fillRect(x,0,2,256);
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=2;return t;
+})();
+const cityFacade=new THREE.MeshStandardMaterial({color:0xd5dce9,map:cityFacadeTexture,metalness:.42,roughness:.41,emissive:0x886d44,emissiveMap:cityFacadeTexture,emissiveIntensity:.10});
 function architecturalTower(p,x,z,h,flavor=0) {
  const g=new THREE.Group();g.position.set(x,.63,z);p.add(g);
- cube(.59,h,.63,flavor%2?palette.metal:bronze,g,0,h*.5,0);
+ cube(.59,h,.63,cityFacade,g,0,h*.5,0);
  cube(.7,.12,.72,copper,g,0,h+.08,0);
  if(flavor%3===0){const roof=mesh(new THREE.ConeGeometry(.52,.54,4),darkVolcanic,g,0,h+.38,0);roof.rotation.y=Math.PI/4}
- for(let level=0;level<Math.min(9,Math.floor(h/.23));level++){
-  cube(.025,.07,.36,windowLight,g,-.315,.30+level*.23,0);
-  cube(.35,.07,.025,windowLight,g,0,.30+level*.23,.33);
- }
+ // façade windows are batched in one PBR material, not separate draw calls
  return g;
 }
 function strataCliffs(p,a,index){

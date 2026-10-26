@@ -1,0 +1,25 @@
+name: Human OS Cinematic Visual QA
+on:
+  push:
+    branches: ["feat/human-os-cinematic-assets"]
+    paths:
+      - "human-os-webgl/**"
+      - ".github/workflows/human-os-cinematic.yml"
+  pull_request:
+    paths:
+      - "human-os-webgl/**"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-and-static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Cinematic scene syntax, privacy and interaction checks
+        run: node --test human-os-webgl/tests/cinematic.test.mjs
+      - name: Run original World validation
+        run: node human-os-webgl/validate.mjs

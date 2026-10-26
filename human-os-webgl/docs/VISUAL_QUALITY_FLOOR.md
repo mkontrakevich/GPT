@@ -24,10 +24,17 @@
 - [x] All six bottom nav modules are on a single mobile row.
 - [x] Round clickable tags replace always-visible large labels.
 - [x] Staging runs WebGL on 390×844, 844×390 and desktop.
-- [ ] CI for HUD-specific guard tests green.
-- [ ] Mobile selection, focus and return controls independently verified in staging.
-- [ ] Review screenshot and promote to canonical stable demo only after all prior gates pass.
+- [x] CI for HUD-specific guard tests green.
+- [x] Mobile selection, focus and return controls independently verified in staging.
+- [x] Review screenshot and promote to canonical stable demo only after all prior gates pass.
 - [ ] Real iPhone Safari manual acceptance remains separate from emulator QA.
 
 ## Continuation
 Future visual work should start with project name, goal, stage, progress, and reference this v0.3 quality floor. Continue using GitHub + Cloudflare rather than Work.
+
+## v0.5 checkpoint — 2026-10-27
+- Additive six-domain glTF signatures; original silhouettes, materials and light baseline retained.
+- Static scene batching: mobile 917 to 213 meshes; actual measured software-browser draw calls 966 to 262.
+- Chromium and WebKit software-browser runtime passed three viewports, selection/focus/home and context recovery. Official Khronos validation: six assets, zero errors or warnings.
+- Firefox WebGL and physical iPhone/Windows acceptance remain unverified. Production promotion remains blocked; see SESSION_2026-10-27.md and RELEASE_STATUS.json.
+- Overview JPEG evidence is committed under docs/evidence; original CI screenshots are available in the linked Actions artifact.

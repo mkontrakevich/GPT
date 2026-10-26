@@ -1,0 +1,79 @@
+{
+  "engine": "ACTIVE",
+  "qa": {
+    "version": "v0.5-candidate",
+    "meshCount": 213,
+    "assets": {
+      "loaded": [
+        "relationships",
+        "projects",
+        "health",
+        "work",
+        "memory",
+        "personal"
+      ],
+      "failed": []
+    },
+    "batching": {
+      "sourceMeshes": 780,
+      "batches": 70,
+      "netReduction": 710
+    }
+  },
+  "routes": [
+    {
+      "path": "/health",
+      "status": 200,
+      "bytes": 89,
+      "sha256": "9f7c01dead491f50077a8e1097112874c6019e2da8cf4667376685f649359ef8",
+      "body": {
+        "ok": true,
+        "service": "human-os-living-world",
+        "version": "v0.5-candidate",
+        "demo_only": true
+      }
+    },
+    {
+      "path": "/assets/health-signature.gltf",
+      "status": 200,
+      "bytes": 44026,
+      "sha256": "064904da4408a5f1639316e2c9c12795082c5d071ea0176027b4a175735f8c5b"
+    },
+    {
+      "path": "/assets/relationships-signature.gltf",
+      "status": 200,
+      "bytes": 29746,
+      "sha256": "52a30b3781a947b5e30b7499b2d0bb700fc38739cb8ef80c0c1d6817a57efdab"
+    },
+    {
+      "path": "/assets/projects-signature.gltf",
+      "status": 200,
+      "bytes": 40355,
+      "sha256": "f0adbfc7ce0b999e351bf7474e2364d86716b2f01e438e3408db44915be5d6f9"
+    },
+    {
+      "path": "/assets/work-signature.gltf",
+      "status": 200,
+      "bytes": 54715,
+      "sha256": "1e90e1d43ccfcaa41f485b08b8def1ca48ef95f27e271c1c70237e9d2070790e"
+    },
+    {
+      "path": "/assets/personal-signature.gltf",
+      "status": 200,
+      "bytes": 29984,
+      "sha256": "1faeb787b8658574a6b33676a7ed8b5ed269d1de888c364d1116c02760e1dcdd"
+    },
+    {
+      "path": "/assets/memory-signature.gltf",
+      "status": 200,
+      "bytes": 30392,
+      "sha256": "906e65ba4f94ea533123738d9b507ed340b0a71eee988e6220bde87548d3659f"
+    },
+    {
+      "path": "/not-found",
+      "status": 404,
+      "bytes": 9,
+      "sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31"
+    }
+  ]
+}

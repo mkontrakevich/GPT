@@ -18,6 +18,7 @@ try{
     await page.goto('http://127.0.0.1:8799/',{waitUntil:'networkidle'});
     await page.waitForFunction(()=>['ACTIVE','FALLBACK','2D'].includes(document.querySelector('#engine').textContent));
     const engine=await page.locator('#engine').textContent();
+    await page.screenshot({path:'human-os-webgl/qa/artifacts/'+name+'-'+width+'x'+height+'.png'});
     // Software headless engines are reported separately; unavailable GPU is never a WebGL PASS.
     assert.equal(await page.locator('#menu button').count(),6);
     const item={browser:name,width,height,engine,webglPass:false};evidence.push(item);
@@ -62,10 +63,10 @@ try{
      }
      const canLose=await page.evaluate(()=>!!document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context'));
      if(canLose){
-      await page.evaluate(()=>document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
+      await page.evaluate(()=>{window.__qaLose=document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context');window.__qaLose.loseContext()});
       await page.waitForFunction(()=>__WORLD_QA.context.lost===1,{},{timeout:10000});
       await page.waitForTimeout(1000);
-      await page.evaluate(()=>document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context').restoreContext());
+      await page.evaluate(()=>window.__qaLose.restoreContext());
       await page.waitForFunction(()=>__WORLD_QA.context.restored===1,{},{timeout:15000});
       item.recovery=await page.evaluate(()=>__WORLD_QA.context);
       assert.equal(await page.locator('#engine').textContent(),'ACTIVE');

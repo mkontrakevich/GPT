@@ -1,10 +1,5 @@
 name: Human OS Cinematic Visual QA
 on:
-  push:
-    branches: ["feat/human-os-cinematic-assets"]
-    paths:
-      - "human-os-webgl/**"
-      - ".github/workflows/human-os-cinematic.yml"
   pull_request:
     paths:
       - "human-os-webgl/**"
@@ -14,6 +9,7 @@ permissions:
 jobs:
   synthetic-and-static:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -47,3 +47,29 @@ test('golden 3D visuals and interaction survive interface reduction',()=>{
  for(const marker of ['strataCliffs','cityFacadeTexture','flushPineInstances','cameraFly','positionLabels','waterfall(','meshes','__WORLD_QA'])
   assert.ok(html.includes(marker),'Visual floor regression: '+marker);
 });
+
+test('original reusable glTF assets have valid bounded buffers and geometry',async()=>{
+ const {buildAsset}=await import('../tools/landmark-geometry.mjs');
+ for(const id of ['health','relationships','projects','work','personal','memory']){
+  const text=readFileSync(new URL('../assets/'+id+'-signature.gltf',import.meta.url),'utf8'),g=JSON.parse(text);
+  assert.deepEqual(g,buildAsset(id),'asset must match checked-in generator');
+  assert.equal(g.asset.version,'2.0');assert.ok(Buffer.byteLength(text)<65000);
+  const bytes=Buffer.from(g.buffers[0].uri.split(',')[1],'base64');assert.equal(bytes.length,g.buffers[0].byteLength);
+  for(const view of g.bufferViews)assert.ok(view.byteOffset+view.byteLength<=bytes.length);
+  const v=g.bufferViews[0],n=g.bufferViews[1],ind=g.bufferViews[2];
+  for(let i=0;i<v.byteLength;i+=4)assert.ok(Number.isFinite(bytes.readFloatLE(v.byteOffset+i)));
+  for(let i=0;i<n.byteLength;i+=12){const length=Math.hypot(...[0,4,8].map(k=>bytes.readFloatLE(n.byteOffset+i+k)));assert.ok(length>.99&&length<1.01,'unit normals')}
+  for(let i=0;i<ind.byteLength;i+=2)assert.ok(bytes.readUInt16LE(ind.byteOffset+i)<g.accessors[0].count);
+  assert.equal(g.accessors[2].count%3,0);
+ }
+});
+test('bundled Worker parses and only serves known demo routes',async()=>{
+ const {buildWorker}=await import('../tools/build-worker.mjs');
+ const code=buildWorker();const dir=mkdtempSync(join(tmpdir(),'hgos-worker-'));
+ try{const file=join(dir,'worker.mjs');writeFileSync(file,code);assert.equal(spawnSync(process.execPath,['--check',file],{encoding:'utf8'}).status,0);const {default:w}=await import('file://'+file);
+ for(const path of ['/','/health','/assets/health-signature.gltf'])assert.equal((await w.fetch(new Request('https://demo.test'+path))).status,200);
+ assert.equal((await w.fetch(new Request('https://demo.test/no-such-route'))).status,404);
+ assert.equal((await w.fetch(new Request('https://demo.test/',{method:'POST'}))).status,405);
+ assert.equal(await (await w.fetch(new Request('https://demo.test/',{method:'HEAD'}))).text(),'');
+ }finally{rmSync(dir,{recursive:true,force:true})}
+});

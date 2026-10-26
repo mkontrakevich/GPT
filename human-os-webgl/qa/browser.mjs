@@ -40,6 +40,26 @@ try{
      const qa=await page.evaluate(()=>({version:__WORLD_QA.version,meshCount:__WORLD_QA.meshCount,batching:__WORLD_QA.batching,assets:__WORLD_QA.assets,performance:__WORLD_QA.performance,state:__WORLD_QA.inspect()}));
      assert.equal(qa.assets.loaded.length,6);assert.equal(qa.assets.failed.length,0);assert.ok(qa.batching.netReduction>300);assert.ok(qa.meshCount<917);
      item.qa=qa;
+     if(name==='chromium'&&width===390){
+      const cdp=await page.context().newCDPSession(page),before=await page.evaluate(()=>__WORLD_QA.inspect().camera);
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:80,y:230,id:1},{x:170,y:230,id:2}]});
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:50,y:230,id:1},{x:200,y:230,id:2}]});
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      const after=await page.evaluate(()=>__WORLD_QA.inspect());
+      assert.ok(after.camera.distance<before.distance,'pinch must zoom inward');
+      assert.ok(Math.abs(after.camera.yaw-before.yaw)<.001,'pinch must not orbit');
+      assert.equal(after.selected,null);assert.equal(after.pointers,0);
+      await page.mouse.move(20,230);await page.mouse.down();await page.mouse.move(65,250,{steps:6});await page.mouse.up();
+      assert.ok(Math.abs((await page.evaluate(()=>__WORLD_QA.inspect().camera.yaw))-after.camera.yaw)>.05,'drag must orbit');
+      await page.mouse.move(20,230);await page.mouse.down();
+      await page.evaluate(()=>document.querySelector('#world').dispatchEvent(new PointerEvent('pointercancel',{pointerId:1,bubbles:true})));
+      assert.equal(await page.evaluate(()=>__WORLD_QA.inspect().pointers),0);await page.mouse.up();
+      await page.setViewportSize({width:844,height:390});await page.waitForTimeout(200);
+      assert.ok(Math.abs((await page.evaluate(()=>__WORLD_QA.inspect().camera.distance))-30)<.02);
+      await page.setViewportSize({width,height});await page.waitForTimeout(200);
+      assert.ok(Math.abs((await page.evaluate(()=>__WORLD_QA.inspect().camera.distance))-38)<.02);
+      item.gestures={pinch:true,drag:true,cancel:true,orientation:true};await cdp.detach();
+     }
      const canLose=await page.evaluate(()=>!!document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context'));
      if(canLose){
       await page.evaluate(()=>document.querySelector('#world').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
@@ -54,7 +74,7 @@ try{
     }
     if(name==='chromium')assert.equal(engine,'ACTIVE','Chromium WebGL must actually render');
     assert.deepEqual(errors,[]);
-    await page.screenshot({path:'human-os-webgl/qa/artifacts/'+name+'-'+width+'x'+height+'.png'});await page.close();
+    await page.screenshot({path:'human-os-webgl/qa/artifacts/'+name+'-'+width+'x'+height+'.png'});console.log('RUNTIME_CASE',JSON.stringify(item));await page.close();
    }
    const fallback=await browser.newPage();await fallback.route('**/cdn.jsdelivr.net/**',route=>route.abort());await fallback.goto('http://127.0.0.1:8799/');await fallback.waitForFunction(()=>document.querySelector('#engine').textContent==='2D');await fallback.locator('[data-area="health"]').click();assert.equal(await fallback.locator('#go').getAttribute('href'),'https://health-game-console-mvp.kontrakevich.workers.dev/');evidence.push({browser:name,fallbackPass:true});await fallback.close();
   }finally{await browser.close()}

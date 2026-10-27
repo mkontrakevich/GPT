@@ -31,11 +31,35 @@ for(const [name,type] of [['chromium',chromium],['webkit',webkit]]){
  const before=await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect()),box=await page.locator('#scene canvas').boundingBox();
  await page.mouse.move(box.x+30,box.y+80);await page.mouse.down();await page.mouse.move(box.x+95,box.y+80,{steps:6});await page.mouse.up();
  assert.ok(Math.abs((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().yaw))-before.yaw)>.2);
- await page.locator('#sceneHome').click();assert.ok(Math.abs((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().yaw))-.55)<.001);
- if(name==='chromium'){const cdp=await page.context().newCDPSession(page),y=box.y+box.height*.65,x=box.x+box.width*.5;await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x-40,y,id:1},{x:x+40,y,id:2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-65,y,id:1},{x:x+65,y,id:2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert.ok((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().distance))<13.2);await cdp.detach();await page.locator('#sceneHome').click()}
+ await page.locator('#sceneHome').click();assert.ok(Math.abs((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().yaw))-.40)<.001);
+ if(name==='chromium'){const cdp=await page.context().newCDPSession(page),y=box.y+box.height*.65,x=box.x+box.width*.5;await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x-40,y,id:1},{x:x+40,y,id:2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-65,y,id:1},{x:x+65,y,id:2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert.ok((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().distance))<9.2);await cdp.detach();await page.locator('#sceneHome').click()}
  await page.evaluate(()=>{window.__loss=document.querySelector('#scene canvas').getContext('webgl2').getExtension('WEBGL_lose_context');__loss.loseContext()});await page.waitForFunction(()=>__HEALTH_ISLAND_QA.context.lost===1);await page.waitForTimeout(1000);await page.evaluate(()=>__loss.restoreContext());await page.waitForFunction(()=>__HEALTH_ISLAND_QA.context.restored===1);assert.equal(await page.locator('#render').textContent(),'WEBGL / THREE.JS');
  }
 
+
+ if(width===390){
+ const beforeStorage=await page.evaluate(()=>localStorage.getItem('hgc-preview-v1'));
+ await page.locator('#avatarDetails summary').click();
+ await page.locator('[data-avatar-preview="low"]').click();await page.locator('#scene').scrollIntoViewIfNeeded();
+ await page.waitForFunction(()=>__HEALTH_ISLAND_QA.inspect().visual.energy<.1);
+ assert.equal(await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().metricMode),'PREVIEW');
+ await page.locator('[data-avatar-preview="high"]').click();await page.locator('#scene').scrollIntoViewIfNeeded();
+ await page.waitForFunction(()=>__HEALTH_ISLAND_QA.inspect().visual.energy>.9);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('hgc-preview-v1')),beforeStorage,'try-on must not change health records');
+ await page.locator('#avatarLive').click();
+ await page.locator('#profileHeight').fill('200');await page.locator('#saveAvatarProfile').click();await page.locator('#scene').scrollIntoViewIfNeeded();
+ await page.waitForFunction(()=>__HEALTH_ISLAND_QA.inspect().visual.heightScale>1.1);
+ const box=await page.locator('#scene canvas').boundingBox(),head=await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().headBox);
+ assert.ok(head.top>box.y+5&&head.bottom<box.y+box.height-5,'full head stays inside scene safe zone');
+ await page.evaluate(()=>{for(const [id,value] of [['energy',9],['mood',9],['knee',7]]){const el=document.querySelector('#'+id);el.value=String(value);el.dispatchEvent(new Event('input',{bubbles:true}))}});await page.locator('#save').click();await page.locator('#scene').scrollIntoViewIfNeeded();await page.waitForFunction(()=>__HEALTH_ISLAND_QA.inspect().visual.energy>.8);assert.equal(await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().visual.knee),.7);
+ const records=Array.from({length:35},(_,age)=>{const date=new Date();date.setDate(date.getDate()-age);return{metric:'bodyMass',date:date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0'),value:age<7?88:80,source:'SYNTHETIC_QA'}});
+ page.on('dialog',d=>d.dismiss());
+ await page.locator('#upload').setInputFiles({name:'synthetic-avatar.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({records}))});
+ await page.locator('#scene').scrollIntoViewIfNeeded();await page.waitForFunction(()=>__HEALTH_ISLAND_QA.inspect().visual.bodyWidth>1.04);
+ assert.equal(await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().metricMode),'LOCAL');
+ await page.screenshot({path:'health-game-console/qa/artifacts/'+name+'-avatar-synthetic-local.png'});
+ await page.evaluate(()=>localStorage.clear());await page.reload({waitUntil:'networkidle'});await page.waitForFunction(()=>window.__HEALTH_ISLAND_QA?.loaded);
+ }
  if(width===390||width===1366){
   await page.screenshot({path:'health-game-console/qa/artifacts/'+name+'-'+width+'-top.png'});
   await page.evaluate(()=>scrollTo(0,innerHeight*.8));await page.screenshot({path:'health-game-console/qa/artifacts/'+name+'-'+width+'-middle.png'});

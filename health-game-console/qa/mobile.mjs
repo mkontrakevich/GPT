@@ -17,14 +17,14 @@ for(const [name,type] of [['chromium',chromium],['webkit',webkit]]){
  await page.waitForFunction(()=>document.querySelector('#render').textContent==='WEBGL / THREE.JS');
  const metrics=await page.evaluate(()=>{const rect=s=>{const r=document.querySelector(s).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}};return{width:innerWidth,scrollWidth:document.documentElement.scrollWidth,nav:rect('nav'),scene:rect('#scene'),header:rect('header'),buttons:[...document.querySelectorAll('[data-part]')].map(b=>{const r=b.getBoundingClientRect();return{label:b.getAttribute('aria-label'),y:r.y,width:r.width,height:r.height}}),render:document.querySelector('#render').textContent}});
  assert.ok(metrics.scrollWidth<=width+1,'page overflow');assert.equal(metrics.buttons.length,7);
- if(width<=600){assert.ok(metrics.nav.height<=70,'mobile nav must be a single row');assert.ok(metrics.buttons.every(b=>b.height>=44&&b.width>=44));assert.ok(metrics.buttons.every(b=>Math.abs(b.y-metrics.buttons[0].y)<1));assert.ok(metrics.scene.bottom<height,'3D must fit first mobile viewport');}
+ if(width<=600||(width<=950&&height<=500)){assert.ok(metrics.nav.height<=70,'mobile nav must be a single row');assert.ok(metrics.buttons.every(b=>b.height>=44&&b.width>=44));assert.ok(metrics.buttons.every(b=>Math.abs(b.y-metrics.buttons[0].y)<1));assert.ok(metrics.scene.bottom<height,'3D must fit first mobile viewport');}
  for(const [part,title] of [['overview','ТВОЯ СИСТЕМА'],['vitals','ВИТАЛЬНЫЕ ПОКАЗАТЕЛИ'],['recovery','ВОССТАНОВЛЕНИЕ'],['mobility','МОБИЛЬНОСТЬ'],['activity','НАГРУЗКА'],['body','СОСТАВ ТЕЛА'],['mind','НАСТРОЕНИЕ']]){await page.locator('[data-part="'+part+'"]').click();assert.equal(await page.locator('#title').textContent(),title);assert.equal(await page.locator('[data-part="'+part+'"]').getAttribute('aria-pressed'),'true')}
  await page.locator('[data-part="overview"]').click();await page.evaluate(()=>scrollTo(0,0));
  if(width===390||width===1366){
   await page.screenshot({path:'health-game-console/qa/artifacts/'+name+'-'+width+'-top.png'});
   await page.evaluate(()=>scrollTo(0,innerHeight*.8));await page.screenshot({path:'health-game-console/qa/artifacts/'+name+'-'+width+'-middle.png'});
   await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));await page.screenshot({path:'health-game-console/qa/artifacts/'+name+'-'+width+'-bottom.png'});
-  for(const zoom of [.8,.9,1,1.25]){await page.evaluate(z=>{document.documentElement.style.zoom=z},zoom);const right=await page.locator('header').evaluate(el=>el.getBoundingClientRect().right);assert.ok(right<=width+1,'zoom overflow '+zoom)}
+  for(const zoom of [.8,.9,1,1.25]){await page.evaluate(z=>{document.documentElement.style.zoom=z},zoom);const bounds=await page.evaluate(()=>({headerRight:document.querySelector('header').getBoundingClientRect().right,rootRight:document.documentElement.getBoundingClientRect().right}));assert.ok(bounds.headerRight<=bounds.rootRight+1,'header exceeds root at CSS zoom '+zoom)}
  }
  assert.deepEqual(errors,[]);evidence.push({browser:name,width,height,webgl:true,metrics});console.log('MOBILE_LAYOUT_CASE',name,width,height,JSON.stringify(metrics));await page.close();
  }

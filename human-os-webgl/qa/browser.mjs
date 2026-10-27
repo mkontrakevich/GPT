@@ -26,11 +26,16 @@ try{
      await page.locator('#menu [data-area="'+id+'"]').click();
      await page.waitForTimeout(100);
      assert.equal(await page.locator('#panel').isVisible(),true);
-     if(engine==='ACTIVE'){assert.equal(await page.evaluate(()=>window.__WORLD_QA.inspect().selected),id);await page.locator('#homeWorld').click()}else await page.locator('#close').click();
+     if(engine==='ACTIVE'){assert.equal(await page.evaluate(()=>window.__WORLD_QA.inspect().selected),id);
+ const avatar=await page.evaluate(()=>__WORLD_QA.avatar.inspect());assert.equal(avatar.island,id);assert.equal(avatar.visible,true);assert.equal(avatar.context.islandId,id);assert.equal(avatar.identity,'shared-adult-v1');await page.locator('#homeWorld').click()}else await page.locator('#close').click();
     }
     if(engine==='ACTIVE'){
      await page.locator('#menu [data-area="health"]').click();await page.waitForFunction(()=>!window.__WORLD_QA.inspect().camera.flying,{},{timeout:15000});
-     const focus=await page.evaluate(()=>window.__WORLD_QA.inspect().camera);
+     await page.locator('#viewAvatar').click();assert.equal(await page.evaluate(()=>__WORLD_QA.avatar.inspect().fullscreen),true);assert.equal(await page.evaluate(()=>__WORLD_QA.inspect().camera.position.length),3);
+ await page.locator('#avatarPresentation').selectOption('female');assert.equal(await page.evaluate(()=>__WORLD_QA.avatar.inspect().wardrobe),'adult-mini-bikini-thong');
+ await page.screenshot({path:'human-os-webgl/qa/artifacts/'+name+'-'+width+'-avatar.png'});
+ await page.locator('#avatarClose').click();assert.equal(await page.evaluate(()=>__WORLD_QA.avatar.inspect().fullscreen),false);
+ const focus=await page.evaluate(()=>window.__WORLD_QA.inspect().camera);
      assert.ok(Math.abs(focus.target[0]+5)<.15&&Math.abs(focus.target[2]+4.8)<.15);
      assert.ok(Math.abs(Math.hypot(...focus.position.map((v,i)=>v-focus.target[i]))-focus.distance)<.02);
      await page.locator('#homeWorld').click();await page.waitForTimeout(1500);

@@ -1,0 +1,695 @@
+{
+  "run": 40592963404,
+  "ci": "success",
+  "mobile": {
+    "initial": {
+      "wardrobe": "home:neutral",
+      "context": {
+        "title": "Личное",
+        "outfit": "home",
+        "top": 12174511,
+        "bottom": 8293773,
+        "islandId": "personal",
+        "role": "neutral",
+        "roleSource": "unspecified"
+      },
+      "presentation": "male",
+      "metricMode": "DEMO",
+      "identityLocked": true,
+      "visual": {
+        "heightScale": 1,
+        "bodyWidth": 1,
+        "waist": 1,
+        "shoulders": 1,
+        "energy": 0.5,
+        "mood": 0.5,
+        "knee": null,
+        "activity": null,
+        "sleep": null,
+        "pulseHz": null,
+        "breathHz": null,
+        "gaitCue": null,
+        "gaitTempo": null,
+        "oxygen": null
+      },
+      "island": null,
+      "visible": true,
+      "fullscreen": false,
+      "identity": "shared-adult-v1",
+      "placement": "central-hub",
+      "position": [
+        0,
+        0.2,
+        0
+      ]
+    },
+    "rows": [
+      {
+        "wardrobe": "adult-swim-thong",
+        "context": {
+          "title": "Здоровье",
+          "outfit": "swim",
+          "top": 2914438,
+          "bottom": 2914438,
+          "islandId": "health",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "health",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "work:neutral",
+        "context": {
+          "title": "Работа",
+          "outfit": "work",
+          "top": 3360605,
+          "bottom": 2635850,
+          "islandId": "work",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "work",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "home:neutral",
+        "context": {
+          "title": "Личное",
+          "outfit": "home",
+          "top": 12174511,
+          "bottom": 8293773,
+          "islandId": "personal",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "personal",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "casual:neutral",
+        "context": {
+          "title": "Отношения",
+          "outfit": "casual",
+          "top": 4288370,
+          "bottom": 3360605,
+          "islandId": "relationships",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "relationships",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "studio:neutral",
+        "context": {
+          "title": "Проекты",
+          "outfit": "studio",
+          "top": 6520203,
+          "bottom": 3360605,
+          "islandId": "projects",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "projects",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "casual:neutral",
+        "context": {
+          "title": "Память",
+          "outfit": "casual",
+          "top": 10126704,
+          "bottom": 3360605,
+          "islandId": "memory",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "memory",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      }
+    ],
+    "home": {
+      "wardrobe": "casual:neutral",
+      "context": {
+        "title": "Память",
+        "outfit": "casual",
+        "top": 10126704,
+        "bottom": 3360605,
+        "islandId": "memory",
+        "role": "neutral",
+        "roleSource": "unspecified"
+      },
+      "presentation": "male",
+      "metricMode": "DEMO",
+      "identityLocked": true,
+      "visual": {
+        "heightScale": 1,
+        "bodyWidth": 1,
+        "waist": 1,
+        "shoulders": 1,
+        "energy": 0.5,
+        "mood": 0.5,
+        "knee": null,
+        "activity": null,
+        "sleep": null,
+        "pulseHz": null,
+        "breathHz": null,
+        "gaitCue": null,
+        "gaitTempo": null,
+        "oxygen": null
+      },
+      "island": null,
+      "visible": true,
+      "fullscreen": false,
+      "identity": "shared-adult-v1",
+      "placement": "central-hub",
+      "position": [
+        0,
+        0.2,
+        0
+      ]
+    },
+    "engine": "ACTIVE",
+    "assets": {
+      "loaded": [
+        "projects",
+        "health",
+        "personal",
+        "work",
+        "relationships",
+        "memory"
+      ],
+      "failed": []
+    }
+  },
+  "desktop": {
+    "initial": {
+      "wardrobe": "home:neutral",
+      "context": {
+        "title": "Личное",
+        "outfit": "home",
+        "top": 12174511,
+        "bottom": 8293773,
+        "islandId": "personal",
+        "role": "neutral",
+        "roleSource": "unspecified"
+      },
+      "presentation": "male",
+      "metricMode": "DEMO",
+      "identityLocked": true,
+      "visual": {
+        "heightScale": 1,
+        "bodyWidth": 1,
+        "waist": 1,
+        "shoulders": 1,
+        "energy": 0.5,
+        "mood": 0.5,
+        "knee": null,
+        "activity": null,
+        "sleep": null,
+        "pulseHz": null,
+        "breathHz": null,
+        "gaitCue": null,
+        "gaitTempo": null,
+        "oxygen": null
+      },
+      "island": null,
+      "visible": true,
+      "fullscreen": false,
+      "identity": "shared-adult-v1",
+      "placement": "central-hub",
+      "position": [
+        0,
+        0.2,
+        0
+      ]
+    },
+    "rows": [
+      {
+        "wardrobe": "adult-swim-thong",
+        "context": {
+          "title": "Здоровье",
+          "outfit": "swim",
+          "top": 2914438,
+          "bottom": 2914438,
+          "islandId": "health",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "health",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "work:neutral",
+        "context": {
+          "title": "Работа",
+          "outfit": "work",
+          "top": 3360605,
+          "bottom": 2635850,
+          "islandId": "work",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "work",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "home:neutral",
+        "context": {
+          "title": "Личное",
+          "outfit": "home",
+          "top": 12174511,
+          "bottom": 8293773,
+          "islandId": "personal",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "personal",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "casual:neutral",
+        "context": {
+          "title": "Отношения",
+          "outfit": "casual",
+          "top": 4288370,
+          "bottom": 3360605,
+          "islandId": "relationships",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "relationships",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "studio:neutral",
+        "context": {
+          "title": "Проекты",
+          "outfit": "studio",
+          "top": 6520203,
+          "bottom": 3360605,
+          "islandId": "projects",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "projects",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      },
+      {
+        "wardrobe": "casual:neutral",
+        "context": {
+          "title": "Память",
+          "outfit": "casual",
+          "top": 10126704,
+          "bottom": 3360605,
+          "islandId": "memory",
+          "role": "neutral",
+          "roleSource": "unspecified"
+        },
+        "presentation": "male",
+        "metricMode": "DEMO",
+        "identityLocked": true,
+        "visual": {
+          "heightScale": 1,
+          "bodyWidth": 1,
+          "waist": 1,
+          "shoulders": 1,
+          "energy": 0.5,
+          "mood": 0.5,
+          "knee": null,
+          "activity": null,
+          "sleep": null,
+          "pulseHz": null,
+          "breathHz": null,
+          "gaitCue": null,
+          "gaitTempo": null,
+          "oxygen": null
+        },
+        "island": "memory",
+        "visible": true,
+        "fullscreen": false,
+        "identity": "shared-adult-v1",
+        "placement": "central-hub",
+        "position": [
+          0,
+          0.2,
+          0
+        ]
+      }
+    ],
+    "home": {
+      "wardrobe": "casual:neutral",
+      "context": {
+        "title": "Память",
+        "outfit": "casual",
+        "top": 10126704,
+        "bottom": 3360605,
+        "islandId": "memory",
+        "role": "neutral",
+        "roleSource": "unspecified"
+      },
+      "presentation": "male",
+      "metricMode": "DEMO",
+      "identityLocked": true,
+      "visual": {
+        "heightScale": 1,
+        "bodyWidth": 1,
+        "waist": 1,
+        "shoulders": 1,
+        "energy": 0.5,
+        "mood": 0.5,
+        "knee": null,
+        "activity": null,
+        "sleep": null,
+        "pulseHz": null,
+        "breathHz": null,
+        "gaitCue": null,
+        "gaitTempo": null,
+        "oxygen": null
+      },
+      "island": null,
+      "visible": true,
+      "fullscreen": false,
+      "identity": "shared-adult-v1",
+      "placement": "central-hub",
+      "position": [
+        0,
+        0.2,
+        0
+      ]
+    },
+    "engine": "ACTIVE",
+    "assets": {
+      "loaded": [
+        "health",
+        "personal",
+        "relationships",
+        "memory",
+        "projects",
+        "work"
+      ],
+      "failed": []
+    }
+  },
+  "photorealModelGenerated": false,
+  "externalPhotoTransfer": false,
+  "physicalDeviceVerified": false
+}

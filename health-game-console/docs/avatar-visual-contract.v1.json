@@ -12,7 +12,12 @@
       34
     ],
     "baselineMinimumDates": 7,
-    "aggregation": "median of daily medians"
+    "aggregation": "median of daily medians",
+    "recentAppliesTo": [
+      "bodyMass",
+      "leanBodyMass",
+      "bodyFatPercentage"
+    ]
   },
   "channels": {
     "bodyMass": {
@@ -343,12 +348,6 @@
       "target": "symmetric indicator; no side or diagnosis inferred"
     }
   },
-  "neutralStatuses": [
-    "MISSING",
-    "INVALID",
-    "STALE",
-    "INSUFFICIENT"
-  ],
   "privacy": {
     "execution": "browser-local",
     "serverStorage": false,
@@ -360,5 +359,12 @@
     "morphFaceByHealthMetrics": false,
     "sourcePhotoUsed": false
   },
-  "artSourceWorldCommit": "993b3e19ee46388cb4d0262629c90d39afd9bb47"
+  "artSourceWorldCommit": "993b3e19ee46388cb4d0262629c90d39afd9bb47",
+  "comparisonNeutralStatuses": [
+    "MISSING",
+    "INVALID",
+    "STALE",
+    "INSUFFICIENT"
+  ],
+  "directMeasurementMayRenderWithInsufficientBaseline": true
 }

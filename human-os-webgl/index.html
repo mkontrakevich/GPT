@@ -547,10 +547,8 @@ const hub=new THREE.Group();S.add(hub);cyl(2.1,2.48,.48,palette.basalt[1],hub,0,
 cyl(1.74,1.85,.23,palette.cream,hub,0,.46,0,48);
 cyl(1.37,1.37,.1,palette.ocean,hub,0,.61,0,48);
 for(let r of [1.15,1.7,2.08]){let t=mesh(new THREE.TorusGeometry(r,.027,7,100),palette.light,hub,0,.73,0);t.rotation.x=Math.PI/2;animated.push(t)}
-const central=cyl(.14,.2,1.05,palette.aqua,hub,0,1.30,0);sphere(.23,palette.aqua,hub,0,1.99,0);
-for(let q of [-1,1]){let arm=cyl(.055,.07,.72,palette.aqua,hub,.27*q,1.43,0);arm.rotation.z=q*.64;let leg=cyl(.075,.095,.71,palette.aqua,hub,q*.13,.67,0);leg.rotation.z=q*.19}
-const coreOrb=sphere(.58,new THREE.MeshStandardMaterial({color:0x8dd7f5,emissive:0x307ebb,emissiveIntensity:.78,metalness:.4,roughness:.14,transparent:true,opacity:.88}),hub,0,3.25,0);
-halo(hub,0,3.28,0,3.6,labelGlow(0x60d9ff));const beam=mesh(new THREE.CylinderGeometry(.035,.20,2.3,10),new THREE.MeshBasicMaterial({color:0x75c5ff,transparent:true,opacity:.21,depthWrite:false}),hub,0,2.3,0);
+// The central platform is reserved for the single persistent avatar.
+const coreOrb=new THREE.Object3D();
 const bridgeMat=mat(0x8ea1a8,.42,.41),railMat=mat(0x6f91a1,.45,.33);
 function bridge(x,z){
  const len=Math.hypot(x,z),angle=Math.atan2(x,z),from=2.02,to=len-2.43;
@@ -615,7 +613,7 @@ function endPointer(e,cancelled=false){
  if(down){const p=[...pointers.values()][0];lastX=p.x;lastY=p.y;return}
  if(cancelled||gesture||moved>10)return;
  const box=canvas.getBoundingClientRect(),pointer=new THREE.Vector2((e.clientX-box.left)/box.width*2-1,-((e.clientY-box.top)/box.height*2-1));
- const ray=new THREE.Raycaster();ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(allPick);if(hits.length)choose(hits[0].object.userData.area);
+ const ray=new THREE.Raycaster();ray.setFromCamera(pointer,camera);if(ray.intersectObject(avatarRoot,true).some(hit=>hit.object.visible&&hit.object.parent.visible)){openAvatarView();return}const hits=ray.intersectObjects(allPick);if(hits.length)choose(hits[0].object.userData.area);
 }
 canvas.addEventListener('pointerup',e=>endPointer(e));
 canvas.addEventListener('pointercancel',e=>endPointer(e,true));
@@ -665,20 +663,20 @@ try{
 }catch(err){QA.assets.failed.push({id:'loader',error:String(err)})}
 QA.batching=batchStaticScene();
 const avatarRoot=new THREE.Group();avatarRoot.name='human-os-avatar';S.add(avatarRoot);
-const avatar=createAvatarModel(THREE,{parent:avatarRoot});avatarRoot.visible=false;
+const avatar=createAvatarModel(THREE,{parent:avatarRoot});avatarRoot.position.set(0,.20,0);avatarRoot.visible=true;avatar.setIslandContext({islandId:'personal'});
 const avatarPlatform=cyl(1.5,1.55,.12,palette.cream,avatarRoot,0,.27,0,40);avatarPlatform.visible=false;
 let avatarView=false,savedAvatarCamera=null,hiddenWorld=[];
 function updateAvatarContext(){if(!selected)return;avatar.setIslandContext({islandId:selected.id,role:$('#avatarRoleChoice').value});$('#avatarRoleChoice').hidden=selected.id!=='work'}
-window.__setAvatarIsland=a=>{avatarRoot.visible=true;avatarRoot.position.set(a.p[0],.34,a.p[2]+2.08);avatar.setIslandContext({islandId:a.id,role:$('#avatarRoleChoice').value});$('#avatarRoleChoice').hidden=a.id!=='work'};
-const originalHome=window.__worldHome;window.__worldHome=()=>{if(avatarView)closeAvatarView();avatarRoot.visible=false;originalHome()};
+window.__setAvatarIsland=a=>{avatarRoot.visible=true;avatarRoot.position.set(0,.20,0);avatar.setIslandContext({islandId:a.id,role:$('#avatarRoleChoice').value});$('#avatarRoleChoice').hidden=a.id!=='work'};
+const originalHome=window.__worldHome;window.__worldHome=()=>{if(avatarView)closeAvatarView();avatarRoot.visible=true;originalHome()};
 $('#avatarPresentation').addEventListener('change',()=>avatar.setWardrobe($('#avatarPresentation').value));
 $('#avatarRoleChoice').addEventListener('change',updateAvatarContext);
-function openAvatarView(){if(!selected||avatarView)return;avatarView=true;savedAvatarCamera={target:target.clone(),dist,pitch,yaw,fov:camera.fov};flight.dest=null;
+function openAvatarView(){if(avatarView)return;avatarView=true;savedAvatarCamera={target:target.clone(),dist,pitch,yaw,fov:camera.fov};flight.dest=null;
  hiddenWorld=S.children.filter(o=>o!==avatarRoot&&!o.isLight).map(o=>[o,o.visible]);hiddenWorld.forEach(([o])=>o.visible=false);avatarPlatform.visible=true;
  document.body.classList.add('avatarView');target.set(avatarRoot.position.x,avatarRoot.position.y+.42+1.57*avatar.smooth.heightScale,avatarRoot.position.z);yaw=.18;pitch=.08;dist=6.25+Math.max(0,avatar.smooth.heightScale-1)*5.5;camera.fov=34;camera.updateProjectionMatrix();cam();$('#avatarClose').focus()}
 function closeAvatarView(){if(!avatarView)return;avatarView=false;hiddenWorld.forEach(([o,v])=>o.visible=v);hiddenWorld=[];avatarPlatform.visible=false;document.body.classList.remove('avatarView');target.copy(savedAvatarCamera.target);dist=savedAvatarCamera.dist;pitch=savedAvatarCamera.pitch;yaw=savedAvatarCamera.yaw;camera.fov=savedAvatarCamera.fov;camera.updateProjectionMatrix();cam();$('#viewAvatar').focus()}
 $('#viewAvatar').onclick=openAvatarView;$('#avatarClose').onclick=closeAvatarView;addEventListener('keydown',e=>{if(e.key==='Escape')closeAvatarView()});
-QA.avatar={inspect:()=>({...avatar.inspect(),island:selected?.id||null,visible:avatarRoot.visible,fullscreen:avatarView,identity:'shared-adult-v1'})};
+QA.avatar={inspect:()=>({...avatar.inspect(),island:selected?.id||null,visible:avatarRoot.visible,fullscreen:avatarView,identity:'shared-adult-v1',placement:'central-hub',position:avatarRoot.position.toArray()})};
 
 QA.meshCount=0;S.traverse(o=>{if(o.isMesh)QA.meshCount++});
 $('#loader')?.remove();$('#engine').textContent='ACTIVE';

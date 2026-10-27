@@ -27,7 +27,7 @@ try{
      await page.waitForTimeout(100);
      assert.equal(await page.locator('#panel').isVisible(),true);
      if(engine==='ACTIVE'){assert.equal(await page.evaluate(()=>window.__WORLD_QA.inspect().selected),id);
- const avatar=await page.evaluate(()=>__WORLD_QA.avatar.inspect());assert.equal(avatar.island,id);assert.equal(avatar.visible,true);assert.equal(avatar.context.islandId,id);assert.equal(avatar.identity,'shared-adult-v1');await page.locator('#homeWorld').click()}else await page.locator('#close').click();
+ const avatar=await page.evaluate(()=>__WORLD_QA.avatar.inspect());assert.equal(avatar.island,id);assert.equal(avatar.visible,true);assert.equal(avatar.context.islandId,id);assert.equal(avatar.identity,'shared-adult-v1');assert.equal(avatar.placement,'central-hub');assert.deepEqual(avatar.position,[0,.20,0]);await page.locator('#homeWorld').click()}else await page.locator('#close').click();
     }
     if(engine==='ACTIVE'){
      const icons=await page.evaluate(()=>[...document.querySelectorAll('.worldTag')].map(el=>({island:el.dataset.domain,icon:el.dataset.icon,nav:document.querySelector('#menu [data-area="'+el.dataset.domain+'"] strong').textContent,content:getComputedStyle(el,'::before').content})));

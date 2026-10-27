@@ -30,6 +30,8 @@ try{
  const avatar=await page.evaluate(()=>__WORLD_QA.avatar.inspect());assert.equal(avatar.island,id);assert.equal(avatar.visible,true);assert.equal(avatar.context.islandId,id);assert.equal(avatar.identity,'shared-adult-v1');await page.locator('#homeWorld').click()}else await page.locator('#close').click();
     }
     if(engine==='ACTIVE'){
+     const icons=await page.evaluate(()=>[...document.querySelectorAll('.worldTag')].map(el=>({island:el.dataset.domain,icon:el.dataset.icon,nav:document.querySelector('#menu [data-area="'+el.dataset.domain+'"] strong').textContent,content:getComputedStyle(el,'::before').content})));
+     assert.equal(icons.length,6);for(const icon of icons){assert.equal(icon.icon,icon.nav);assert.equal(icon.content,'"'+icon.nav+'"')}item.icons=icons;
      await page.locator('#menu [data-area="health"]').click();await page.waitForFunction(()=>!window.__WORLD_QA.inspect().camera.flying,{},{timeout:15000});
      await page.locator('#viewAvatar').click();assert.equal(await page.evaluate(()=>__WORLD_QA.avatar.inspect().fullscreen),true);assert.equal(await page.evaluate(()=>__WORLD_QA.inspect().camera.position.length),3);
  await page.locator('#avatarPresentation').selectOption('female');assert.equal(await page.evaluate(()=>__WORLD_QA.avatar.inspect().wardrobe),'adult-mini-bikini-thong');

@@ -20,7 +20,7 @@ body{background:#080d1b}
 .toast{display:none;top:110px;background:#101a2be8;border:1px solid #6d8ca353;color:#d6e7ec;font-size:10px;letter-spacing:.1em;padding:11px 19px;box-shadow:0 16px 30px #0008}
 #worldTags{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
 .worldTag{position:absolute;transform:translate(-50%,-50%);border:1px solid #d1e7df52;border-radius:9px;background:linear-gradient(130deg,#192b3dbf,#09182ccc);box-shadow:0 12px 35px #0205139e,0 0 23px var(--a);color:#eef7f6;padding:9px 15px 9px 12px;font-size:10px;letter-spacing:.16em;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .25s,background .25s;backdrop-filter:blur(9px);pointer-events:auto;cursor:pointer}
-.worldTag::before{content:'◇';color:var(--a);margin-right:8px}
+.worldTag::before{content:attr(data-icon);color:var(--a);margin-right:8px}
 .worldTag:hover{border-color:var(--a);background:#152f3cea}
 .worldTag.hidden{display:none}
 .mobileTitle{display:block;position:fixed;z-index:3;left:50%;top:calc(87px + env(safe-area-inset-top));transform:translateX(-50%);font:600 10px system-ui;color:#bbdfdf;letter-spacing:.25em;text-align:center;text-shadow:0 2px 20px #0009;pointer-events:none}
@@ -80,7 +80,8 @@ body{background:#080d1b}
   transition:opacity .2s,transform .2s,box-shadow .2s;backdrop-filter:blur(6px);
   overflow:hidden
 }
-.worldTag::before{content:'◇';font-size:18px;line-height:1;margin:0;color:var(--a);text-shadow:0 0 10px var(--a)}
+.worldTag::before{content:attr(data-icon);font-size:18px;line-height:1;margin:0;color:var(--a);text-shadow:0 0 10px var(--a)}
+.worldTag.on{border-color:var(--a);background:#183b48;box-shadow:0 0 0 5px #10172855,0 0 25px var(--a)}
 .worldTag:hover,.worldTag:focus-visible{transform:translate(-50%,-50%) scale(1.14);box-shadow:0 0 0 7px #10172855,0 0 25px var(--a);outline:1px solid var(--a)}
 .panel{width:268px;padding:16px 17px;border-radius:13px;box-shadow:0 20px 50px #0009}
 .panel .eyebrow:first-child{display:none}
@@ -282,8 +283,8 @@ const $=s=>document.querySelector(s),areas=[
 {id:'memory',title:'ПАМЯТЬ',icon:'▤',color:0xe7b983,p:[5,0,5.6],description:'История жизни, важные события, воспоминания и наследие.',url:'https://kontrakevich.github.io/HROS-Web3D/',hint:'Хроника HROS'}
 ];
 let selected=null;for(const a of areas){const b=document.createElement('button');b.dataset.area=a.id;b.innerHTML='<strong>'+a.icon+'</strong>'+a.title;b.onclick=()=>choose(a);$('#menu').append(b)}
-$('#close').onclick=()=>{window.__worldHome?.();$('#panel').hidden=true;selected=null;document.querySelectorAll('[data-area]').forEach(n=>n.classList.remove('on'))};
-function choose(a){selected=a;window.__setAvatarIsland?.(a);window.__focusArea?.(a);$('#title').textContent=a.title;$('#desc').textContent=a.description;$('#sub').textContent=a.hint;$('#go').hidden=!a.url;if(a.url)$('#go').href=a.url;$('#panel').hidden=false;document.querySelectorAll('[data-area]').forEach(n=>n.classList.toggle('on',n.dataset.area===a.id))}
+$('#close').onclick=()=>{window.__worldHome?.();$('#panel').hidden=true;selected=null;document.querySelectorAll('[data-area],.worldTag').forEach(n=>{n.classList.remove('on');n.setAttribute('aria-pressed','false')})};
+function choose(a){selected=a;window.__setAvatarIsland?.(a);window.__focusArea?.(a);$('#title').textContent=a.title;$('#desc').textContent=a.description;$('#sub').textContent=a.hint;$('#go').hidden=!a.url;if(a.url)$('#go').href=a.url;$('#panel').hidden=false;document.querySelectorAll('[data-area],.worldTag').forEach(n=>{const active=(n.dataset.area||n.dataset.domain)===a.id;n.classList.toggle('on',active);n.setAttribute('aria-pressed',String(active))})}
 const canvas=$('#world');let THREE;try{THREE=await Promise.race([import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js'),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),9000))])}catch(e){$('#engine').textContent='2D';$('#fallback').style.display='flex';$('#loader').remove();canvas.style.display='none';}
 if(THREE){
 try{
@@ -577,7 +578,7 @@ for(let i=0;i<(mobile?8:16);i++){const c=new THREE.Group();S.add(c);c.position.s
  for(let j=0;j<3;j++){let s=sphere(2+rnd()*2.3,new THREE.MeshBasicMaterial({color:i%3?0x365075:0x6d668f,transparent:true,opacity:.035,depthWrite:false}),c,(j-1)*1.4,rnd()*.4,0);s.scale.y=.25}
 }
 
-const tags=areas.map((a,i)=>{const el=document.createElement('button');el.className='worldTag';el.type='button';el.textContent=a.title.toUpperCase();el.setAttribute('aria-label','Открыть '+a.title);el.title=a.title;el.style.setProperty('--a','#'+a.color.toString(16).padStart(6,'0'));el.onclick=()=>choose(a);document.querySelector('#worldTags').append(el);return el});
+const tags=areas.map((a,i)=>{const el=document.createElement('button');el.className='worldTag';el.type='button';el.textContent=a.title.toUpperCase();el.dataset.icon=a.icon;el.dataset.domain=a.id;el.setAttribute('aria-label','Открыть '+a.title);el.title=a.title;el.style.setProperty('--a','#'+a.color.toString(16).padStart(6,'0'));el.onclick=()=>choose(a);document.querySelector('#worldTags').append(el);return el});
 function positionLabels(){const w=innerWidth,h=innerHeight;areas.forEach((a,i)=>{const v=new THREE.Vector3(a.p[0],2.78,a.p[2]).project(camera);const screenX=(v.x*.5+.5)*w,screenY=(-v.y*.5+.5)*h;const visible=v.z<1&&v.z>-1&&screenX>35&&screenX<w-35&&screenY>60&&screenY<h-90;tags[i].style.opacity=visible?'1':'0';tags[i].style.pointerEvents=visible?'auto':'none';tags[i].style.left=screenX+'px';tags[i].style.top=screenY+'px';})}
 let yaw=.06,pitch=.83,dist=Math.min(innerWidth,innerHeight)<700?(innerWidth>innerHeight?30:38):24,down=false,lastX=0,lastY=0, moved=0,pinch=0, target=new THREE.Vector3(0,0,0);
 function cam(){const p=Math.max(.28,Math.min(1.18,pitch));camera.position.set(target.x+Math.sin(yaw)*Math.cos(p)*dist,target.y+Math.sin(p)*dist,target.z+Math.cos(yaw)*Math.cos(p)*dist);camera.lookAt(target)}

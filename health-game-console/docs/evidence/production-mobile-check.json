@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"check\": \"data-release=\\\"{&quot;health&quot;:{&quot;ok&quot;:true,&quot;service&quot;:&quot;health-game-console&quot;,&quot;version&quot;:&quot;preview-v0.3-mobile&quot;,&quot;demo_only&quot;:true,&quot;personal_data_backend&quot;:false},&quot;width&quot;:390,&quot;height&quot;:700,&quot;navHeight&quot;:61,&quot;sceneTop&quot;:253.03125,&quot;sceneBottom&quot;:519.03125,&quot;render&quot;:&quot;WEBGL / THREE.JS&quot;,&quot;modules&quot;:7,&quot;overflow&quot;:false}\"\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,34 @@
+name: HGC Preview Quality Gate
+on:
+  push:
+    branches: ["feat/health-game-console-mvp"]
+    paths:
+      - "health-game-console/**"
+      - "!health-game-console/docs/**"
+      - ".github/workflows/health-game-console-preview.yml"
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Preview security and structure tests
+        run: node --test health-game-console/tests/*.test.mjs
+      - name: Install browser regression tools
+        run: npm install --prefix health-game-console/qa --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium and WebKit
+        run: cd health-game-console/qa && npx playwright install --with-deps chromium webkit
+      - name: Real browser mobile layout and 3D regression
+        run: node health-game-console/qa/mobile.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: health-console-mobile-evidence
+          path: health-game-console/qa/artifacts

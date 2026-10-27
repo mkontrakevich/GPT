@@ -1,0 +1,370 @@
+{
+  "version": "1.0",
+  "scope": "rendering-only; not medical classification",
+  "baseline": {
+    "recentAgeDays": [
+      0,
+      6
+    ],
+    "recentMinimumDates": 3,
+    "baselineAgeDays": [
+      7,
+      34
+    ],
+    "baselineMinimumDates": 7,
+    "aggregation": "median of daily medians",
+    "recentAppliesTo": [
+      "bodyMass",
+      "leanBodyMass",
+      "bodyFatPercentage"
+    ]
+  },
+  "channels": {
+    "bodyMass": {
+      "unit": "кг",
+      "effect": "силуэт",
+      "kind": "relative",
+      "cuts": [
+        -0.05,
+        -0.02,
+        0.02,
+        0.05
+      ],
+      "fresh": 14,
+      "smooth": 7,
+      "minRecent": 3
+    },
+    "leanBodyMass": {
+      "unit": "кг",
+      "effect": "плечи и руки",
+      "kind": "relative",
+      "cuts": [
+        -0.05,
+        -0.02,
+        0.02,
+        0.05
+      ],
+      "fresh": 30,
+      "smooth": 7,
+      "minRecent": 3
+    },
+    "bodyFatPercentage": {
+      "unit": "%",
+      "effect": "талия",
+      "kind": "difference",
+      "cuts": [
+        -3,
+        -1,
+        1,
+        3
+      ],
+      "fresh": 30,
+      "smooth": 7,
+      "minRecent": 3,
+      "max": 100
+    },
+    "bodyMassIndex": {
+      "unit": "кг/м²",
+      "effect": "информация; без повторного изменения силуэта",
+      "kind": "relative",
+      "cuts": [
+        -0.05,
+        -0.02,
+        0.02,
+        0.05
+      ],
+      "fresh": 30
+    },
+    "bodyHeight": {
+      "unit": "см",
+      "effect": "рост; только явное измерение",
+      "kind": "absolute",
+      "fresh": 365
+    },
+    "restingHeartRate": {
+      "unit": "уд/мин",
+      "effect": "ритм света на груди",
+      "kind": "relative",
+      "cuts": [
+        -0.2,
+        -0.1,
+        0.1,
+        0.2
+      ],
+      "fresh": 1
+    },
+    "heartRate": {
+      "unit": "уд/мин",
+      "effect": "резервный ритм, если нет пульса покоя",
+      "kind": "relative",
+      "cuts": [
+        -0.2,
+        -0.1,
+        0.1,
+        0.2
+      ],
+      "fresh": 1
+    },
+    "respiratoryRate": {
+      "unit": "вдохов/мин",
+      "effect": "ритм дыхания",
+      "kind": "relative",
+      "cuts": [
+        -0.2,
+        -0.1,
+        0.1,
+        0.2
+      ],
+      "fresh": 1
+    },
+    "oxygenSaturation": {
+      "unit": "%",
+      "effect": "дуга измерения; без оценки здоровья",
+      "kind": "difference",
+      "cuts": [
+        -3,
+        -1,
+        1,
+        3
+      ],
+      "fresh": 1,
+      "max": 100
+    },
+    "sleepHours": {
+      "unit": "ч",
+      "effect": "отдельная дуга сна",
+      "kind": "ratio",
+      "cuts": [
+        0.5,
+        0.85,
+        1.15,
+        1.5
+      ],
+      "fresh": 1,
+      "max": 24
+    },
+    "stepCount": {
+      "unit": "шаг.",
+      "effect": "движение контура активности",
+      "kind": "ratio",
+      "cuts": [
+        0.5,
+        0.85,
+        1.15,
+        1.5
+      ],
+      "fresh": 1,
+      "zero": true
+    },
+    "distanceWalkingRunning": {
+      "unit": "км",
+      "effect": "резервный показатель активности",
+      "kind": "ratio",
+      "cuts": [
+        0.5,
+        0.85,
+        1.15,
+        1.5
+      ],
+      "fresh": 1,
+      "zero": true
+    },
+    "activeEnergyBurned": {
+      "unit": "ккал",
+      "effect": "резервный показатель активности; не меняет вес",
+      "kind": "ratio",
+      "cuts": [
+        0.5,
+        0.85,
+        1.15,
+        1.5
+      ],
+      "fresh": 1,
+      "zero": true
+    },
+    "basalEnergyBurned": {
+      "unit": "ккал",
+      "effect": "информация; без морфинга тела",
+      "kind": "ratio",
+      "cuts": [
+        0.5,
+        0.85,
+        1.15,
+        1.5
+      ],
+      "fresh": 1
+    },
+    "flightsClimbed": {
+      "unit": "эт.",
+      "effect": "информация активности; без общего балла здоровья",
+      "kind": "ratio",
+      "cuts": [
+        0.5,
+        0.85,
+        1.15,
+        1.5
+      ],
+      "fresh": 1,
+      "zero": true
+    },
+    "workoutMinutes": {
+      "unit": "мин",
+      "effect": "резервный показатель активности",
+      "kind": "ratio",
+      "cuts": [
+        0.5,
+        0.85,
+        1.15,
+        1.5
+      ],
+      "fresh": 1,
+      "zero": true,
+      "max": 1440
+    },
+    "walkingSpeed": {
+      "unit": "м/с",
+      "effect": "темп декоративной дорожки",
+      "kind": "ratio",
+      "cuts": [
+        0.5,
+        0.85,
+        1.15,
+        1.5
+      ],
+      "fresh": 1,
+      "zero": true
+    },
+    "walkingStepLength": {
+      "unit": "см",
+      "effect": "информация; не меняет анатомию",
+      "kind": "relative",
+      "cuts": [
+        -0.05,
+        -0.02,
+        0.02,
+        0.05
+      ],
+      "fresh": 1
+    },
+    "walkingAsymmetryPercentage": {
+      "unit": "%",
+      "effect": "общий индикатор походки; сторона неизвестна",
+      "kind": "difference",
+      "cuts": [
+        -3,
+        -1,
+        1,
+        3
+      ],
+      "fresh": 1,
+      "max": 100,
+      "zero": true
+    },
+    "walkingDoubleSupportPercentage": {
+      "unit": "%",
+      "effect": "общий индикатор походки",
+      "kind": "difference",
+      "cuts": [
+        -3,
+        -1,
+        1,
+        3
+      ],
+      "fresh": 1,
+      "max": 100,
+      "zero": true
+    },
+    "headphoneAudioExposure": {
+      "unit": "дБ",
+      "effect": "отдельный информационный индикатор",
+      "kind": "difference",
+      "cuts": [
+        -6,
+        -3,
+        3,
+        6
+      ],
+      "fresh": 1,
+      "zero": true
+    }
+  },
+  "selfReports": {
+    "energy": {
+      "unit": "1–10",
+      "bands": [
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          7,
+          10
+        ]
+      ],
+      "target": "pose/eyes"
+    },
+    "mood": {
+      "unit": "1–10",
+      "bands": [
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          7,
+          10
+        ]
+      ],
+      "target": "expression only"
+    },
+    "knee": {
+      "unit": "0–10",
+      "bands": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          7,
+          10
+        ]
+      ],
+      "target": "symmetric indicator; no side or diagnosis inferred"
+    }
+  },
+  "privacy": {
+    "execution": "browser-local",
+    "serverStorage": false,
+    "automaticAppleHealthAccess": false,
+    "automaticZeppAccess": false,
+    "previewMutatesRecords": false
+  },
+  "identity": {
+    "morphFaceByHealthMetrics": false,
+    "sourcePhotoUsed": false
+  },
+  "artSourceWorldCommit": "993b3e19ee46388cb4d0262629c90d39afd9bb47",
+  "comparisonNeutralStatuses": [
+    "MISSING",
+    "INVALID",
+    "STALE",
+    "INSUFFICIENT"
+  ],
+  "directMeasurementMayRenderWithInsufficientBaseline": true
+}

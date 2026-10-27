@@ -49,6 +49,11 @@ for(const [name,type] of [['chromium',chromium],['webkit',webkit]]){
  await page.screenshot({path:'health-game-console/qa/artifacts/'+name+'-avatar-fullscreen.png'});
  await page.keyboard.press('Escape');assert.equal(await page.locator('#avatarViewer').evaluate(d=>d.open),false);
  assert.equal(await page.locator('#scene').evaluate(e=>e.parentElement.className),'hero');
+ const fixedBody=await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().visual);
+ await page.locator('#avatarDetails summary').click();await page.locator('#avatarContext').selectOption('work');await page.locator('#avatarRole').selectOption('creative');assert.equal(await page.evaluate(()=>__HEALTH_ISLAND_QA.wardrobe),'work:creative');
+ await page.locator('#avatarContext').selectOption('personal');assert.equal(await page.evaluate(()=>__HEALTH_ISLAND_QA.wardrobe),'home:creative');
+ assert.equal((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().visual)).heightScale,fixedBody.heightScale);
+ await page.locator('#avatarContext').selectOption('health');await page.locator('#avatarDetails summary').click();
  const beforeStorage=await page.evaluate(()=>localStorage.getItem('hgc-preview-v1'));
  await page.locator('#avatarDetails summary').click();
  await page.locator('[data-avatar-preview="low"]').click();await page.locator('#scene').scrollIntoViewIfNeeded();

@@ -76,3 +76,5 @@ test('bundled Worker parses and only serves known demo routes',async()=>{
  assert.equal(await (await w.fetch(new Request('https://demo.test/',{method:'HEAD'}))).text(),'');
  }finally{rmSync(dir,{recursive:true,force:true})}
 });
+
+test('world bundles the same maintained adult avatar and context resolver',()=>{const factory=readFileSync(new URL('../../human-os-shared/avatar-model.mjs',import.meta.url),'utf8').replaceAll('export ','');assert.ok(html.includes(factory));assert.match(html,/__setAvatarIsland/);assert.match(html,/QA.avatar/);assert.match(html,/avatarView/)});

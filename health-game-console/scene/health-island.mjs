@@ -170,7 +170,7 @@ function strataCliffs(p,a,index){
  function animateCharacter(t,dt,reduced){
   const target=avatarState.visual,k=reduced?1:1-Math.exp(-Math.min(dt,.15)*3);
   for(const name of ['heightScale','bodyWidth','waist','shoulders','energy','mood'])smooth[name]+=(target[name]-smooth[name])*k;
-  hero.scale.y=smooth.heightScale;head.scale.y=1/smooth.heightScale;
+  hero.scale.y=smooth.heightScale;head.scale.y=1/smooth.heightScale;if(distance<minCameraDistance()){distance=minCameraDistance();cam()}
   upper.rotation.x=(.5-smooth.energy)*.10;
   const pos=torsoGeo.attributes.position;
   for(let i=0;i<pos.count;i++){const y=torsoBase[i*3+1],waistInfluence=1-Math.min(1,y/.65);pos.setX(i,torsoBase[i*3]*smooth.bodyWidth*(1+(smooth.waist-1)*waistInfluence)*(1+(smooth.shoulders-1)*(1-waistInfluence)))}
@@ -196,6 +196,7 @@ function strataCliffs(p,a,index){
  const points=[];for(let i=0;i<85;i++)points.push((rnd()-.5)*24,(rnd()-.5)*14,-9-rnd()*8);
  const starGeo=new THREE.BufferGeometry();starGeo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));S.add(new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xd4eaff,size:.035,transparent:true,opacity:.55,depthWrite:false})));
  let yaw=.40,pitch=.24,distance=9.2;
+ function minCameraDistance(){return 8.8+Math.max(0,smooth.heightScale-1)*9}
  function cam(){camera.position.set(Math.sin(yaw)*Math.cos(pitch)*distance,Math.sin(pitch)*distance+.75,Math.cos(yaw)*Math.cos(pitch)*distance);camera.lookAt(0,.75,0)}
  function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);camera.aspect=w/h;camera.updateProjectionMatrix();R.setSize(w,h,false);cam()}
  resize();new ResizeObserver(resize).observe(host);
@@ -204,14 +205,14 @@ function strataCliffs(p,a,index){
  canvas.addEventListener('pointerdown',e=>{pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){movement=0;gesture=false}else{gesture=true;pinch=0}canvas.setPointerCapture(e.pointerId)});
  canvas.addEventListener('pointermove',e=>{
   const previous=pointers.get(e.pointerId);if(!previous)return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pointers.size===2){const [a,b]=[...pointers.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch)distance=Math.max(8.8,Math.min(15,distance+(pinch-d)*.025));pinch=d;gesture=true;movement=99}
+  if(pointers.size===2){const [a,b]=[...pointers.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch)distance=Math.max(minCameraDistance(),Math.min(15,distance+(pinch-d)*.025));pinch=d;gesture=true;movement=99}
   else{const dx=e.clientX-previous.x;movement+=Math.abs(dx)+Math.abs(e.clientY-previous.y);yaw-=dx*.007}cam();
  });
  const ray=new THREE.Raycaster(),mouse=new THREE.Vector2();
  function end(e,cancel=false){if(!pointers.has(e.pointerId))return;pointers.delete(e.pointerId);pinch=0;if(cancel||gesture||movement>8||pointers.size)return;const b=canvas.getBoundingClientRect();mouse.set((e.clientX-b.left)/b.width*2-1,-((e.clientY-b.top)/b.height*2-1));ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(nodes)[0];if(hit)onSelect(hit.object.userData.module)}
  canvas.addEventListener('pointerup',e=>end(e));canvas.addEventListener('pointercancel',e=>end(e,true));canvas.addEventListener('lostpointercapture',e=>end(e,true));
- canvas.addEventListener('wheel',e=>{e.preventDefault();distance=Math.max(8.8,Math.min(15,distance+e.deltaY*.015));cam()},{passive:false});
- $('#sceneHome').onclick=()=>{yaw=.40;pitch=.24;distance=9.2;cam()};
+ canvas.addEventListener('wheel',e=>{e.preventDefault();distance=Math.max(minCameraDistance(),Math.min(15,distance+e.deltaY*.015));cam()},{passive:false});
+ $('#sceneHome').onclick=()=>{yaw=.40;pitch=.24;distance=Math.max(9.2,minCameraDistance());cam()};
  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();contextReady=false;qa.context.lost++;pointers.clear();$('#render').textContent='ВОССТАНОВЛЕНИЕ 3D';$('#avatarRenderMode').textContent='ВОССТАНОВЛЕНИЕ 3D'});
  canvas.addEventListener('webglcontextrestored',()=>{contextReady=true;qa.context.restored++;resize();$('#render').textContent='WEBGL / THREE.JS'});
  qa.inspect=()=>({yaw,distance,selected:getSelection(),headBox:(()=>{const b=canvas.getBoundingClientRect(),points=[[-.34,-.4],[.34,-.4],[-.34,.45],[.34,.45]].map(([x,y])=>head.localToWorld(new THREE.Vector3(x,y,.30)).project(camera));return{top:b.top+(-Math.max(...points.map(v=>v.y))*.5+.5)*b.height,bottom:b.top+(-Math.min(...points.map(v=>v.y))*.5+.5)*b.height}})(),visual:{...smooth,knee:avatarState.visual.knee,activity:avatarState.visual.activity},metricMode:avatarState.mode,pointers:pointers.size,drawCalls:R.info.render.calls,triangles:R.info.render.triangles,textures:R.info.memory.textures,contextLost:R.getContext().isContextLost(),markers:nodes.map(n=>{const v=n.getWorldPosition(new THREE.Vector3()).project(camera),b=canvas.getBoundingClientRect();return{id:n.userData.module,x:b.left+(v.x*.5+.5)*b.width,y:b.top+(-v.y*.5+.5)*b.height}})});

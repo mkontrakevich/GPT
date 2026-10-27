@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"release\": \"data-release=\\\"{&quot;health&quot;:{&quot;ok&quot;:true,&quot;service&quot;:&quot;health-game-console&quot;,&quot;version&quot;:&quot;preview-v0.5-avatar&quot;,&quot;demo_only&quot;:true,&quot;personal_data_backend&quot;:false},&quot;mode&quot;:&quot;DEMO&quot;,&quot;style&quot;:&quot;human-os-floating-islands&quot;,&quot;loaded&quot;:true,&quot;errors&quot;:[],&quot;meshCount&quot;:84,&quot;drawCalls&quot;:84,&quot;headBox&quot;:{&quot;top&quot;:272.4107936717989,&quot;bottom&quot;:310.9919017344772},&quot;overflow&quot;:false}\"\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -272,6 +272,7 @@ function createAvatarModel(THREE,{parent,initialState=null,initialWardrobe="male
  const topMaterial=mat(0xb9c4af,0,.94).clone(),bottomMaterial=mat(0x7e8d8d,0,.95).clone();
  const topGeo=loft([[.04,.301,.189],[.13,.296,.176],[.27,.261,.161],[.42,.276,.186],[.58,.321,.201],[.74,.361,.201],[.87,.371,.176],[.94,.351,.156],[1.02,.211,.121],[1.07,.136,.106],[1.12,.106,.101]]);
  const topBase=new Float32Array(topGeo.attributes.position.array),top=mesh(topGeo,topMaterial,upper);
+ const trouserHip=mesh(loft([[-.225,.045,.065],[-.18,.173,.113],[-.10,.283,.183],[0,.313,.193],[.16,.296,.178]]),bottomMaterial,upper);
  const clothArms=[],clothLegs=[],shoeShells=[];
  arms.forEach(({pivot})=>clothArms.push(mesh(loft([[-.91,.071,.072],[-.76,.098,.091],[-.64,.111,.099],[-.49,.092,.091],[-.38,.116,.103],[-.23,.129,.116],[-.10,.137,.126],[.01,.101,.101],[.07,.026,.031]],20),topMaterial,pivot)));
  legs.forEach(leg=>{clothLegs.push(mesh(loft([[-1.23,.075,.080],[-1.02,.090,.103],[-.84,.114,.125],[-.63,.100,.104],[-.43,.129,.136],[-.22,.151,.161],[0,.158,.163],[.10,.118,.133]],22),bottomMaterial,leg));const shoe=sphere(.112,mat(0x33475d,0,.85),leg,0,-1.275,.08);shoe.scale.set(.78,.53,1.8);shoeShells.push(shoe)});
@@ -283,7 +284,7 @@ function createAvatarModel(THREE,{parent,initialState=null,initialWardrobe="male
  function applyContext(){
  const swimming=context.outfit==='swim',work=context.outfit==='work';
  swimwear.visible=swimming;bikiniTop.visible=swimming&&wardrobe==='female';
- top.visible=!swimming;topMaterial.color.setHex(context.top);bottomMaterial.color.setHex(context.bottom);
+ top.visible=!swimming;trouserHip.visible=!swimming;topMaterial.color.setHex(context.top);bottomMaterial.color.setHex(context.bottom);
  clothArms.forEach(o=>o.visible=!swimming);clothLegs.forEach(o=>o.visible=!swimming);
  shoeShells.forEach(o=>o.visible=!swimming&&context.outfit!=='home');
  lapels.visible=work&&['office','hospitality','creative'].includes(context.role);
@@ -315,6 +316,7 @@ function createAvatarModel(THREE,{parent,initialState=null,initialWardrobe="male
  const clothPos=topGeo.attributes.position;
  for(let i=0;i<clothPos.count;i++){const y=topBase[i*3+1],w=Math.max(0,1-Math.abs(y-.25)/.45),shape=wardrobe==='female'?(1-.10*w-.04*Math.max(0,(y-.6)/.5)):1;clothPos.setX(i,topBase[i*3]*smooth.bodyWidth*(1+(smooth.waist-1)*w)*(1+(smooth.shoulders-1)*Math.max(0,(y-.5)/.6))*shape);clothPos.setZ(i,topBase[i*3+2]*(1+(smooth.waist-1)*w))}
  clothPos.needsUpdate=true;topGeo.computeVertexNormals();
+  trouserHip.scale.x=smooth.bodyWidth;trouserHip.scale.z=1+Math.max(0,smooth.waist-1);
   belt.scale.x=smooth.bodyWidth*(1+(smooth.waist-1)*.3);belt.scale.z=1+(smooth.waist-1)*.3;
   arms.forEach(({side,pivot,sleeve,forearm})=>{pivot.position.x=side*.345*smooth.shoulders*smooth.bodyWidth*(wardrobe==='female'?.95:1);pivot.rotation.z=side*(.03+smooth.energy*.14);sleeve.scale.x=sleeve.scale.z=smooth.shoulders;forearm.scale.x=forearm.scale.z=smooth.shoulders});
   brows.forEach((b,i)=>b.rotation.z=(i?1:-1)*(.5-smooth.mood)*.12);
@@ -455,7 +457,7 @@ function strataCliffs(p,a,index){
  window.__applyAvatarState=state=>{avatar.applyState(state);qa.metricMode=state.mode;qa.identityLocked=true};
  const wardrobeButtons=document.querySelectorAll('[data-wardrobe]');
  wardrobeButtons.forEach(button=>button.addEventListener('click',()=>{avatar.setWardrobe(button.dataset.wardrobe);wardrobeButtons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));document.querySelector('.fallbackBikini').style.display=button.dataset.wardrobe==='female'?'':'none';qa.wardrobe=avatar.inspect().wardrobe}));
- function changeContext(){avatar.setIslandContext({islandId:document.querySelector('#avatarContext').value,role:document.querySelector('#avatarRole').value});qa.wardrobe=avatar.inspect().wardrobe;qa.context=avatar.inspect().context;document.querySelector('#avatarRoleLabel').hidden=document.querySelector('#avatarContext').value!=='work'}
+ function changeContext(){avatar.setIslandContext({islandId:document.querySelector('#avatarContext').value,role:document.querySelector('#avatarRole').value});qa.wardrobe=avatar.inspect().wardrobe;qa.avatarContext=avatar.inspect().context;document.querySelector('#avatarRoleLabel').hidden=document.querySelector('#avatarContext').value!=='work'}
  document.querySelector('#avatarContext').value=resolveAvatarContext({islandId:new URL(location.href).searchParams.get('island')}).islandId;
  document.querySelector('#avatarContext').addEventListener('change',changeContext);document.querySelector('#avatarRole').addEventListener('change',changeContext);changeContext();
  // Seven ivory/gold gate lights retain the existing seven health modules.

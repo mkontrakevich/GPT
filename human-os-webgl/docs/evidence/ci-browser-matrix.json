@@ -1,0 +1,437 @@
+[
+  {
+    "browser": "chromium",
+    "width": 390,
+    "height": 844,
+    "engine": "ACTIVE",
+    "webglPass": true,
+    "recovery": {
+      "lost": 1,
+      "restored": 1
+    },
+    "gestures": {
+      "pinch": true,
+      "drag": true,
+      "cancel": true,
+      "orientation": true
+    },
+    "qa": {
+      "version": "v0.5-candidate",
+      "meshCount": 213,
+      "batching": {
+        "sourceMeshes": 780,
+        "batches": 70,
+        "netReduction": 710
+      },
+      "assets": {
+        "loaded": [
+          "projects",
+          "health",
+          "relationships",
+          "work",
+          "personal",
+          "memory"
+        ],
+        "failed": []
+      },
+      "performance": {
+        "environment": "current browser; hardware unverified",
+        "frames": 61,
+        "frameMsP50": 183.3,
+        "frameMsP95": 366.7,
+        "fps": 5.2,
+        "drawCalls": 262,
+        "triangles": 118174,
+        "geometries": 224,
+        "textures": 21
+      },
+      "state": {
+        "camera": {
+          "position": [
+            1.5326857657001982,
+            28.020160823532496,
+            25.584181711752695
+          ],
+          "target": [
+            -0.004467489771487767,
+            0,
+            -0.004288766799722392
+          ],
+          "distance": 37.97712566979209,
+          "pitch": 0.8298302295804881,
+          "yaw": 0.06,
+          "flying": true
+        },
+        "selected": null,
+        "pointers": 0,
+        "drawCalls": 262,
+        "triangles": 118174,
+        "geometries": 224,
+        "textures": 21,
+        "pixelRatio": 1,
+        "contextLost": false
+      }
+    }
+  },
+  {
+    "browser": "chromium",
+    "width": 844,
+    "height": 390,
+    "engine": "ACTIVE",
+    "webglPass": true,
+    "recovery": {
+      "lost": 1,
+      "restored": 1
+    },
+    "qa": {
+      "version": "v0.5-candidate",
+      "meshCount": 237,
+      "batching": {
+        "sourceMeshes": 804,
+        "batches": 70,
+        "netReduction": 734
+      },
+      "assets": {
+        "loaded": [
+          "health",
+          "relationships",
+          "projects",
+          "work",
+          "personal",
+          "memory"
+        ],
+        "failed": []
+      },
+      "performance": {
+        "environment": "current browser; hardware unverified",
+        "frames": 67,
+        "frameMsP50": 166.6,
+        "frameMsP95": 300.1,
+        "fps": 6.3,
+        "drawCalls": 284,
+        "triangles": 129342,
+        "geometries": 246,
+        "textures": 21
+      },
+      "state": {
+        "camera": {
+          "position": [
+            1.2087113999257368,
+            22.12054085502652,
+            20.196763243472258
+          ],
+          "target": [
+            -0.004829145758059111,
+            0,
+            -0.004635880018189937
+          ],
+          "distance": 29.981453182283815,
+          "pitch": 0.8298164637830169,
+          "yaw": 0.06,
+          "flying": true
+        },
+        "selected": null,
+        "pointers": 0,
+        "drawCalls": 284,
+        "triangles": 129342,
+        "geometries": 246,
+        "textures": 21,
+        "pixelRatio": 1,
+        "contextLost": false
+      }
+    }
+  },
+  {
+    "browser": "chromium",
+    "width": 1280,
+    "height": 800,
+    "engine": "ACTIVE",
+    "webglPass": true,
+    "recovery": {
+      "lost": 1,
+      "restored": 1
+    },
+    "qa": {
+      "version": "v0.5-candidate",
+      "meshCount": 237,
+      "batching": {
+        "sourceMeshes": 804,
+        "batches": 70,
+        "netReduction": 734
+      },
+      "assets": {
+        "loaded": [
+          "health",
+          "relationships",
+          "projects",
+          "work",
+          "personal",
+          "memory"
+        ],
+        "failed": []
+      },
+      "performance": {
+        "environment": "current browser; hardware unverified",
+        "frames": 55,
+        "frameMsP50": 333.4,
+        "frameMsP95": 783.3,
+        "fps": 2.8,
+        "drawCalls": 284,
+        "triangles": 129342,
+        "geometries": 246,
+        "textures": 21
+      },
+      "state": {
+        "camera": {
+          "position": [
+            0.9652163710349291,
+            17.695879710812527,
+            16.1562006330489
+          ],
+          "target": [
+            -0.005646202639127441,
+            0,
+            -0.005420348306535195
+          ],
+          "distance": 23.98509382140282,
+          "pitch": 0.8297854413686769,
+          "yaw": 0.06,
+          "flying": true
+        },
+        "selected": null,
+        "pointers": 0,
+        "drawCalls": 284,
+        "triangles": 129342,
+        "geometries": 246,
+        "textures": 21,
+        "pixelRatio": 1,
+        "contextLost": false
+      }
+    }
+  },
+  {
+    "browser": "webkit",
+    "width": 390,
+    "height": 844,
+    "engine": "ACTIVE",
+    "webglPass": true,
+    "recovery": {
+      "lost": 1,
+      "restored": 1
+    },
+    "qa": {
+      "version": "v0.5-candidate",
+      "meshCount": 213,
+      "batching": {
+        "sourceMeshes": 780,
+        "batches": 70,
+        "netReduction": 710
+      },
+      "assets": {
+        "loaded": [
+          "health",
+          "relationships",
+          "projects",
+          "memory",
+          "work",
+          "personal"
+        ],
+        "failed": []
+      },
+      "performance": {
+        "environment": "current browser; hardware unverified",
+        "frames": 152,
+        "frameMsP50": 47,
+        "frameMsP95": 76,
+        "fps": 12.1,
+        "drawCalls": 262,
+        "triangles": 118174,
+        "geometries": 224,
+        "textures": 21
+      },
+      "state": {
+        "camera": {
+          "position": [
+            1.5329660844141526,
+            28.02132226786871,
+            25.58500067148991
+          ],
+          "target": [
+            -0.0042222179900698025,
+            0,
+            -0.004053221497841684
+          ],
+          "distance": 37.97837711981694,
+          "pitch": 0.8298395176861413,
+          "yaw": 0.06,
+          "flying": true
+        },
+        "selected": null,
+        "pointers": 0,
+        "drawCalls": 262,
+        "triangles": 118174,
+        "geometries": 224,
+        "textures": 21,
+        "pixelRatio": 1,
+        "contextLost": false
+      }
+    }
+  },
+  {
+    "browser": "webkit",
+    "width": 844,
+    "height": 390,
+    "engine": "ACTIVE",
+    "webglPass": true,
+    "recovery": {
+      "lost": 1,
+      "restored": 1
+    },
+    "qa": {
+      "version": "v0.5-candidate",
+      "meshCount": 237,
+      "batching": {
+        "sourceMeshes": 804,
+        "batches": 70,
+        "netReduction": 734
+      },
+      "assets": {
+        "loaded": [
+          "relationships",
+          "health",
+          "projects",
+          "work",
+          "personal",
+          "memory"
+        ],
+        "failed": []
+      },
+      "performance": {
+        "environment": "current browser; hardware unverified",
+        "frames": 142,
+        "frameMsP50": 61,
+        "frameMsP95": 88,
+        "fps": 12.8,
+        "drawCalls": 284,
+        "triangles": 129342,
+        "geometries": 246,
+        "textures": 21
+      },
+      "state": {
+        "camera": {
+          "position": [
+            1.2110004481248704,
+            22.128003542012877,
+            20.20237312275979
+          ],
+          "target": [
+            -0.002757634639033658,
+            0,
+            -0.0026472669463138707
+          ],
+          "distance": 29.989408103316222,
+          "pitch": 0.8298951843557334,
+          "yaw": 0.06,
+          "flying": false
+        },
+        "selected": null,
+        "pointers": 0,
+        "drawCalls": 284,
+        "triangles": 129342,
+        "geometries": 246,
+        "textures": 21,
+        "pixelRatio": 1,
+        "contextLost": false
+      }
+    }
+  },
+  {
+    "browser": "webkit",
+    "width": 1280,
+    "height": 800,
+    "engine": "ACTIVE",
+    "webglPass": true,
+    "recovery": {
+      "lost": 1,
+      "restored": 1
+    },
+    "qa": {
+      "version": "v0.5-candidate",
+      "meshCount": 237,
+      "batching": {
+        "sourceMeshes": 804,
+        "batches": 70,
+        "netReduction": 734
+      },
+      "assets": {
+        "loaded": [
+          "health",
+          "relationships",
+          "projects",
+          "work",
+          "personal",
+          "memory"
+        ],
+        "failed": []
+      },
+      "performance": {
+        "environment": "current browser; hardware unverified",
+        "frames": 105,
+        "frameMsP50": 107,
+        "frameMsP95": 163,
+        "fps": 8.5,
+        "drawCalls": 284,
+        "triangles": 129342,
+        "geometries": 246,
+        "textures": 21
+      },
+      "state": {
+        "camera": {
+          "position": [
+            0.966607282182212,
+            17.699221420524808,
+            16.15889666056277
+          ],
+          "target": [
+            -0.004342035334691539,
+            0,
+            -0.004168316213411037
+          ],
+          "distance": 23.9885358226266,
+          "pitch": 0.8298349853256858,
+          "yaw": 0.06,
+          "flying": false
+        },
+        "selected": null,
+        "pointers": 0,
+        "drawCalls": 284,
+        "triangles": 129342,
+        "geometries": 246,
+        "textures": 21,
+        "pixelRatio": 1,
+        "contextLost": false
+      }
+    }
+  },
+  {
+    "browser": "firefox",
+    "width": 390,
+    "height": 844,
+    "engine": "FALLBACK",
+    "webglPass": false
+  },
+  {
+    "browser": "firefox",
+    "width": 844,
+    "height": 390,
+    "engine": "FALLBACK",
+    "webglPass": false
+  },
+  {
+    "browser": "firefox",
+    "width": 1280,
+    "height": 800,
+    "engine": "FALLBACK",
+    "webglPass": false
+  }
+]

@@ -1,0 +1,484 @@
+{
+  "health": {
+    "run": 40590322418,
+    "tests": 36,
+    "browserProfiles": 20,
+    "production": {
+      "success": true,
+      "check": "{&quot;scene&quot;:{&quot;x&quot;:16,&quot;y&quot;:253.03125,&quot;width&quot;:358,&quot;height&quot;:336,&quot;top&quot;:253.03125,&quot;right&quot;:374,&quot;bottom&quot;:589.03125,&quot;left&quot;:16},&quot;before&quot;:{&quot;yaw&quot;:0.18,&quot;distance&quot;:6.25,&quot;heroFrame&quot;:{&quot;top&quot;:279.6291848519335,&quot;bottom&quot;:565.065263308612,&quot;pixels&quot;:285.4360784566785,&quot;occupancy&quot;:0.8545990372954446},&quot;wardrobe&quot;:&quot;adult-swim-thong&quot;,&quot;selected&quot;:&quot;overview&quot;,&quot;headBox&quot;:{&quot;top&quot;:284.59211822808777,&quot;bottom&quot;:330.83184084812814},&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1.0085261164858372,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:1.006634465969019,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;pointers&quot;:0,&quot;drawCalls&quot;:86,&quot;triangles&quot;:20606,&quot;textures&quot;:1,&quot;contextLost&quot;:false,&quot;markers&quot;:[{&quot;id&quot;:&quot;overview&quot;,&quot;x&quot;:289.48485362733396,&quot;y&quot;:509.5448222513528},{&quot;id&quot;:&quot;vitals&quot;,&quot;x&quot;:246.84448453320724,&quot;y&quot;:528.0994184638134},{&quot;id&quot;:&quot;recovery&quot;,&quot;x&quot;:151.57937200692592,&quot;y&quot;:529.2695445084415},{&quot;id&quot;:&quot;mobility&quot;,&quot;x&quot;:100.98624291897826,&quot;y&quot;:511.58243128299245},{&quot;id&quot;:&quot;activity&quot;,&quot;x&quot;:126.53719680066823,&quot;y&quot;:493.86399864096705},{&quot;id&quot;:&quot;body&quot;,&quot;x&quot;:191.46687101043435,&quot;y&quot;:486.90382600253804},{&quot;id&quot;:&quot;mind&quot;,&quot;x&quot;:258.10090020045675,&quot;y&quot;:492.62686190986574}]},&quot;after&quot;:{&quot;yaw&quot;:0.18,&quot;distance&quot;:6.25,&quot;heroFrame&quot;:{&quot;top&quot;:53.61443482080196,&quot;bottom&quot;:651.9303053351122,&quot;pixels&quot;:598.3158705143102,&quot;occupancy&quot;:0.854736957877586},&quot;wardrobe&quot;:&quot;adult-swim-thong&quot;,&quot;selected&quot;:&quot;overview&quot;,&quot;headBox&quot;:{&quot;top&quot;:64.04972383132173,&quot;bottom&quot;:160.95932213679546},&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1.0240039585430951,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:1.006634465969019,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;pointers&quot;:0,&quot;drawCalls&quot;:84,&quot;triangles&quot;:20270,&quot;textures&quot;:1,&quot;contextLost&quot;:false,&quot;markers&quot;:[{&quot;id&quot;:&quot;overview&quot;,&quot;x&quot;:393.02214832075975,&quot;y&quot;:535.5074867543323},{&quot;id&quot;:&quot;vitals&quot;,&quot;x&quot;:303.656105309117,&quot;y&quot;:574.3943650439204},{&quot;id&quot;:&quot;recovery&quot;,&quot;x&quot;:103.99868384685075,&quot;y&quot;:576.8467250176918},{&quot;id&quot;:&quot;mobility&quot;,&quot;x&quot;:-2.034820229686274,&quot;y&quot;:539.777924844595},{&quot;id&quot;:&quot;activity&quot;,&quot;x&quot;:51.51508311517293,&quot;y&quot;:502.6434851756795},{&quot;id&quot;:&quot;body&quot;,&quot;x&quot;:187.5952386446229,&quot;y&quot;:488.0562970113073},{&quot;id&quot;:&quot;mind&quot;,&quot;x&quot;:327.2473956296997,&quot;y&quot;:500.0506836434312}]},&quot;fullscreen&quot;:true,&quot;errors&quot;:[],&quot;overflow&quot;:false}"
+    }
+  },
+  "world": {
+    "run": 40590327636,
+    "tests": 12,
+    "runtime": [
+      {
+        "browser": "chromium",
+        "width": 390,
+        "height": 844,
+        "engine": "ACTIVE",
+        "webglPass": true,
+        "qa": {
+          "version": "v0.6-avatar-candidate",
+          "meshCount": 286,
+          "batching": {
+            "sourceMeshes": 780,
+            "batches": 70,
+            "netReduction": 710
+          },
+          "assets": {
+            "loaded": [
+              "health",
+              "relationships",
+              "projects",
+              "work",
+              "personal",
+              "memory"
+            ],
+            "failed": []
+          },
+          "performance": {
+            "environment": "current browser; hardware unverified",
+            "frames": 107,
+            "frameMsP50": 100,
+            "frameMsP95": 233.3,
+            "fps": 10.7,
+            "drawCalls": 262,
+            "triangles": 118174,
+            "geometries": 293,
+            "textures": 21
+          },
+          "state": {
+            "camera": {
+              "position": [
+                1.5313407185888883,
+                28.014567117956034,
+                25.58024255576323
+              ],
+              "target": [
+                -0.005643723258930176,
+                0,
+                -0.005417739474453875
+              ],
+              "distance": 37.97109828177541,
+              "pitch": 0.8297854950600518,
+              "yaw": 0.06,
+              "flying": true
+            },
+            "selected": null,
+            "pointers": 0,
+            "drawCalls": 262,
+            "triangles": 118174,
+            "geometries": 293,
+            "textures": 21,
+            "pixelRatio": 1,
+            "contextLost": false
+          }
+        },
+        "gestures": {
+          "pinch": true,
+          "drag": true,
+          "cancel": true,
+          "orientation": true
+        },
+        "recovery": {
+          "lost": 1,
+          "restored": 1
+        }
+      },
+      {
+        "browser": "chromium",
+        "width": 844,
+        "height": 390,
+        "engine": "ACTIVE",
+        "webglPass": true,
+        "qa": {
+          "version": "v0.6-avatar-candidate",
+          "meshCount": 310,
+          "batching": {
+            "sourceMeshes": 804,
+            "batches": 70,
+            "netReduction": 734
+          },
+          "assets": {
+            "loaded": [
+              "health",
+              "relationships",
+              "projects",
+              "work",
+              "personal",
+              "memory"
+            ],
+            "failed": []
+          },
+          "performance": {
+            "environment": "current browser; hardware unverified",
+            "frames": 110,
+            "frameMsP50": 83.4,
+            "frameMsP95": 183.3,
+            "fps": 12.3,
+            "drawCalls": 284,
+            "triangles": 129342,
+            "geometries": 315,
+            "textures": 21
+          },
+          "state": {
+            "camera": {
+              "position": [
+                1.2082809177380935,
+                22.119127849338955,
+                20.195704089001286
+              ],
+              "target": [
+                -0.00521842946513641,
+                0,
+                -0.0050092173138235625
+              ],
+              "distance": 29.979946890630096,
+              "pitch": 0.8298015577718603,
+              "yaw": 0.06,
+              "flying": true
+            },
+            "selected": null,
+            "pointers": 0,
+            "drawCalls": 284,
+            "triangles": 129342,
+            "geometries": 315,
+            "textures": 21,
+            "pixelRatio": 1,
+            "contextLost": false
+          }
+        },
+        "recovery": {
+          "lost": 1,
+          "restored": 1
+        }
+      },
+      {
+        "browser": "chromium",
+        "width": 1280,
+        "height": 800,
+        "engine": "ACTIVE",
+        "webglPass": true,
+        "qa": {
+          "version": "v0.6-avatar-candidate",
+          "meshCount": 310,
+          "batching": {
+            "sourceMeshes": 804,
+            "batches": 70,
+            "netReduction": 734
+          },
+          "assets": {
+            "loaded": [
+              "health",
+              "relationships",
+              "projects",
+              "work",
+              "personal",
+              "memory"
+            ],
+            "failed": []
+          },
+          "performance": {
+            "environment": "current browser; hardware unverified",
+            "frames": 88,
+            "frameMsP50": 133.4,
+            "frameMsP95": 416.7,
+            "fps": 6.9,
+            "drawCalls": 284,
+            "triangles": 129342,
+            "geometries": 315,
+            "textures": 21
+          },
+          "state": {
+            "camera": {
+              "position": [
+                0.9616366814096006,
+                17.687260058242344,
+                16.14925326607772
+              ],
+              "target": [
+                -0.00900204093088687,
+                0,
+                -0.00864133781975715
+              ],
+              "distance": 23.976214587124904,
+              "pitch": 0.8296576342086159,
+              "yaw": 0.06,
+              "flying": true
+            },
+            "selected": null,
+            "pointers": 0,
+            "drawCalls": 284,
+            "triangles": 129342,
+            "geometries": 315,
+            "textures": 21,
+            "pixelRatio": 1,
+            "contextLost": false
+          }
+        },
+        "recovery": {
+          "lost": 1,
+          "restored": 1
+        }
+      },
+      {
+        "browser": "webkit",
+        "width": 390,
+        "height": 844,
+        "engine": "ACTIVE",
+        "webglPass": true,
+        "qa": {
+          "version": "v0.6-avatar-candidate",
+          "meshCount": 286,
+          "batching": {
+            "sourceMeshes": 780,
+            "batches": 70,
+            "netReduction": 710
+          },
+          "assets": {
+            "loaded": [
+              "health",
+              "relationships",
+              "projects",
+              "work",
+              "personal",
+              "memory"
+            ],
+            "failed": []
+          },
+          "performance": {
+            "environment": "current browser; hardware unverified",
+            "frames": 206,
+            "frameMsP50": 30,
+            "frameMsP95": 49,
+            "fps": 29.4,
+            "drawCalls": 262,
+            "triangles": 118174,
+            "geometries": 293,
+            "textures": 21
+          },
+          "state": {
+            "camera": {
+              "position": [
+                1.533418804277773,
+                28.02320099362865,
+                25.586324586864148
+              ],
+              "target": [
+                -0.003826185935781382,
+                0,
+                -0.0036729689174245846
+              ],
+              "distance": 37.98040140643794,
+              "pitch": 0.8298545416884066,
+              "yaw": 0.06,
+              "flying": true
+            },
+            "selected": null,
+            "pointers": 0,
+            "drawCalls": 262,
+            "triangles": 118174,
+            "geometries": 293,
+            "textures": 21,
+            "pixelRatio": 1,
+            "contextLost": false
+          }
+        },
+        "recovery": {
+          "lost": 1,
+          "restored": 1
+        }
+      },
+      {
+        "browser": "webkit",
+        "width": 844,
+        "height": 390,
+        "engine": "ACTIVE",
+        "webglPass": true,
+        "qa": {
+          "version": "v0.6-avatar-candidate",
+          "meshCount": 310,
+          "batching": {
+            "sourceMeshes": 804,
+            "batches": 70,
+            "netReduction": 734
+          },
+          "assets": {
+            "loaded": [
+              "health",
+              "relationships",
+              "projects",
+              "work",
+              "personal",
+              "memory"
+            ],
+            "failed": []
+          },
+          "performance": {
+            "environment": "current browser; hardware unverified",
+            "frames": 191,
+            "frameMsP50": 37,
+            "frameMsP95": 58,
+            "fps": 23.4,
+            "drawCalls": 284,
+            "triangles": 129342,
+            "geometries": 315,
+            "textures": 21
+          },
+          "state": {
+            "camera": {
+              "position": [
+                1.2093404273718156,
+                22.1225851925876,
+                20.1983021997582
+              ],
+              "target": [
+                -0.004259718996589727,
+                0,
+                -0.004089076175862195
+              ],
+              "distance": 29.983632438123607,
+              "pitch": 0.8298380293355981,
+              "yaw": 0.06,
+              "flying": true
+            },
+            "selected": null,
+            "pointers": 0,
+            "drawCalls": 284,
+            "triangles": 129342,
+            "geometries": 315,
+            "textures": 21,
+            "pixelRatio": 1,
+            "contextLost": false
+          }
+        },
+        "recovery": {
+          "lost": 1,
+          "restored": 1
+        }
+      },
+      {
+        "browser": "webkit",
+        "width": 1280,
+        "height": 800,
+        "engine": "ACTIVE",
+        "webglPass": true,
+        "qa": {
+          "version": "v0.6-avatar-candidate",
+          "meshCount": 310,
+          "batching": {
+            "sourceMeshes": 804,
+            "batches": 70,
+            "netReduction": 734
+          },
+          "assets": {
+            "loaded": [
+              "health",
+              "relationships",
+              "projects",
+              "work",
+              "personal",
+              "memory"
+            ],
+            "failed": []
+          },
+          "performance": {
+            "environment": "current browser; hardware unverified",
+            "frames": 138,
+            "frameMsP50": 66,
+            "frameMsP95": 106,
+            "fps": 14.5,
+            "drawCalls": 284,
+            "triangles": 129342,
+            "geometries": 315,
+            "textures": 21
+          },
+          "state": {
+            "camera": {
+              "position": [
+                0.9664091007447467,
+                17.698743054942288,
+                16.158511733086684
+              ],
+              "target": [
+                -0.004527800764162268,
+                0,
+                -0.004346558602702169
+              ],
+              "distance": 23.988043112117584,
+              "pitch": 0.8298278932804803,
+              "yaw": 0.06,
+              "flying": false
+            },
+            "selected": null,
+            "pointers": 0,
+            "drawCalls": 284,
+            "triangles": 129342,
+            "geometries": 315,
+            "textures": 21,
+            "pixelRatio": 1,
+            "contextLost": false
+          }
+        },
+        "recovery": {
+          "lost": 1,
+          "restored": 1
+        }
+      },
+      {
+        "browser": "firefox",
+        "width": 390,
+        "height": 844,
+        "engine": "FALLBACK",
+        "webglPass": false
+      },
+      {
+        "browser": "firefox",
+        "width": 844,
+        "height": 390,
+        "engine": "FALLBACK",
+        "webglPass": false
+      },
+      {
+        "browser": "firefox",
+        "width": 1280,
+        "height": 800,
+        "engine": "FALLBACK",
+        "webglPass": false
+      }
+    ],
+    "contextProbe": {
+      "success": true,
+      "check": "{&quot;rows&quot;:[{&quot;wardrobe&quot;:&quot;adult-swim-thong&quot;,&quot;context&quot;:{&quot;title&quot;:&quot;Здоровье&quot;,&quot;outfit&quot;:&quot;swim&quot;,&quot;top&quot;:2914438,&quot;bottom&quot;:2914438,&quot;islandId&quot;:&quot;health&quot;,&quot;role&quot;:&quot;neutral&quot;,&quot;roleSource&quot;:&quot;unspecified&quot;},&quot;presentation&quot;:&quot;male&quot;,&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;identityLocked&quot;:true,&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:null,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;island&quot;:&quot;health&quot;,&quot;visible&quot;:true,&quot;fullscreen&quot;:false,&quot;identity&quot;:&quot;shared-adult-v1&quot;},{&quot;wardrobe&quot;:&quot;work:neutral&quot;,&quot;context&quot;:{&quot;title&quot;:&quot;Работа&quot;,&quot;outfit&quot;:&quot;work&quot;,&quot;top&quot;:3360605,&quot;bottom&quot;:2635850,&quot;islandId&quot;:&quot;work&quot;,&quot;role&quot;:&quot;neutral&quot;,&quot;roleSource&quot;:&quot;unspecified&quot;},&quot;presentation&quot;:&quot;male&quot;,&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;identityLocked&quot;:true,&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:null,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;island&quot;:&quot;work&quot;,&quot;visible&quot;:true,&quot;fullscreen&quot;:false,&quot;identity&quot;:&quot;shared-adult-v1&quot;},{&quot;wardrobe&quot;:&quot;home:neutral&quot;,&quot;context&quot;:{&quot;title&quot;:&quot;Личное&quot;,&quot;outfit&quot;:&quot;home&quot;,&quot;top&quot;:12174511,&quot;bottom&quot;:8293773,&quot;islandId&quot;:&quot;personal&quot;,&quot;role&quot;:&quot;neutral&quot;,&quot;roleSource&quot;:&quot;unspecified&quot;},&quot;presentation&quot;:&quot;male&quot;,&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;identityLocked&quot;:true,&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:null,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;island&quot;:&quot;personal&quot;,&quot;visible&quot;:true,&quot;fullscreen&quot;:false,&quot;identity&quot;:&quot;shared-adult-v1&quot;},{&quot;wardrobe&quot;:&quot;casual:neutral&quot;,&quot;context&quot;:{&quot;title&quot;:&quot;Отношения&quot;,&quot;outfit&quot;:&quot;casual&quot;,&quot;top&quot;:4288370,&quot;bottom&quot;:3360605,&quot;islandId&quot;:&quot;relationships&quot;,&quot;role&quot;:&quot;neutral&quot;,&quot;roleSource&quot;:&quot;unspecified&quot;},&quot;presentation&quot;:&quot;male&quot;,&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;identityLocked&quot;:true,&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:null,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;island&quot;:&quot;relationships&quot;,&quot;visible&quot;:true,&quot;fullscreen&quot;:false,&quot;identity&quot;:&quot;shared-adult-v1&quot;},{&quot;wardrobe&quot;:&quot;studio:neutral&quot;,&quot;context&quot;:{&quot;title&quot;:&quot;Проекты&quot;,&quot;outfit&quot;:&quot;studio&quot;,&quot;top&quot;:6520203,&quot;bottom&quot;:3360605,&quot;islandId&quot;:&quot;projects&quot;,&quot;role&quot;:&quot;neutral&quot;,&quot;roleSource&quot;:&quot;unspecified&quot;},&quot;presentation&quot;:&quot;male&quot;,&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;identityLocked&quot;:true,&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:null,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;island&quot;:&quot;projects&quot;,&quot;visible&quot;:true,&quot;fullscreen&quot;:false,&quot;identity&quot;:&quot;shared-adult-v1&quot;},{&quot;wardrobe&quot;:&quot;casual:neutral&quot;,&quot;context&quot;:{&quot;title&quot;:&quot;Память&quot;,&quot;outfit&quot;:&quot;casual&quot;,&quot;top&quot;:10126704,&quot;bottom&quot;:3360605,&quot;islandId&quot;:&quot;memory&quot;,&quot;role&quot;:&quot;neutral&quot;,&quot;roleSource&quot;:&quot;unspecified&quot;},&quot;presentation&quot;:&quot;male&quot;,&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;identityLocked&quot;:true,&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:null,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;island&quot;:&quot;memory&quot;,&quot;visible&quot;:true,&quot;fullscreen&quot;:false,&quot;identity&quot;:&quot;shared-adult-v1&quot;}],&quot;full&quot;:{&quot;wardrobe&quot;:&quot;work:creative&quot;,&quot;context&quot;:{&quot;title&quot;:&quot;Работа&quot;,&quot;outfit&quot;:&quot;work&quot;,&quot;top&quot;:2372416,&quot;bottom&quot;:2635850,&quot;islandId&quot;:&quot;work&quot;,&quot;role&quot;:&quot;creative&quot;,&quot;roleSource&quot;:&quot;explicit&quot;},&quot;presentation&quot;:&quot;male&quot;,&quot;metricMode&quot;:&quot;DEMO&quot;,&quot;identityLocked&quot;:true,&quot;visual&quot;:{&quot;heightScale&quot;:1,&quot;bodyWidth&quot;:1,&quot;waist&quot;:1,&quot;shoulders&quot;:1,&quot;energy&quot;:0.5,&quot;mood&quot;:0.5,&quot;knee&quot;:null,&quot;activity&quot;:null,&quot;sleep&quot;:null,&quot;pulseHz&quot;:null,&quot;breathHz&quot;:null,&quot;gaitCue&quot;:null,&quot;gaitTempo&quot;:null,&quot;oxygen&quot;:null},&quot;island&quot;:&quot;work&quot;,&quot;visible&quot;:true,&quot;fullscreen&quot;:true,&quot;identity&quot;:&quot;shared-adult-v1&quot;},&quot;assets&quot;:{&quot;loaded&quot;:[&quot;health&quot;,&quot;projects&quot;,&quot;work&quot;,&quot;personal&quot;,&quot;memory&quot;,&quot;relationships&quot;],&quot;failed&quot;:[]},&quot;engine&quot;:&quot;ACTIVE&quot;}"
+    }
+  },
+  "versions": {
+    "health-game-console-mvp": [
+      {
+        "version_id": "a96cf2a2-2036-436f-913d-920b36cad73a",
+        "percentage": 100
+      }
+    ],
+    "health-console-mobile-fix": [
+      {
+        "version_id": "5108aef2-8ba7-4a07-842f-18db26217797",
+        "percentage": 100
+      }
+    ],
+    "human-os-cinematic-v3": [
+      {
+        "version_id": "e8e24888-d7a3-4abe-acbb-b900df5c38c0",
+        "percentage": 100
+      }
+    ],
+    "human-os-living-world": [
+      {
+        "version_id": "45c4d7d4-c336-4675-acf4-4d68d8cf0cee",
+        "percentage": 100
+      }
+    ]
+  },
+  "physicalDeviceVerified": false,
+  "artAccepted": false
+}

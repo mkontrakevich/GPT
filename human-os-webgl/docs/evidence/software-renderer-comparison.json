@@ -1,0 +1,41 @@
+{
+  "scope": "Cloudflare Chromium software renderer, 390x844, sequential short sessions; not iPhone",
+  "baseline": {
+    "engine": "ACTIVE",
+    "samples": 20,
+    "p50": 133.29999999999927,
+    "p95": 150.10000000000036,
+    "averageCalls": 966,
+    "fps": 7.643506840938622,
+    "qa": {
+      "meshCount": 917
+    }
+  },
+  "candidate": {
+    "engine": "ACTIVE",
+    "samples": 20,
+    "p50": 100,
+    "p95": 100.10000000000036,
+    "averageCalls": 262,
+    "fps": 10.169836265636121,
+    "qa": {
+      "meshCount": 213,
+      "batching": {
+        "sourceMeshes": 780,
+        "batches": 70,
+        "netReduction": 710
+      },
+      "assets": {
+        "loaded": [
+          "relationships",
+          "personal",
+          "health",
+          "work",
+          "memory",
+          "projects"
+        ],
+        "failed": []
+      }
+    }
+  }
+}

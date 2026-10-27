@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "project": "HUMAN OS — WebGL Living World",
+  "dateMoscow": "2026-10-27",
+  "scope": "visual-demo-only",
+  "progressEstimatePercent": 92,
+  "sourceRuntimeCommit": "77c77d74cc9bce2601466177002116dd2cf24049",
+  "testedSceneAndAssetsCommit": "3f1b030e52a3953c27ffd6e670b9479a8d89d6ac",
+  "canPromote": false,
+  "stagingVersion": "6c93fd20-1da5-40cc-97ed-7667c0ab945b",
+  "productionVersion": "45c4d7d4-c336-4675-acf4-4d68d8cf0cee",
+  "gates": {
+    "chromiumSoftwareRuntime": "PASS_3_VIEWPORTS",
+    "webkitSoftwareRuntime": "PASS_3_VIEWPORTS",
+    "khronosAssets": "PASS_6_WITH_ZERO_ERRORS_AND_WARNINGS",
+    "firefoxWebGL": "UNVERIFIED_FALLBACK_IN_CI",
+    "physicalIPhoneSafari": "NOT_RUN",
+    "physicalWindowsBrowsers": "NOT_RUN",
+    "physicalIPhone30FPS": "NOT_MEASURED",
+    "fullTexturedArtLibrary": "PARTIAL",
+    "finalArtApproval": "PENDING",
+    "independentReleaseAcceptance": "PENDING"
+  },
+  "evidence": {
+    "ci": "https://github.com/mkontrakevich/GPT/actions/runs/40407956142",
+    "artifact": "https://github.com/mkontrakevich/GPT/actions/runs/40407956142/artifacts/12691299478",
+    "latestCI": "https://github.com/mkontrakevich/GPT/actions/runs/40408517082",
+    "latestArtifact": "https://github.com/mkontrakevich/GPT/actions/runs/40408517082/artifacts/12691593735"
+  },
+  "effort": {
+    "humanHours": null,
+    "reason": "No verified timesheet"
+  },
+  "businessValue": {
+    "purpose": "Reusable visual navigation demo; reduced render overhead",
+    "revenueEvidence": null
+  },
+  "paidMediaGenerationCalls": 0,
+  "validatedRuntimeCommit": "77c77d74cc9bce2601466177002116dd2cf24049"
+}

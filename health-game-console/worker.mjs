@@ -4,13 +4,14 @@ const SECURITY = {
   "X-Frame-Options": "DENY",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "Cache-Control": "no-store",
+  "Cross-Origin-Resource-Policy": "same-origin",
   "Content-Security-Policy": "default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
 };
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/health") return Response.json({
-      ok: true, service: "health-game-console", version: "preview-assets-v0.2",
+      ok: true, service: "health-game-console", version: "preview-assets-v0.3-mobile",
       demo_only: true, personal_data_backend: false
     }, {headers: {"Cache-Control":"no-store"}});
     const original = await env.ASSETS.fetch(request);

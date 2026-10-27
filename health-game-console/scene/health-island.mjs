@@ -1,9 +1,7 @@
-// HUMAN OS shared island visual vocabulary, derived from world commit 993b3e19ee46388cb4d0262629c90d39afd9bb47.
-// Geometry, palette, canvas stone, vegetation instancing and lighting match the approved island world.
 export function mountHealthIsland({host,ids,onSelect,getSelection=()=>ids[0]}){
  const $=s=>document.querySelector(s);
  let R,ready=false,contextReady=true,inView=true;
- const qa=window.__HEALTH_ISLAND_QA={version:'health-character-v0.5',style:'human-os-floating-islands',sourceWorld:'993b3e19ee46388cb4d0262629c90d39afd9bb47',loaded:false,context:{lost:0,restored:0},errors:[]};
+ const qa=window.__HEALTH_ISLAND_QA={version:'health-character-v0.6',style:'human-os-floating-islands',sourceWorld:'993b3e19ee46388cb4d0262629c90d39afd9bb47',loaded:false,context:{lost:0,restored:0},errors:[]};
  const fallback=err=>{qa.errors.push(String(err));$('#fallback').style.display='grid';$('#render').textContent='2D FALLBACK / 3D НЕДОСТУПЕН';$('#avatarRenderMode').textContent+=' · 2D';if(R)R.domElement.style.display='none'};
  Promise.race([import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js'),new Promise((_,reject)=>setTimeout(()=>reject(Error('3D timeout')),5500))]).then(THREE=>{
  try{
@@ -11,7 +9,7 @@ export function mountHealthIsland({host,ids,onSelect,getSelection=()=>ids[0]}){
  R.setPixelRatio(Math.min(devicePixelRatio||1,1.2));R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.16;
  const canvas=R.domElement;canvas.setAttribute('aria-label','Персонаж HUMAN OS в стилистике островов');host.insertBefore(canvas,host.firstChild);
  const S=new THREE.Scene();S.fog=new THREE.FogExp2(0x0b1022,.009);
- const camera=new THREE.PerspectiveCamera(40,1,.1,100);
+ const camera=new THREE.PerspectiveCamera(34,1,.1,100);
  S.add(new THREE.HemisphereLight(0xc4dafa,0x364565,1.75));const sun=new THREE.DirectionalLight(0xffdbad,3.35);sun.position.set(-8,19,3);S.add(sun);
  const mobile=true,areas=[{id:'health',color:0x59f0e7,p:[0,0,0]}];
 const materialCache=new Map();
@@ -118,46 +116,62 @@ function strataCliffs(p,a,index){
 
  // Faceted, clothed character: identity geometry stays fixed across metric updates.
  const hero=new THREE.Group();hero.position.y=.42;S.add(hero);
- const skin=mat(0xd7be9b,.03,.82),hair=mat(0x33475d,.04,.8),coat=mat(0x356d72,.08,.8),pants=mat(0xa7b7b2,.02,.9),boot=mat(0x33475d,.2,.65),eyeMat=mat(0x152537,.12,.3);
- const upper=new THREE.Group();upper.position.y=1.12;hero.add(upper);
- const torsoGeo=new THREE.LatheGeometry([[.25,0],[.30,.12],[.27,.43],[.34,.70],[.40,.88],[.31,1.03],[.19,1.10]].map(v=>new THREE.Vector2(...v)),12);
- const torso=mesh(torsoGeo,coat,upper,0,0,0);torso.scale.z=.67;
+ const skin=mat(0xd7be9b,.03,.82),hair=mat(0x33475d,.04,.8),coat=mat(0xd7be9b,.03,.82),pants=mat(0xd7be9b,.03,.82),boot=mat(0xd7be9b,.03,.82),eyeMat=mat(0x152537,.12,.3);
+ // Elliptical anatomical cross sections: pelvis, iliac crest, waist, ribs, deltoids, neck.
+ function loft(rows,segments=24){const vertices=[],index=[];for(const [y,rx,rz,zc=0] of rows)for(let j=0;j<=segments;j++){const a=j/segments*Math.PI*2;vertices.push(Math.sin(a)*rx,y,Math.cos(a)*rz+zc)}for(let i=0;i<rows.length-1;i++)for(let j=0;j<segments;j++){const k=i*(segments+1)+j;index.push(k,k+1,k+segments+1,k+1,k+segments+2,k+segments+1)}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));g.setIndex(index);g.computeVertexNormals();const normals=g.attributes.normal;for(let i=0;i<rows.length;i++){const a=i*(segments+1),b=a+segments,n=new THREE.Vector3(normals.getX(a)+normals.getX(b),normals.getY(a)+normals.getY(b),normals.getZ(a)+normals.getZ(b)).normalize();normals.setXYZ(a,n.x,n.y,n.z);normals.setXYZ(b,n.x,n.y,n.z)}return g}
+ const upper=new THREE.Group();upper.position.y=1.43;hero.add(upper);
+ const torsoGeo=loft([[-.23,.03,.05],[-.18,.16,.10],[-.10,.27,.17],[0,.30,.18],[.13,.285,.165],[.27,.25,.15],[.42,.265,.175],[.58,.31,.19],[.74,.35,.19],[.87,.36,.165],[.94,.34,.145],[1.02,.20,.11],[1.07,.125,.095],[1.12,.095,.09]]);
+ const torso=mesh(torsoGeo,skin,upper,0,0,0);
  const torsoBase=new Float32Array(torsoGeo.attributes.position.array);
- const hips=sphere(.29,pants,hero,0,1.05,0);hips.scale.set(1,.6,.67);
- const belt=mesh(new THREE.TorusGeometry(.265,.025,5,24),copper,upper,0,.07,0);belt.rotation.x=Math.PI/2;belt.scale.y=.67;
- const seam=cube(.018,.72,.025,copper,upper,0,.50,.235);
- for(const y of [.32,.55,.78])sphere(.026,pearl,upper,.075,y,.25);
- cyl(.12,.13,.18,skin,upper,0,1.18,0,10);
- const head=new THREE.Group();head.position.set(0,1.49,0);upper.add(head);
- const face=mesh(new THREE.IcosahedronGeometry(.315,2),skin,head);face.scale.set(.87,1.08,.86);
- const hairCap=mesh(new THREE.SphereGeometry(.322,12,7,0,Math.PI*2,0,1.38),hair,head,0,.035,-.012);hairCap.scale.set(.92,1.05,.92);
- const forelock=mesh(new THREE.IcosahedronGeometry(.14,0),hair,head,-.09,.22,.20);forelock.scale.set(1.15,.55,.6);forelock.rotation.z=-.22;
+ const hips=new THREE.Group();hero.add(hips);
+ const swim=mat(0x2c7886,0,.91),swimwear=new THREE.Group();hero.add(swimwear);
+ function fabricPatch(back=false){const verts=[],ind=[],N=16,rows=[[1.51,.30,.184,1.40],[1.46,.31,.195,back?.18:.72],[1.34,.29,.19,back?.075:.27],[1.22,.17,.125,back?.07:.25]];
+ for(const [y,rx,rz,span] of rows)for(let j=0;j<=N;j++){const a=(j/N*2-1)*span;verts.push(Math.sin(a)*rx,y,(back?-1:1)*Math.cos(a)*rz)}
+ for(let i=0;i<rows.length-1;i++)for(let j=0;j<N;j++){const k=i*(N+1)+j;ind.push(k,k+1,k+N+1,k+1,k+N+2,k+N+1)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));g.setIndex(ind);g.computeVertexNormals();return g}
+ const fabricMaterial=new THREE.MeshStandardMaterial({color:0x2c7886,roughness:.91,side:THREE.DoubleSide});
+ mesh(fabricPatch(),fabricMaterial,swimwear);mesh(fabricPatch(true),fabricMaterial,swimwear);
+ for(const side of [-1,1]){const curve=new THREE.QuadraticBezierCurve3(new THREE.Vector3(side*.295,1.51,.033),new THREE.Vector3(side*.325,1.55,0),new THREE.Vector3(side*.295,1.51,-.033));mesh(new THREE.TubeGeometry(curve,12,.016,5,false),swim,swimwear)}
+ const belt=swimwear;
+ const bikiniTop=new THREE.Group();upper.add(bikiniTop);
+ for(const side of [-1,1]){const cup=sphere(.145,swim,bikiniTop,side*.153,.72,.177);cup.scale.set(1.05,.86,.72);
+ const strap=new THREE.QuadraticBezierCurve3(new THREE.Vector3(side*.23,.81,.20),new THREE.Vector3(side*.24,1.0,.02),new THREE.Vector3(side*.23,.79,-.16));mesh(new THREE.TubeGeometry(strap,14,.012,5,false),swim,bikiniTop)}
+ cube(.065,.020,.025,swim,bikiniTop,0,.72,.219);
+ const backBand=mesh(new THREE.TorusGeometry(.32,.014,5,32),swim,bikiniTop,0,.65,0);backBand.rotation.x=Math.PI/2;backBand.scale.y=.59;
+ let wardrobe='male';bikiniTop.visible=false;
+ function setWardrobe(value){wardrobe=value==='female'?'female':'male';bikiniTop.visible=wardrobe==='female';document.querySelector('.fallbackBikini').style.display=wardrobe==='female'?'':'none';qa.wardrobe=wardrobe==='female'?'adult-mini-bikini-thong':'adult-swim-thong';document.querySelectorAll('[data-wardrobe]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.wardrobe===wardrobe)))}
+ document.querySelectorAll('[data-wardrobe]').forEach(b=>b.addEventListener('click',()=>setWardrobe(b.dataset.wardrobe)));setWardrobe('male');
+ cyl(.092,.10,.13,skin,upper,0,1.14,0,16);
+ const head=new THREE.Group();head.position.set(0,1.38,0);upper.add(head);
+ const face=mesh(loft([[-.21,.055,.075,.014],[-.18,.10,.105,.008],[-.12,.137,.125],[0,.16,.145],[.10,.155,.14],[.18,.13,.12],[.225,.075,.075],[.24,.005,.005]],24),skin,head);
+ const hairCap=mesh(new THREE.SphereGeometry(.165,20,10,0,Math.PI*2,0,1.52),hair,head,0,.09,-.012);hairCap.scale.set(1,1.08,.97);
+ const forelock=mesh(new THREE.IcosahedronGeometry(.065,1),hair,head,-.045,.18,.10);forelock.scale.set(1.3,.45,.9);forelock.rotation.z=-.18;
  const eyes=[],brows=[];
  for(const side of [-1,1]){
-  eyes.push(sphere(.024,eyeMat,head,side*.105,.015,.265));
-  brows.push(cube(.10,.018,.022,hair,head,side*.105,.082,.264));
-  const ear=sphere(.057,skin,head,side*.275,-.015,-.005);ear.scale.set(.65,1,.7);
+  eyes.push(sphere(.011,eyeMat,head,side*.062,.015,.138));
+  brows.push(cube(.052,.009,.012,hair,head,side*.062,.055,.137));
+  const ear=sphere(.034,skin,head,side*.159,-.005,-.005);ear.scale.set(.55,1,.55);
  }
- const nose=mesh(new THREE.ConeGeometry(.050,.135,4),skin,head,0,-.03,.30);nose.rotation.x=Math.PI/2;
- const mouthNeutral=cube(.11,.014,.018,bronze,head,0,-.132,.252);
- const mouthSmile=mesh(new THREE.TorusGeometry(.060,.008,4,12,Math.PI),bronze,head,0,-.105,.257);mouthSmile.rotation.z=Math.PI;
+ const noseGeo=new THREE.BufferGeometry();noseGeo.setAttribute('position',new THREE.Float32BufferAttribute([-.015,.052,.134,.015,.052,.134,0,-.039,.197,-.023,-.051,.145,.023,-.051,.145],3));noseGeo.setIndex([0,2,1,0,3,2,1,2,4,3,4,2]);noseGeo.computeVertexNormals();mesh(noseGeo,skin,head);
+ const mouthNeutral=cube(.064,.007,.009,bronze,head,0,-.106,.127);
+ const mouthSmile=mesh(new THREE.TorusGeometry(.033,.004,4,12,Math.PI),bronze,head,0,-.094,.13);mouthSmile.rotation.z=Math.PI;
  const arms=[],legs=[],kneeRings=[];
  for(const side of [-1,1]){
-  const shoulder=new THREE.Group();shoulder.position.set(side*.385,.88,0);upper.add(shoulder);
-  const sleeve=cyl(.13,.105,.50,coat,shoulder,0,-.22,0,10);
-  sphere(.10,coat,shoulder,0,-.48,0);
-  const forearm=cyl(.10,.082,.42,coat,shoulder,0,-.70,0,10);
-  cyl(.088,.088,.045,copper,shoulder,0,-.905,0,10);
-  const hand=sphere(.10,skin,shoulder,0,-1.02,.01);hand.scale.set(.72,1.16,.75);
+  const shoulder=new THREE.Group();shoulder.position.set(side*.345,.84,0);upper.add(shoulder);
+  // A continuous deltoid-to-wrist surface replaces disconnected cylinders.
+  const arm=mesh(loft([[-.94,.060,.061],[-.88,.068,.070],[-.76,.087,.080],[-.64,.100,.088],[-.54,.088,.082],[-.49,.081,.080],[-.38,.105,.092],[-.23,.118,.105],[-.10,.126,.115],[.01,.09,.09],[.07,.015,.02]],20),skin,shoulder);
+  const sleeve=arm,forearm=new THREE.Group();
+  const hand=new THREE.Group();hand.position.set(0,-1.025,.015);shoulder.add(hand);
+  const palm=mesh(loft([[-.08,.043,.026],[-.04,.050,.029],[.035,.044,.027],[.065,.030,.025]],16),skin,hand);
+  for(let finger=0;finger<4;finger++){const f=mesh(loft([[-.12,.010,.010],[-.10,.013,.013],[-.035,.016,.015],[0,.017,.016]],10),skin,hand,(finger-1.5)*.027,-.045,.002);f.scale.y=[.88,1,.94,.72][finger];f.rotation.z=(finger-1.5)*-.025}
+  const thumb=mesh(loft([[-.10,.010,.010],[-.07,.017,.016],[0,.025,.023]],10),skin,hand,side*.065,-.015,.01);thumb.rotation.z=side*.52;
   arms.push({side,pivot:shoulder,sleeve,forearm});
-  const leg=new THREE.Group();leg.position.set(side*.16,1,0);hero.add(leg);
-  cyl(.135,.12,.43,pants,leg,0,-.20,0,10);
-  sphere(.112,pants,leg,0,-.46,0);
-  cyl(.115,.095,.39,pants,leg,0,-.68,0,10);
-  const shoe=cube(.20,.145,.34,boot,leg,0,-.91,.06);shoe.rotation.y=side*.04;legs.push(leg);
-  const ring=mesh(new THREE.TorusGeometry(.14,.013,5,24),new THREE.MeshBasicMaterial({color:0xe6a96d,transparent:true,opacity:0}),leg,0,-.46,.07);kneeRings.push(ring);
+  const leg=new THREE.Group();leg.position.set(side*.157,1.35,0);hero.add(leg);
+  mesh(loft([[-1.26,.062,.069],[-1.15,.065,.073],[-1.02,.077,.09],[-.84,.101,.112],[-.71,.098,.102],[-.63,.087,.091],[-.56,.096,.10],[-.43,.116,.123],[-.22,.138,.148],[0,.145,.15],[.10,.105,.12]],22),skin,leg);
+  const foot=sphere(.105,skin,leg,0,-1.275,.079);foot.scale.set(.70,.48,1.72);foot.rotation.y=side*.055;for(let toe=0;toe<5;toe++){const o=sphere(.023-toe*.002,skin,leg,side*(-.048+toe*.023),-1.282,.225-toe*.008);o.scale.set(.8,.6,1.1)}legs.push(leg);
+  const ring=mesh(new THREE.TorusGeometry(.14,.013,5,24),new THREE.MeshBasicMaterial({color:0xe6a96d,transparent:true,opacity:0}),leg,0,-.63,.07);kneeRings.push(ring);
  }
- const chestCore=mesh(new THREE.OctahedronGeometry(.065,0),new THREE.MeshStandardMaterial({color:0x68cbd6,emissive:0x68cbd6,emissiveIntensity:.3,metalness:.3,roughness:.25}),upper,-.12,.72,.25);
+ const chestCore=mesh(new THREE.CircleGeometry(.026,12),new THREE.MeshStandardMaterial({color:0x68cbd6,emissive:0x68cbd6,emissiveIntensity:.3,metalness:.3,roughness:.25}),upper,-.12,.50,.21);
  const motionRing=mesh(new THREE.TorusGeometry(1.34,.019,5,64),new THREE.MeshBasicMaterial({color:0x8dfbff,transparent:true,opacity:.4}),S,0,.40,0);motionRing.rotation.x=Math.PI/2;
  const sleepRing=mesh(new THREE.TorusGeometry(1.45,.012,5,64,Math.PI*1.4),new THREE.MeshBasicMaterial({color:0xe6a96d,transparent:true,opacity:.3}),S,0,.39,0);sleepRing.rotation.x=Math.PI/2;
  const shadow=mesh(new THREE.CircleGeometry(.62,24),new THREE.MeshBasicMaterial({color:0x0b1022,transparent:true,opacity:.25,depthWrite:false}),S,0,.34,0);shadow.rotation.x=-Math.PI/2;
@@ -170,13 +184,13 @@ function strataCliffs(p,a,index){
  function animateCharacter(t,dt,reduced){
   const target=avatarState.visual,k=reduced?1:1-Math.exp(-Math.min(dt,.15)*3);
   for(const name of ['heightScale','bodyWidth','waist','shoulders','energy','mood'])smooth[name]+=(target[name]-smooth[name])*k;
-  hero.scale.y=smooth.heightScale;head.scale.y=1/smooth.heightScale;if(distance<minCameraDistance()){distance=minCameraDistance();cam()}
+  hero.scale.y=smooth.heightScale;head.scale.y=1/smooth.heightScale;if(distance<minCameraDistance())distance=minCameraDistance();cam()
   upper.rotation.x=(.5-smooth.energy)*.10;
   const pos=torsoGeo.attributes.position;
-  for(let i=0;i<pos.count;i++){const y=torsoBase[i*3+1],waistInfluence=1-Math.min(1,y/.65);pos.setX(i,torsoBase[i*3]*smooth.bodyWidth*(1+(smooth.waist-1)*waistInfluence)*(1+(smooth.shoulders-1)*(1-waistInfluence)))}
+  for(let i=0;i<pos.count;i++){const y=torsoBase[i*3+1],waistInfluence=Math.max(0,1-Math.abs(y-.25)/.45),feminine=wardrobe==='female',shape=feminine?(1-.10*waistInfluence-.04*Math.max(0,(y-.6)/.5)+.04*Math.max(0,-y/.2)):1;pos.setX(i,torsoBase[i*3]*smooth.bodyWidth*(1+(smooth.waist-1)*waistInfluence)*(1+(smooth.shoulders-1)*Math.max(0,(y-.5)/.6))*shape);pos.setZ(i,torsoBase[i*3+2]*(1+(smooth.waist-1)*waistInfluence))}
   pos.needsUpdate=true;torsoGeo.computeVertexNormals();
-  hips.scale.x=smooth.bodyWidth*smooth.waist;belt.scale.x=smooth.bodyWidth*smooth.waist;
-  arms.forEach(({side,pivot,sleeve,forearm})=>{pivot.position.x=side*.385*smooth.shoulders*smooth.bodyWidth;pivot.rotation.z=side*(.03+smooth.energy*.14);sleeve.scale.x=sleeve.scale.z=smooth.shoulders;forearm.scale.x=forearm.scale.z=smooth.shoulders});
+  belt.scale.x=smooth.bodyWidth*(1+(smooth.waist-1)*.3);belt.scale.z=1+(smooth.waist-1)*.3;
+  arms.forEach(({side,pivot,sleeve,forearm})=>{pivot.position.x=side*.345*smooth.shoulders*smooth.bodyWidth*(wardrobe==='female'?.95:1);pivot.rotation.z=side*(.03+smooth.energy*.14);sleeve.scale.x=sleeve.scale.z=smooth.shoulders;forearm.scale.x=forearm.scale.z=smooth.shoulders});
   brows.forEach((b,i)=>b.rotation.z=(i?1:-1)*(.5-smooth.mood)*.12);
   mouthSmile.visible=smooth.mood>.62;mouthNeutral.visible=!mouthSmile.visible;
   eyes.forEach(o=>o.scale.y=.85+smooth.energy*.3);
@@ -195,9 +209,9 @@ function strataCliffs(p,a,index){
  window.__healthIslandSelect=select;select(getSelection());
  const points=[];for(let i=0;i<85;i++)points.push((rnd()-.5)*24,(rnd()-.5)*14,-9-rnd()*8);
  const starGeo=new THREE.BufferGeometry();starGeo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));S.add(new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xd4eaff,size:.035,transparent:true,opacity:.55,depthWrite:false})));
- let yaw=.40,pitch=.24,distance=9.2;
- function minCameraDistance(){return 8.8+Math.max(0,smooth.heightScale-1)*9}
- function cam(){camera.position.set(Math.sin(yaw)*Math.cos(pitch)*distance,Math.sin(pitch)*distance+.75,Math.cos(yaw)*Math.cos(pitch)*distance);camera.lookAt(0,.75,0)}
+ let yaw=.18,pitch=.08,distance=6.25;
+ function minCameraDistance(){return 5.95+Math.max(0,smooth.heightScale-1)*5.5}
+ function cam(){const targetY=.42+1.57*smooth.heightScale;camera.position.set(Math.sin(yaw)*Math.cos(pitch)*distance,Math.sin(pitch)*distance+targetY,Math.cos(yaw)*Math.cos(pitch)*distance);camera.lookAt(0,targetY,0)}
  function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);camera.aspect=w/h;camera.updateProjectionMatrix();R.setSize(w,h,false);cam()}
  resize();new ResizeObserver(resize).observe(host);
  new IntersectionObserver(entries=>{inView=entries[0].isIntersecting}).observe(host);
@@ -212,11 +226,14 @@ function strataCliffs(p,a,index){
  function end(e,cancel=false){if(!pointers.has(e.pointerId))return;pointers.delete(e.pointerId);pinch=0;if(cancel||gesture||movement>8||pointers.size)return;const b=canvas.getBoundingClientRect();mouse.set((e.clientX-b.left)/b.width*2-1,-((e.clientY-b.top)/b.height*2-1));ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(nodes)[0];if(hit)onSelect(hit.object.userData.module)}
  canvas.addEventListener('pointerup',e=>end(e));canvas.addEventListener('pointercancel',e=>end(e,true));canvas.addEventListener('lostpointercapture',e=>end(e,true));
  canvas.addEventListener('wheel',e=>{e.preventDefault();distance=Math.max(minCameraDistance(),Math.min(15,distance+e.deltaY*.015));cam()},{passive:false});
- $('#sceneHome').onclick=()=>{yaw=.40;pitch=.24;distance=Math.max(9.2,minCameraDistance());cam()};
+ $('#sceneHome').onclick=()=>{yaw=.18;pitch=.08;distance=Math.max(6.25,minCameraDistance());cam()};
  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();contextReady=false;qa.context.lost++;pointers.clear();$('#render').textContent='ВОССТАНОВЛЕНИЕ 3D';$('#avatarRenderMode').textContent='ВОССТАНОВЛЕНИЕ 3D'});
  canvas.addEventListener('webglcontextrestored',()=>{contextReady=true;qa.context.restored++;resize();$('#render').textContent='WEBGL / THREE.JS'});
- qa.inspect=()=>({yaw,distance,selected:getSelection(),headBox:(()=>{const b=canvas.getBoundingClientRect(),points=[[-.34,-.4],[.34,-.4],[-.34,.45],[.34,.45]].map(([x,y])=>head.localToWorld(new THREE.Vector3(x,y,.30)).project(camera));return{top:b.top+(-Math.max(...points.map(v=>v.y))*.5+.5)*b.height,bottom:b.top+(-Math.min(...points.map(v=>v.y))*.5+.5)*b.height}})(),visual:{...smooth,knee:avatarState.visual.knee,activity:avatarState.visual.activity},metricMode:avatarState.mode,pointers:pointers.size,drawCalls:R.info.render.calls,triangles:R.info.render.triangles,textures:R.info.memory.textures,contextLost:R.getContext().isContextLost(),markers:nodes.map(n=>{const v=n.getWorldPosition(new THREE.Vector3()).project(camera),b=canvas.getBoundingClientRect();return{id:n.userData.module,x:b.left+(v.x*.5+.5)*b.width,y:b.top+(-v.y*.5+.5)*b.height}})});
+ // Wardrobe is an explicit adult presentation choice, never inferred from health metrics.
+ function heroFrame(){hero.updateWorldMatrix(true,true);camera.updateMatrixWorld();const b=canvas.getBoundingClientRect(),box=new THREE.Box3().setFromObject(hero),points=[];for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z])points.push(new THREE.Vector3(x,y,z).project(camera));const top=(-Math.max(...points.map(v=>v.y))*.5+.5)*b.height,bottom=(-Math.min(...points.map(v=>v.y))*.5+.5)*b.height;return{top:b.top+top,bottom:b.top+bottom,pixels:bottom-top,occupancy:(bottom-top)/b.height}}
+ qa.inspect=()=>({yaw,distance,heroFrame:heroFrame(),wardrobe:qa.wardrobe,selected:getSelection(),headBox:(()=>{const b=canvas.getBoundingClientRect(),points=[[-.20,-.23],[.20,-.23],[-.20,.26],[.20,.26]].map(([x,y])=>head.localToWorld(new THREE.Vector3(x,y,.18)).project(camera));return{top:b.top+(-Math.max(...points.map(v=>v.y))*.5+.5)*b.height,bottom:b.top+(-Math.min(...points.map(v=>v.y))*.5+.5)*b.height}})(),visual:{...smooth,knee:avatarState.visual.knee,activity:avatarState.visual.activity},metricMode:avatarState.mode,pointers:pointers.size,drawCalls:R.info.render.calls,triangles:R.info.render.triangles,textures:R.info.memory.textures,contextLost:R.getContext().isContextLost(),markers:nodes.map(n=>{const v=n.getWorldPosition(new THREE.Vector3()).project(camera),b=canvas.getBoundingClientRect();return{id:n.userData.module,x:b.left+(v.x*.5+.5)*b.width,y:b.top+(-v.y*.5+.5)*b.height}})});
  qa.palette={stone:palette.cream.color.getHexString(),ocean:palette.ocean.color.getHexString(),basalt:palette.basalt[0].color.getHexString(),metal:copper.color.getHexString()};
+ qa.anatomy={model:'adult-proportion-study-v1',headUnits:7.0,continuousLimbs:true,individualFingers:true,clinicalModel:false};
  qa.meshCount=0;S.traverse(o=>{if(o.isMesh)qa.meshCount++});
  let previousFrame=performance.now();
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;

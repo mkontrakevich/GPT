@@ -21,6 +21,11 @@ for(const [name,type] of [['chromium',chromium],['webkit',webkit]]){
  assert.equal(island.style,'human-os-floating-islands');assert.equal(island.loaded,true);assert.deepEqual(island.errors,[]);
  assert.ok(island.meshCount<150&&island.drawCalls<160,'single-island budget');
  assert.deepEqual(island.palette,{stone:'d7be9b',ocean:'2c9aab',basalt:'33475d',metal:'e6a96d'});
+ const framing=await page.evaluate(()=>({frame:__HEALTH_ISLAND_QA.inspect().heroFrame,wardrobe:__HEALTH_ISLAND_QA.wardrobe,canvas:document.querySelector('#scene canvas').getBoundingClientRect().toJSON()}));
+ assert.equal(framing.wardrobe,'adult-swim-thong');
+ assert.ok(framing.frame.occupancy>=.70&&framing.frame.occupancy<=.94,'hero fills 70–94% of scene');
+ assert.ok(framing.frame.top>=framing.canvas.y+4&&framing.frame.bottom<=framing.canvas.bottom-4,'head and shoes inside safe zone');
+
 
  if(width<=600||(width<=950&&height<=500)){assert.ok(metrics.nav.height<=70,'mobile nav must be a single row');assert.ok(metrics.buttons.every(b=>b.height>=44&&b.width>=44));assert.ok(metrics.buttons.every(b=>Math.abs(b.y-metrics.buttons[0].y)<1));assert.ok(metrics.scene.bottom<height,'3D must fit first mobile viewport');}
  for(const [part,title] of [['overview','ТВОЯ СИСТЕМА'],['vitals','ВИТАЛЬНЫЕ ПОКАЗАТЕЛИ'],['recovery','ВОССТАНОВЛЕНИЕ'],['mobility','МОБИЛЬНОСТЬ'],['activity','НАГРУЗКА'],['body','СОСТАВ ТЕЛА'],['mind','НАСТРОЕНИЕ']]){await page.locator('[data-part="'+part+'"]').click();assert.equal(await page.locator('#title').textContent(),title);assert.equal(await page.locator('[data-part="'+part+'"]').getAttribute('aria-pressed'),'true')}
@@ -31,13 +36,19 @@ for(const [name,type] of [['chromium',chromium],['webkit',webkit]]){
  const before=await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect()),box=await page.locator('#scene canvas').boundingBox();
  await page.mouse.move(box.x+30,box.y+80);await page.mouse.down();await page.mouse.move(box.x+95,box.y+80,{steps:6});await page.mouse.up();
  assert.ok(Math.abs((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().yaw))-before.yaw)>.2);
- await page.locator('#sceneHome').click();assert.ok(Math.abs((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().yaw))-.40)<.001);
- if(name==='chromium'){const cdp=await page.context().newCDPSession(page),y=box.y+box.height*.65,x=box.x+box.width*.5;await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x-40,y,id:1},{x:x+40,y,id:2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-65,y,id:1},{x:x+65,y,id:2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert.ok((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().distance))<9.2);await cdp.detach();await page.locator('#sceneHome').click()}
+ await page.locator('#sceneHome').click();assert.ok(Math.abs((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().yaw))-.18)<.001);
+ if(name==='chromium'){const cdp=await page.context().newCDPSession(page),y=box.y+box.height*.65,x=box.x+box.width*.5;await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x-40,y,id:1},{x:x+40,y,id:2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-65,y,id:1},{x:x+65,y,id:2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert.ok((await page.evaluate(()=>__HEALTH_ISLAND_QA.inspect().distance))<6.25);await cdp.detach();await page.locator('#sceneHome').click()}
  await page.evaluate(()=>{window.__loss=document.querySelector('#scene canvas').getContext('webgl2').getExtension('WEBGL_lose_context');__loss.loseContext()});await page.waitForFunction(()=>__HEALTH_ISLAND_QA.context.lost===1);await page.waitForTimeout(1000);await page.evaluate(()=>__loss.restoreContext());await page.waitForFunction(()=>__HEALTH_ISLAND_QA.context.restored===1);assert.equal(await page.locator('#render').textContent(),'WEBGL / THREE.JS');
  }
 
 
  if(width===390){
+ await page.locator('[data-wardrobe="female"]').click();assert.equal(await page.evaluate(()=>__HEALTH_ISLAND_QA.wardrobe),'adult-mini-bikini-thong');await page.locator('[data-wardrobe="male"]').click();assert.equal(await page.evaluate(()=>__HEALTH_ISLAND_QA.wardrobe),'adult-swim-thong');
+ await page.locator('#sceneExpand').click();assert.equal(await page.locator('#avatarViewer').evaluate(d=>d.open),true);
+ await page.waitForTimeout(200);const fullscreen=await page.locator('#scene').boundingBox();assert.ok(Math.abs(fullscreen.height-height)<2&&Math.abs(fullscreen.width-width)<2,'viewer fills viewport');
+ await page.screenshot({path:'health-game-console/qa/artifacts/'+name+'-avatar-fullscreen.png'});
+ await page.keyboard.press('Escape');assert.equal(await page.locator('#avatarViewer').evaluate(d=>d.open),false);
+ assert.equal(await page.locator('#scene').evaluate(e=>e.parentElement.className),'hero');
  const beforeStorage=await page.evaluate(()=>localStorage.getItem('hgc-preview-v1'));
  await page.locator('#avatarDetails summary').click();
  await page.locator('[data-avatar-preview="low"]').click();await page.locator('#scene').scrollIntoViewIfNeeded();

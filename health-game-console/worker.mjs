@@ -11,7 +11,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/health") return Response.json({
-      ok: true, service: "health-game-console", version: "preview-assets-v0.5-avatar",
+      ok: true, service: "health-game-console", version: "preview-assets-v0.6-avatar-closeup",
       demo_only: true, personal_data_backend: false
     }, {headers: {"Cache-Control":"no-store"}});
     const original = await env.ASSETS.fetch(request);

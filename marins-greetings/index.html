@@ -17,7 +17,7 @@
 <section class="table-wrap"><table><thead><tr><th>Статус</th><th>Период</th><th>Отель</th><th>Текст приветствия</th><th>Срок: с</th><th>Срок: по</th></tr></thead><tbody id="rows"><tr><td colspan="6" class="empty">Загрузка…</td></tr></tbody></table></section>
 </main>
 <script>
-const SNAPSHOT='https://raw.githubusercontent.com/Kontrakevich/GPT/main/marins-greetings/snapshot.json';
+const SNAPSHOT='https://raw.githubusercontent.com/mkontrakevich/GPT/main/marins-greetings/snapshot.json';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const isoDate=v=>v?new Date(v).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}).replace(',',''):'—';
 const day=v=>v?new Date(v).toISOString().slice(0,10):'';

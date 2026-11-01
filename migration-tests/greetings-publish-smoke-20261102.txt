@@ -1,5 +1,0 @@
-GREETINGS_PUBLISH_SMOKE
-repository=mkontrakevich/GPT
-source=ChatGPT GitHub connector
-test=write-read-delete
-no_production_data=true

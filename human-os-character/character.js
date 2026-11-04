@@ -6,17 +6,17 @@ try {renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true,powerPrefere
 catch(err){$('#loading').hidden=true;$('#error').style.display='flex';throw err}
 renderer.outputColorSpace=T.SRGBColorSpace;
 renderer.toneMapping=T.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.43;
+renderer.toneMappingExposure=1.05;
 renderer.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.45:1.8));
 renderer.shadowMap.enabled=false;
 
 const scene=new T.Scene();scene.background=new T.Color(0x1c1a32);
 const camera=new T.PerspectiveCamera(35,1,.1,100);
 const pivot=new T.Vector3(0,2.22,0);
-const hemi=new T.HemisphereLight(0xd5dcff,0x302641,3.0);scene.add(hemi);
-const key=new T.DirectionalLight(0xffd3a1,3.4);key.position.set(-3.5,7,5);scene.add(key);
-const rim=new T.DirectionalLight(0xe3a5e0,3);rim.position.set(2.5,5,-3.5);scene.add(rim);
-const cool=new T.DirectionalLight(0x889ce6,1.4);cool.position.set(-5,2,-4);scene.add(cool);
+const hemi=new T.HemisphereLight(0xd5dcff,0x302641,2.1);scene.add(hemi);
+const key=new T.DirectionalLight(0xffd3a1,2.6);key.position.set(-3.5,7,5);scene.add(key);
+const rim=new T.DirectionalLight(0xe3a5e0,2.0);rim.position.set(2.5,5,-3.5);scene.add(rim);
+const cool=new T.DirectionalLight(0x889ce6,.65);cool.position.set(-5,2,-4);scene.add(cool);
 const root=new T.Group();scene.add(root);
 const lighting={alternate:false};
 const getMaterial=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.79,metalness:.02,...extra});
@@ -149,7 +149,7 @@ loft(torso,[{x:0,y:2.1,z:0,rx:.43,rz:.27},{x:0,y:2.29,z:0,rx:.39,rz:.22},{x:0,y:
 ring(root,0,2.24,0,.43,.278,.061,belt);
 box(root,0,2.24,.30,.18,.132,.045,gold);box(root,0,2.24,.324,.125,.08,.02,belt);
 for(const sx of [-1,1]){
- const breast=ball(torso,sx*.23,2.97,.26,.22,.29,.17,top);breast.rotation.z=sx*.07;
+ const breast=ball(torso,sx*.23,2.97,.26,.178,.20,.105,top);breast.rotation.z=sx*.07;
  // painted textile seam around torso
  tube(torso,[[sx*.43,3.12,.10],[sx*.42,2.88,.23],[sx*.36,2.57,.22],[sx*.34,2.34,.19]],.015,coatLining,26);
 }
@@ -161,30 +161,30 @@ ball(torso,0,3.34,-.018,.138,.18,.135,skin);
 
 // Sculpted face. Relative head y coordinates 0.35–1.03 (total figure 4.40)
 const H=head;
-ball(H,0,.47,0,.345,.445,.282,skin);
-ball(H,0,.22,.07,.243,.18,.24,skinSoft);
+ball(H,0,.47,0,.319,.425,.267,skin);
+ball(H,0,.22,.07,.215,.15,.208,skinSoft);
 for(const sx of [-1,1]){
- ball(H,sx*.31,.43,-.04,.082,.145,.066,skinSoft);
- ball(H,sx*.216,.41,.223,.135,.083,.043,skinSoft);
- ball(H,sx*.22,.40,.260,.115,.057,.016,blush).material.transparent=true;
+ ball(H,sx*.31,.43,-.04,.064,.116,.055,skinSoft);
+ ball(H,sx*.216,.41,.223,.095,.054,.035,skinSoft);
+ const cheekTint=ball(H,sx*.22,.40,.260,.094,.039,.011,new T.MeshBasicMaterial({color:0xbe6b73,transparent:true,opacity:.13,depthWrite:false}));
  // eyes and irises: almond sculpt, large painterly expression
- let eye=ball(H,sx*.156,.562,.254,.132,.069,.035,eyeWhite);eye.rotation.z=sx*.045;
- ball(H,sx*.151,.559,.286,.047,.053,.013,iris);
- ball(H,sx*.152,.560,.298,.028,.038,.012,irisDark);
- ball(H,sx*.165,.582,.312,.012,.016,.009,eyeWhite);
- tube(H,[[sx*.027,.584,.264],[sx*.111,.630,.289],[sx*.188,.638,.289],[sx*.273,.580,.261]],.015,brows,24);
- tube(H,[[sx*.048,.716,.241],[sx*.130,.736,.260],[sx*.22,.722,.253]],.025,brows,15);
+ let eye=ball(H,sx*.156,.562,.254,.107,.051,.025,eyeWhite);eye.rotation.z=sx*.045;
+ ball(H,sx*.151,.559,.286,.033,.041,.013,iris);
+ ball(H,sx*.152,.560,.298,.022,.029,.010,irisDark);
+ ball(H,sx*.165,.582,.312,.009,.014,.008,eyeWhite);
+ tube(H,[[sx*.027,.584,.264],[sx*.111,.630,.289],[sx*.188,.638,.289],[sx*.273,.580,.261]],.010,brows,24);
+ tube(H,[[sx*.048,.716,.241],[sx*.130,.736,.260],[sx*.22,.722,.253]],.016,brows,15);
  // lower eyelid subtle
  tube(H,[[sx*.078,.529,.271],[sx*.16,.505,.288],[sx*.255,.536,.267]],.008,blush,12);
  // eyelash at outer rim
- tube(H,[[sx*.265,.59,.263],[sx*.305,.635,.245]],.013,brows,6);
+ tube(H,[[sx*.265,.59,.263],[sx*.305,.635,.245]],.009,brows,6);
 }
 // nose bridge, tip, nostril and lips
 ball(H,0,.438,.275,.063,.12,.065,skinSoft);
-ball(H,0,.371,.320,.082,.048,.060,skinSoft);
-for(const sx of [-1,1])ball(H,sx*.060,.363,.326,.038,.019,.026,skin);
-ball(H,0,.281,.284,.127,.029,.024,lips);
-ball(H,0,.248,.281,.115,.028,.021,lips);
+ball(H,0,.371,.320,.066,.035,.048,skinSoft);
+for(const sx of [-1,1])ball(H,sx*.060,.363,.326,.025,.014,.022,skin);
+ball(H,0,.281,.284,.102,.023,.022,lips);
+ball(H,0,.248,.281,.093,.023,.020,lips);
 tube(H,[[-.12,.279,.302],[0,.293,.318],[.12,.279,.302]],.006,blush,12);
 ball(H,0,.160,.245,.110,.035,.032,skinSoft);
 
@@ -262,12 +262,12 @@ for(const sx of [-1,1]){
  tube(coatMotion,[[sx*.46,3.26,.19],[sx*.66,3.05,.23],[sx*.48,2.72,.30]],.015,glowing,18);
  // sleeve silhouette - wearable sculpted fabric geometry
  const shoulder=[sx*.59,3.13,.03],elbow=sideArm(sx,'elbow'),wrist=sideArm(sx,'wrist');
- ball(coatMotion,...shoulder,.255,.29,.26,coatLight);
- tapered(coatMotion,[shoulder,[sx*.66,3.00,.09],elbow,wrist],[.262,.225,.17,.153],coatLight,14);
+ ball(coatMotion,...shoulder,.18,.22,.19,coatLight);
+ tapered(coatMotion,[shoulder,[sx*.66,3.00,.09],elbow,wrist],[.172,.145,.125,.104],coatLight,14);
  // shoulder seam / sleeve crease / satin piping
  tube(coatMotion,[[sx*.53,3.28,.19],[sx*.70,3.09,.22],elbow],.013,glowing,22);
  tube(coatMotion,[[elbow[0]-sx*.1,elbow[1]+.07,elbow[2]+.12],[elbow[0],elbow[1]-.04,elbow[2]+.16],[elbow[0]+sx*.11,elbow[1]+.05,elbow[2]+.11]],.012,pantsShadow,13);
- ball(coatMotion,...wrist,.164,.117,.161,pearl);
+ ball(coatMotion,...wrist,.118,.10,.115,pearl);
 }
 // collar outer shell
 panel(coatMotion,[
@@ -292,9 +292,9 @@ function palm(sx){
  ball(root,...center,open?.16:.14,open?.09:.17,.065,skin);
  if(open){
   for(let k=0;k<4;k++){const y=3.08+(k-1.5)*.036;
-   tapered(root,[[-1.42,y,.43],[-1.57,y+.05,.445],[-1.68-(k%2)*.015,y+.055,.46]],[.038,.027,.014],skin,7);
+   tapered(root,[[-1.42,y,.43],[-1.57,y+.05,.445],[-1.68-(k%2)*.015,y+.055,.46]],[.026,.020,.011],skin,7);
   }
-  tapered(root,[[-1.29,3.00,.44],[-1.33,2.92,.47],[-1.40,2.89,.51]],[.045,.028,.015],skinSoft,7);
+  tapered(root,[[-1.29,3.00,.44],[-1.33,2.92,.47],[-1.40,2.89,.51]],[.035,.022,.012],skinSoft,7);
  }else{
   for(let k=0;k<4;k++)tapered(root,[[.66+(k-1.5)*.055,2.07,.36],[.65+(k-1.5)*.055,1.98,.38]],[.03,.015],skin,7);
  }
@@ -322,10 +322,10 @@ const topDisk=mesh(new T.CylinderGeometry(1.46,1.46,.015,96),new T.MeshStandardM
 for(let radius of [1.19,1.47,1.71])ring(scene,0,.014,0,radius,radius,.017,radius===1.71?haloMat:glowing);
 const centered=new T.Mesh(new T.CircleGeometry(1.49,64),new T.MeshBasicMaterial({color:0x89728a,transparent:true,opacity:.085,depthWrite:false}));centered.rotation.x=-Math.PI/2;centered.position.y=.002;scene.add(centered);
 for(let i=0;i<36;i++){const a=i*2.4,r=1.8+rand()*2.25;let o=ball(scene,Math.sin(a)*r,.2+rand()*4.1,-2.5+rand()*.7,.012,.012,.012,i%3?glowing:haloMat);o.material.transparent=true}
-const heroLight=new T.PointLight(0xffcf9f,20,5,2);heroLight.position.set(-2.0,2.8,1.6);scene.add(heroLight);
+const heroLight=new T.PointLight(0xffcf9f,7,5,2);heroLight.position.set(-2.0,2.8,1.6);scene.add(heroLight);
 
 // Pointer controls and camera, touch navigation on iPhone
-let azimuth=.21,elev=.12,dist=8.9,automatic=false,drag=false,lastX=0,lastY=0,moved=0,pinch=0;
+let azimuth=.17,elev=.07,dist=8.8,automatic=false,drag=false,lastX=0,lastY=0,moved=0,pinch=0;
 function setCam(){const p=2.22;
  camera.position.set(Math.sin(azimuth)*dist*Math.cos(elev),p+Math.sin(elev)*dist*.65,Math.cos(azimuth)*dist*Math.cos(elev));
  camera.lookAt(0,p,0);
@@ -356,7 +356,7 @@ function updateButtons(which){for(const id of ['front','turn','light','full'])$(
 const clock=new T.Clock();let frames=0,fps=0,prev=performance.now(),acc=0,metricsCount=0;
 let actualTriangles=0,meshCount=0;
 scene.traverse(o=>{if(!o.isMesh)return;meshCount++;const g=o.geometry;const count=g.index?g.index.count/3:g.attributes.position.count/3;actualTriangles+=Math.round(count)});
-window.__HUMAN_CHARACTER_QA={version:'0.1-model-study',source:'real-time-procedural-mesh',isBillboard:false,rigged:false,meshes:meshCount,triangles:actualTriangles,renderer:'three-webgl',mobileOptimized:true,healthData:false};
+window.__HUMAN_CHARACTER_QA={version:'0.2-proportion-study',source:'real-time-procedural-mesh',isBillboard:false,rigged:false,meshes:meshCount,triangles:actualTriangles,renderer:'three-webgl',mobileOptimized:true,healthData:false};
 $('#state').textContent='WEBGL ACTIVE';$('#loading').hidden=true;
 function render(){
  requestAnimationFrame(render);if(document.hidden)return;const t=clock.getElapsedTime();

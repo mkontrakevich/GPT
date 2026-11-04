@@ -159,35 +159,99 @@ tube(torso,[[0,3.05,.369],[0,2.87,.395],[0,2.70,.368]],.012,glowing,16);
 tube(torso,[[-.125,2.98,.37],[0,2.87,.395],[.125,2.98,.37]],.014,glowing,12);
 ball(torso,0,3.34,-.018,.138,.18,.135,skin);
 
-// Sculpted face. Relative head y coordinates 0.35–1.03 (total figure 4.40)
+// Sculpted base face with hand-painted expressive features, curved onto real 3D mesh
 const H=head;
 ball(H,0,.47,0,.319,.425,.267,skin);
-ball(H,0,.22,.07,.215,.15,.208,skinSoft);
+ball(H,0,.21,.07,.210,.15,.205,skinSoft);
 for(const sx of [-1,1]){
- ball(H,sx*.31,.43,-.04,.064,.116,.055,skinSoft);
- ball(H,sx*.216,.41,.223,.095,.054,.035,skinSoft);
- const cheekTint=ball(H,sx*.22,.40,.260,.094,.039,.011,new T.MeshBasicMaterial({color:0xbe6b73,transparent:true,opacity:.13,depthWrite:false}));
- // eyes and irises: almond sculpt, large painterly expression
- let eye=ball(H,sx*.156,.562,.254,.107,.051,.025,eyeWhite);eye.rotation.z=sx*.045;
- ball(H,sx*.151,.559,.286,.033,.041,.013,iris);
- ball(H,sx*.152,.560,.298,.022,.029,.010,irisDark);
- ball(H,sx*.165,.582,.312,.009,.014,.008,eyeWhite);
- tube(H,[[sx*.027,.584,.264],[sx*.111,.630,.289],[sx*.188,.638,.289],[sx*.273,.580,.261]],.010,brows,24);
- tube(H,[[sx*.048,.716,.241],[sx*.130,.736,.260],[sx*.22,.722,.253]],.016,brows,15);
- // lower eyelid subtle
- tube(H,[[sx*.078,.529,.271],[sx*.16,.505,.288],[sx*.255,.536,.267]],.008,blush,12);
- // eyelash at outer rim
- tube(H,[[sx*.265,.59,.263],[sx*.305,.635,.245]],.009,brows,6);
+ ball(H,sx*.31,.43,-.04,.061,.112,.050,skinSoft);
 }
-// nose bridge, tip, nostril and lips
-ball(H,0,.438,.275,.063,.12,.065,skinSoft);
-ball(H,0,.371,.320,.066,.035,.048,skinSoft);
-for(const sx of [-1,1])ball(H,sx*.060,.363,.326,.025,.014,.022,skin);
-ball(H,0,.281,.284,.102,.023,.022,lips);
-ball(H,0,.248,.281,.093,.023,.020,lips);
-tube(H,[[-.12,.279,.302],[0,.293,.318],[.12,.279,.302]],.006,blush,12);
-ball(H,0,.160,.245,.110,.035,.032,skinSoft);
-
+function paintFace(){
+ const c=document.createElement('canvas');c.width=512;c.height=768;
+ const g=c.getContext('2d');
+ const soft=(x,y,r,c0,c1)=>{const a=g.createRadialGradient(x,y,0,x,y,r);a.addColorStop(0,c0);a.addColorStop(1,c1);g.fillStyle=a;g.fillRect(x-r,y-r,r*2,r*2)};
+ soft(120,471,145,'rgba(179,76,83,.21)','rgba(160,71,79,0)');
+ soft(391,471,145,'rgba(179,76,83,.21)','rgba(160,71,79,0)');
+ // broad angular painterly planes, colored by hand rather than procedural noise
+ g.fillStyle='rgba(133,64,76,.18)';
+ g.beginPath();g.moveTo(42,310);g.lineTo(84,408);g.lineTo(122,488);g.lineTo(58,457);g.closePath();g.fill();
+ g.beginPath();g.moveTo(470,305);g.lineTo(436,403);g.lineTo(395,482);g.lineTo(463,445);g.closePath();g.fill();
+ g.fillStyle='rgba(255,218,193,.16)';
+ g.beginPath();g.moveTo(86,397);g.lineTo(182,429);g.lineTo(120,459);g.closePath();g.fill();
+ g.beginPath();g.moveTo(427,399);g.lineTo(338,426);g.lineTo(396,461);g.closePath();g.fill();
+ for(let i=0;i<24;i++){
+  const x=66+rand()*380,y=388+rand()*160;
+  g.fillStyle=i%3?'rgba(150,75,75,.13)':'rgba(226,171,144,.22)';
+  g.fillRect(x,y,2+rand()*4,1+rand()*2);
+ }
+ // all face elements intentionally use asymmetry and tapered painterly strokes
+ for(const side of [-1,1]){
+  const cx=256+side*133, y=327;
+  g.save();g.translate(cx,y);g.rotate(-side*.045);
+  // soft orbital shadow
+  g.fillStyle='rgba(116,60,78,.24)';g.beginPath();g.ellipse(0,8,87,47,0,0,Math.PI*2);g.fill();
+  // natural almond eye
+  g.beginPath();g.moveTo(-80,1);g.bezierCurveTo(-42,-47,41,-47,80,0);g.bezierCurveTo(42,37,-41,40,-80,1);g.closePath();
+  g.fillStyle='#f3ddd1';g.fill();
+  g.save();g.clip();
+  g.fillStyle='#8d6456';g.beginPath();g.arc(5,7,38,0,Math.PI*2);g.fill();
+  g.fillStyle='#3b2935';g.beginPath();g.arc(5,7,25,0,Math.PI*2);g.fill();
+  g.fillStyle='#170f20';g.beginPath();g.arc(7,5,16,0,Math.PI*2);g.fill();
+  g.fillStyle='rgba(255,255,235,.94)';g.beginPath();g.ellipse(-7,-9,9,11,.4,0,Math.PI*2);g.fill();
+  g.fillStyle='rgba(255,234,207,.5)';g.beginPath();g.ellipse(22,19,5,5,0,0,Math.PI*2);g.fill();
+  g.restore();
+  // upper eyeliner with natural diminishing tails
+  g.strokeStyle='#402733';g.lineCap='round';g.lineWidth=9;g.beginPath();
+  g.moveTo(-78,0);g.bezierCurveTo(-30,-43,36,-48,77,-6);g.stroke();
+  g.lineWidth=3;g.beginPath();g.moveTo(73,-4);g.lineTo(91,-19);g.stroke();
+  g.strokeStyle='rgba(114,58,68,.55)';g.lineWidth=3;g.beginPath();
+  g.moveTo(-55,24);g.quadraticCurveTo(12,55,61,23);g.stroke();
+  // eyebrow painted as a sharp varied-width taper
+  g.fillStyle='#54323d';g.beginPath();g.moveTo(-67,-127);
+  g.bezierCurveTo(-30,-145,24,-143,66,-118);
+  g.lineTo(65,-110);g.bezierCurveTo(22,-123,-24,-130,-70,-117);g.closePath();g.fill();
+  g.restore();
+ }
+ // central nose: angular light, brush-like shadow, tiny nostril arcs
+ g.fillStyle='rgba(250,214,186,.39)';g.beginPath();g.moveTo(248,339);g.lineTo(270,340);g.lineTo(265,482);g.lineTo(251,491);g.closePath();g.fill();
+ g.fillStyle='rgba(122,63,72,.23)';g.beginPath();g.moveTo(239,399);g.lineTo(246,466);g.lineTo(236,487);g.closePath();g.fill();
+ g.strokeStyle='rgba(124,64,75,.66)';g.lineWidth=4;g.lineCap='round';
+ g.beginPath();g.moveTo(226,493);g.quadraticCurveTo(234,487,241,494);g.moveTo(274,494);g.quadraticCurveTo(284,488,291,494);g.stroke();
+ soft(257,496,56,'rgba(249,216,194,.30)','rgba(239,174,153,0)');
+ // upper lip Cupid's bow and soft lower lip
+ g.fillStyle='#b26570';g.beginPath();g.moveTo(178,611);
+ g.quadraticCurveTo(215,599,232,596);g.quadraticCurveTo(244,602,256,604);
+ g.quadraticCurveTo(268,602,279,596);g.quadraticCurveTo(300,599,336,611);
+ g.quadraticCurveTo(291,626,255,619);g.quadraticCurveTo(220,626,178,611);g.fill();
+ g.fillStyle='#d58d8c';g.beginPath();g.moveTo(190,620);
+ g.quadraticCurveTo(247,652,325,620);g.quadraticCurveTo(280,672,244,666);
+ g.quadraticCurveTo(209,661,190,620);g.fill();
+ g.strokeStyle='rgba(91,42,57,.56)';g.lineWidth=3;g.beginPath();g.moveTo(193,620);g.quadraticCurveTo(253,634,321,620);g.stroke();
+ g.fillStyle='rgba(255,214,199,.63)';g.fillRect(224,652,59,3);
+ // paint fades naturally at the 3D mesh borders; does not form a flat facial card
+ g.globalCompositeOperation='destination-in';
+ const mask=g.createRadialGradient(256,380,170,256,380,390);
+ mask.addColorStop(0,'rgba(255,255,255,1)');mask.addColorStop(.68,'rgba(255,255,255,.98)');
+ mask.addColorStop(1,'rgba(255,255,255,0)');
+ g.fillStyle=mask;g.fillRect(0,0,512,768);g.globalCompositeOperation='source-over';
+ const tex=new T.CanvasTexture(c);tex.colorSpace=T.SRGBColorSpace;tex.anisotropy=4;return tex;
+}
+const faceTexture=paintFace();
+const faceMat=new T.MeshBasicMaterial({map:faceTexture,transparent:true,depthWrite:false,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2});
+const facePos=[],faceUV=[],faceInd=[],W=22,N=38;
+for(let i=0;i<=N;i++){
+ const y=.125+i/N*.745;
+ for(let j=0;j<=W;j++){
+  const x=-.304+j/W*.608;
+  const nx=x/.319,ny=(y-.47)/.425;
+  const z=.267*Math.sqrt(Math.max(.04,1-nx*nx-ny*ny))+.014;
+  facePos.push(x,y,z);faceUV.push(j/W,i/N);
+  if(i<N&&j<W){const a=i*(W+1)+j,b=a+W+1;faceInd.push(a,b,a+1,b,b+1,a+1)}
+ }
+}
+const faceGeo=new T.BufferGeometry();faceGeo.setAttribute('position',new T.Float32BufferAttribute(facePos,3));faceGeo.setAttribute('uv',new T.Float32BufferAttribute(faceUV,2));faceGeo.setIndex(faceInd);faceGeo.computeVertexNormals();mesh(faceGeo,faceMat,H);
+// small 3D nose tip adds parallax at 3/4 view without alien spherical eyes
+ball(H,0,.391,.269,.052,.065,.048,skinSoft);
 // Hair skull cap and handcrafted clumps (no particle-card hair)
 ball(H,0,.760,-.063,.358,.342,.300,hairDeep);
 ball(H,.075,.995,-.08,.28,.18,.27,hair);
@@ -356,7 +420,7 @@ function updateButtons(which){for(const id of ['front','turn','light','full'])$(
 const clock=new T.Clock();let frames=0,fps=0,prev=performance.now(),acc=0,metricsCount=0;
 let actualTriangles=0,meshCount=0;
 scene.traverse(o=>{if(!o.isMesh)return;meshCount++;const g=o.geometry;const count=g.index?g.index.count/3:g.attributes.position.count/3;actualTriangles+=Math.round(count)});
-window.__HUMAN_CHARACTER_QA={version:'0.2-proportion-study',source:'real-time-procedural-mesh',isBillboard:false,rigged:false,meshes:meshCount,triangles:actualTriangles,renderer:'three-webgl',mobileOptimized:true,healthData:false};
+window.__HUMAN_CHARACTER_QA={version:'0.3-painted-face',source:'real-time-procedural-mesh',isBillboard:false,rigged:false,meshes:meshCount,triangles:actualTriangles,renderer:'three-webgl',mobileOptimized:true,healthData:false};
 $('#state').textContent='WEBGL ACTIVE';$('#loading').hidden=true;
 function render(){
  requestAnimationFrame(render);if(document.hidden)return;const t=clock.getElapsedTime();

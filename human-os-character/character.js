@@ -162,7 +162,7 @@ ball(torso,0,3.34,-.018,.138,.18,.135,skin);
 // Sculpted base face with hand-painted expressive features, curved onto real 3D mesh
 const H=head;
 ball(H,0,.47,0,.319,.425,.267,skin);
-ball(H,0,.21,.07,.210,.15,.205,skinSoft);
+// The oval skull itself forms the jaw; avoid a protruding chin sphere obscuring painted lips.
 for(const sx of [-1,1]){
  ball(H,sx*.31,.43,-.04,.061,.112,.050,skinSoft);
 }
@@ -251,7 +251,7 @@ for(let i=0;i<=N;i++){
 }
 const faceGeo=new T.BufferGeometry();faceGeo.setAttribute('position',new T.Float32BufferAttribute(facePos,3));faceGeo.setAttribute('uv',new T.Float32BufferAttribute(faceUV,2));faceGeo.setIndex(faceInd);faceGeo.computeVertexNormals();mesh(faceGeo,faceMat,H);
 // small 3D nose tip adds parallax at 3/4 view without alien spherical eyes
-ball(H,0,.391,.269,.052,.065,.048,skinSoft);
+ball(H,0,.390,.263,.038,.057,.039,skinSoft);
 // Hair skull cap and handcrafted clumps (no particle-card hair)
 ball(H,0,.760,-.063,.358,.342,.300,hairDeep);
 ball(H,.075,.995,-.08,.28,.18,.27,hair);
@@ -420,7 +420,7 @@ function updateButtons(which){for(const id of ['front','turn','light','full'])$(
 const clock=new T.Clock();let frames=0,fps=0,prev=performance.now(),acc=0,metricsCount=0;
 let actualTriangles=0,meshCount=0;
 scene.traverse(o=>{if(!o.isMesh)return;meshCount++;const g=o.geometry;const count=g.index?g.index.count/3:g.attributes.position.count/3;actualTriangles+=Math.round(count)});
-window.__HUMAN_CHARACTER_QA={version:'0.3-painted-face',source:'real-time-procedural-mesh',isBillboard:false,rigged:false,meshes:meshCount,triangles:actualTriangles,renderer:'three-webgl',mobileOptimized:true,healthData:false};
+window.__HUMAN_CHARACTER_QA={version:'0.3.1-painted-face-fix',source:'real-time-procedural-mesh',isBillboard:false,rigged:false,meshes:meshCount,triangles:actualTriangles,renderer:'three-webgl',mobileOptimized:true,healthData:false};
 $('#state').textContent='WEBGL ACTIVE';$('#loading').hidden=true;
 function render(){
  requestAnimationFrame(render);if(document.hidden)return;const t=clock.getElapsedTime();

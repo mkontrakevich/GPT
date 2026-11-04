@@ -19,4 +19,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test human-os-character/tests/character.test.mjs
+      - run: node --test human-os-character/tests/*.test.mjs

@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "manifestVersion": "1.0.0",
   "projectId": "PERSONAL-OS/HUMAN-OS/CHARACTER-SYSTEM",
   "characterId": "human-os-primary-hero",
@@ -71,6 +70,7 @@
   "requiredCameraPresets": [
     "portrait",
     "full-body",
+    "three-quarter",
     "orbit",
     "reset"
   ],

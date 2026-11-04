@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#12142b">
+<title>HUMAN OS · Painterly Character Lab</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#0e1022;color:#ecedf2}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:radial-gradient(ellipse 75% 70% at 56% 50%,#44415d 0%,#24243f 50%,#101127 100%)}
+#stage{width:100%;height:100%;display:block;touch-action:none;outline:0}
+.hud{position:fixed;z-index:3;pointer-events:none}
+header{top:0;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:calc(24px + env(safe-area-inset-top)) 30px 16px;background:linear-gradient(#101228aa,transparent)}
+.brand{font-size:16px;letter-spacing:.22em;font-weight:800;text-shadow:0 3px 12px #080917}.brand span{color:#edc6a1}.micro{margin-top:7px;font-size:9px;letter-spacing:.24em;color:#b9b6ca}
+.status{font-size:10px;color:#c1bbc9;letter-spacing:.12em;text-align:right;line-height:1.8}.status b{color:#e6caa7;font-weight:700}
+footer{left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);padding:6px;display:flex;gap:5px;align-items:center;border:1px solid #dfc2aa57;background:linear-gradient(135deg,#26253edc,#151528e0);border-radius:18px;box-shadow:0 16px 40px #05061681;backdrop-filter:blur(16px);pointer-events:auto;white-space:nowrap}
+button{font:600 11px system-ui;color:#cec8d3;background:transparent;border:1px solid transparent;letter-spacing:.08em;border-radius:12px;padding:11px 15px;cursor:pointer}
+button:hover,button:focus-visible{color:white;border-color:#debea48a;outline:0}
+button.active{color:#1a1828;background:linear-gradient(135deg,#ecd8bd,#bc9b8e);box-shadow:inset 0 1px #fff9}
+.side-note{top:50%;right:27px;transform:translateY(-50%);font-size:10px;line-height:2;letter-spacing:.13em;color:#c4baca9a;text-align:right}
+#loading{position:fixed;z-index:5;inset:0;display:grid;place-items:center;background:#101226;transition:opacity .5s}
+#loading[hidden]{display:none}
+#loading div{text-align:center;color:#efd0b7;letter-spacing:.2em;font-size:12px}
+#loading .bar{height:2px;width:160px;background:#4d3445;margin:20px auto;position:relative;overflow:hidden}
+#loading .bar:after{content:'';height:100%;width:60px;background:#ebc3a5;display:block;animation:loading 1.2s infinite ease-in-out}@keyframes loading{to{transform:translateX(170px)}}
+#error{display:none;position:fixed;inset:0;align-items:center;justify-content:center;padding:32px;text-align:center;color:#e3d9da;background:linear-gradient(135deg,#1b1832,#2f2a43);z-index:4}
+#fps{position:fixed;bottom:83px;left:18px;font-size:10px;letter-spacing:.07em;color:#bdabba91;z-index:3;pointer-events:none}
+.noise{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath filter='url(%23a)' opacity='.16' d='M0 0h120v120H0z'/%3E%3C/svg%3E")}
+@media(max-width:650px){header{padding:calc(15px + env(safe-area-inset-top)) 14px 10px}.brand{font-size:12px}.micro{font-size:7px;margin-top:5px}.status{font-size:8px}.side-note{display:none}footer{width:calc(100% - 20px);bottom:calc(12px + env(safe-area-inset-bottom));justify-content:space-between;border-radius:14px;padding:4px}button{font-size:9px;padding:12px 9px;flex:1}#fps{bottom:78px;left:12px;font-size:8px}}
+@media(prefers-reduced-motion:reduce){#loading .bar:after{animation:none}}
+</style></head><body>
+<canvas id="stage" aria-label="Интерактивный WebGL-персонаж HUMAN OS" tabindex="0"></canvas>
+<div class="noise"></div>
+<div id="loading"><div>CHARACTER DNA <div class="bar"></div>WEBGL / INITIALIZING</div></div>
+<div id="error"><div><strong>Трёхмерная сцена недоступна</strong><p>Откройте страницу в Safari или Chrome с поддержкой WebGL.</p></div></div>
+<header class="hud"><div><div class="brand">HUMAN <span>OS</span></div><div class="micro">CHARACTER LAB / PAINTERLY 3D</div></div><div class="status"><b id="state">ПОДГОТОВКА</b><div>STYLIZED · REAL-TIME WEBGL</div></div></header>
+<div class="hud side-note">DRAG — ROTATE<br>PINCH — ZOOM<br>LOOK · 360°</div>
+<div id="fps" aria-label="Частота кадров, измеренная в браузере"></div>
+<footer class="hud" aria-label="Управление персонажем">
+<button id="front" class="active">ПОРТРЕТ</button><button id="turn">360°</button><button id="light">СВЕТ</button><button id="full">ВЕСЬ РОСТ</button>
+</footer>
+<script type="module" src="/character.js"></script></body></html>

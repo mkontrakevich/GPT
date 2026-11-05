@@ -394,7 +394,7 @@ function setCam(){const p=2.22;
  camera.position.set(Math.sin(azimuth)*dist*Math.cos(elev),p+Math.sin(elev)*dist*.65,Math.cos(azimuth)*dist*Math.cos(elev));
  camera.lookAt(0,p,0);
 }
-function resize(){const w=innerWidth,h=innerHeight;
+function resize(){const w=Math.max(1,canvas.clientWidth||innerWidth),h=Math.max(1,canvas.clientHeight||innerHeight);
  camera.aspect=w/h;
  camera.fov=w<700?(w>h?37:34):35;
  camera.updateProjectionMatrix();
@@ -444,6 +444,60 @@ if(localGLBInput)localGLBInput.onchange=async ()=>{
  }catch(error){console.error('HUMAN_OS_GLB_IMPORT_ERROR',String(error?.message||error));$('#state').textContent='GLB: ОШИБКА';alert('Не удалось открыть GLB: '+String(error?.message||error))}
  localGLBInput.value='';
 };
+
+// Side-by-side QA is a temporary, in-memory local comparison only.
+const qaPanel=$('#qaReference'),qaAngles=$('#qaAngles'),qaToggle=$('#reviewToggle');
+let compareActive=false,referenceLoaded=false;
+function setCompare(active){
+  compareActive=!!active;
+  document.body.classList.toggle('review-mode',compareActive);
+  qaPanel.hidden=!compareActive;qaAngles.hidden=!compareActive;
+  qaToggle.setAttribute('aria-expanded',String(compareActive));
+  automatic=false;
+  $('#turn').classList.remove('active');
+  if(compareActive){azimuth=-.36;elev=.06;dist=mobile?12.0:10.0;setCam();}
+  resize();
+  if(window.__HUMAN_CHARACTER_QA)window.__HUMAN_CHARACTER_QA.compareMode=compareActive;
+}
+qaToggle?.addEventListener('click',()=>setCompare(!compareActive));
+$('#qaClose')?.addEventListener('click',()=>setCompare(false));
+$('#qaLoad')?.addEventListener('click',()=>$('#referenceFile')?.click());
+const qaFile=$('#referenceFile');
+if(qaFile)qaFile.addEventListener('change',async()=>{
+  const file=qaFile.files?.[0];if(!file)return;
+  try{
+    if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>14*1024*1024)
+      throw new Error('Допустим PNG/JPEG/WebP до 14 МБ');
+    const data=await new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(String(reader.result||''));
+      reader.onerror=()=>reject(new Error('Ошибка чтения изображения'));
+      reader.readAsDataURL(file);
+    });
+    const img=$('#qaImage');img.src=data;img.hidden=false;
+    $('#qaEmpty').hidden=true;referenceLoaded=true;
+    // Source is not stored, transmitted, saved to the server or used for inference.
+    window.__HUMAN_CHARACTER_QA.referenceLocalOnly=true;
+    window.__HUMAN_CHARACTER_QA.referenceLoaded=true;
+    window.__HUMAN_CHARACTER_QA.referenceFilename=file.name;
+  }catch(error){console.warn('CHARACTER_QA_REF_REJECTED',String(error?.message||error));}
+  qaFile.value='';
+});
+const compareAngles={
+  threequarter:{yaw:-.36,label:'ОРИГИНАЛ: ВИД ¾ · УТВЕРЖДЁН. 3D-МОДЕЛЬ: НА ПРОВЕРКЕ.'},
+  front:{yaw:0,label:'РАКУРС ФАСА: 3D-РЕКОНСТРУКЦИЯ, ЕЩЁ НЕ УТВЕРЖДЁН.'},
+  profile:{yaw:-Math.PI/2,label:'ПРОФИЛЬ: ПРЕДПОЛОЖЕНИЕ 3D, НЕ ПОДТВЕРЖДЁН ОРИГИНАЛОМ.'},
+  back:{yaw:Math.PI,label:'ВИД СЗАДИ: ПРЕДПОЛОЖЕНИЕ 3D, НЕ ПОДТВЕРЖДЁН ОРИГИНАЛОМ.'}
+};
+for(const button of document.querySelectorAll('[data-angle]')){
+  button.addEventListener('click',()=>{
+    const name=button.dataset.angle,a=compareAngles[name];if(!a)return;
+    azimuth=a.yaw;elev=.055;automatic=false;setCam();
+    for(const b of document.querySelectorAll('[data-angle]'))b.classList.toggle('active',b===button);
+    $('#qaLabel').textContent=a.label;
+    window.__HUMAN_CHARACTER_QA.lastCompareAngle=name;
+  });
+}
 
 const exportGLBButton=$('#exportGLB');
 if(exportGLBButton)exportGLBButton.onclick=async ()=>{

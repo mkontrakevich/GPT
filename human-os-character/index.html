@@ -35,7 +35,7 @@ button.active{color:#1a1828;background:linear-gradient(135deg,#ecd8bd,#bc9b8e);b
 <div class="hud side-note">DRAG — ROTATE<br>PINCH — ZOOM<br>LOOK · 360°</div>
 <div id="fps" aria-label="Частота кадров, измеренная в браузере"></div>
 <footer class="hud" aria-label="Управление персонажем">
-<button id="front" class="active">ПОРТРЕТ</button><button id="turn">360°</button><button id="light">СВЕТ</button><button id="full">ВЕСЬ РОСТ</button><button id="exportGLB" title="Только геометрия, пока без скелета">GLB ↓</button>
-</footer>
+<button id="front" class="active">ПОРТРЕТ</button><button id="turn">360°</button><button id="light">СВЕТ</button><button id="full">ВЕСЬ РОСТ</button><button id="importGLB" title="Открыть новую GLB-модель с устройства">GLB ↑</button><button id="exportGLB" title="Только геометрия, пока без скелета">GLB ↓</button>
+</footer><input id="localGLB" type="file" accept=".glb,model/gltf-binary" style="display:none" />
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 <script type="module" src="/character.js"></script></body></html>

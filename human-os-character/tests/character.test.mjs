@@ -42,8 +42,17 @@ test('exports an explicitly unrigged GLB instead of pretending to deliver the fi
   assert.match(html,/id="exportGLB"/);
   assert.match(html,/type="importmap"/);
   assert.match(js,/GLTFExporter/);
-  assert.match(js,/parseAsync\(root/);
+  assert.match(js,/parseAsync\(importedModel\|\|root/);
   assert.match(js,/HUMAN_OS_HEROINE_BLOCKOUT_UNRIGGED\.glb/);
   assert.match(js,/exportValidatedBytes=bytes\.byteLength/);
   assert.match(js,/rigged:false/);
+});
+
+test('local-only new reconstruction import is available on mobile',()=>{
+  assert.match(html,/id="importGLB"/);
+  assert.match(html,/id="localGLB"/);
+  assert.match(js,/GLTFLoader/);
+  assert.match(js,/file\.arrayBuffer\(\)/);
+  assert.match(js,/localOnly:true/);
+  assert.match(js,/root\.visible=false/);
 });

@@ -430,6 +430,7 @@ if(exportGLBButton)exportGLBButton.onclick=async ()=>{
       binary:true,onlyVisible:true,trs:true,maxTextureSize:1024
     });
     if(!(bytes instanceof ArrayBuffer)||bytes.byteLength<2048)throw new Error('Empty GLB');
+    window.__HUMAN_CHARACTER_QA.exportValidatedBytes=bytes.byteLength;
     const url=URL.createObjectURL(new Blob([bytes],{type:'model/gltf-binary'}));
     const a=document.createElement('a');
     a.href=url;a.download='HUMAN_OS_HEROINE_BLOCKOUT_UNRIGGED.glb';

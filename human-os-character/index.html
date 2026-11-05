@@ -26,6 +26,46 @@ button.active{color:#1a1828;background:linear-gradient(135deg,#ecd8bd,#bc9b8e);b
 @media(prefers-reduced-motion:reduce){#loading .bar:after{animation:none}}
 #exportGLB{color:#b6dacc;border-color:#9ad9c65c}
 @media(max-width:650px){#exportGLB{padding:12px 5px;min-width:48px}}
+
+/* Character QA mode: 2D original on the left, actual rotating 3D geometry on the right.
+   This is comparison only; 2D reference stays local, unapproved views are marked explicitly. */
+#reviewToggle{position:fixed;z-index:8;right:28px;top:calc(86px + env(safe-area-inset-top));border:1px solid #ddc8bd88;background:#16172cc9;color:#f0ded3;font-size:10px;letter-spacing:.1em;backdrop-filter:blur(12px)}
+#reviewToggle[aria-expanded="true"]{background:#edceac;color:#17152a}
+#qaReference{position:fixed;z-index:5;left:14px;top:calc(93px + env(safe-area-inset-top));width:calc(40% - 25px);bottom:calc(85px + env(safe-area-inset-bottom));padding:11px;background:#171a2ce8;border:1px solid #c7a9a37a;border-radius:13px;box-shadow:0 20px 70px #060615b3;backdrop-filter:blur(12px)}
+#qaReference[hidden],#qaAngles[hidden]{display:none !important}
+#qaReference .qaTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;letter-spacing:.15em;color:#ebd3b5}
+#qaReference .qaTitle button{font-size:23px;padding:0 8px;line-height:1}
+#qaImageArea{height:calc(100% - 115px);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2b2841,#17172b);border-radius:8px;overflow:hidden;margin:7px 0}
+#qaImageArea img{display:block;width:100%;height:100%;object-fit:contain}
+#qaImageArea img[hidden]{display:none}
+#qaEmpty{text-align:center;padding:12px;color:#b7aab9;font-size:11px;line-height:1.8}
+#qaLoad{background:#8c6f73;color:#fff;padding:9px 11px;font-size:9px;width:100%;margin-bottom:6px}
+#qaLabel{color:#c9b9c5;font-size:9px;line-height:1.55}
+#qaAngles{position:fixed;z-index:6;right:6%;bottom:calc(92px + env(safe-area-inset-bottom));display:flex;gap:4px;padding:5px;background:#14162adf;border:1px solid #a891968a;border-radius:12px}
+#qaAngles button{font-size:10px;padding:9px 13px}
+body.review-mode #stage{position:fixed;left:40%;top:0;width:60%;height:100%}
+body.review-mode .side-note{display:none}
+body.review-mode footer{left:70%;max-width:58%;overflow-x:auto;scrollbar-width:none}
+body.review-mode footer button{font-size:9px;padding:9px 8px}
+body.review-mode #fps{left:auto;right:18px}
+@media(max-width:700px){
+  #reviewToggle{right:10px;top:calc(63px + env(safe-area-inset-top));padding:8px 10px;font-size:9px}
+  #qaReference{top:calc(95px + env(safe-area-inset-top));left:8px;right:8px;width:auto;height:calc(42% - 87px);bottom:auto;padding:9px}
+  #qaImageArea{height:calc(100% - 93px);margin:5px 0}
+  #qaLoad{padding:6px;margin-bottom:3px}
+  #qaLabel{font-size:8px}
+  #qaAngles{bottom:calc(68px + env(safe-area-inset-bottom));left:10px;right:10px;justify-content:space-between}
+  #qaAngles button{flex:1;font-size:9px;padding:8px 6px}
+  body.review-mode #stage{left:0;top:43%;width:100%;height:57%}
+  body.review-mode footer{display:none}
+  body.review-mode #fps{display:none}
+}
+@media(max-width:700px) and (orientation:landscape){
+  #qaReference{left:8px;top:calc(60px + env(safe-area-inset-top));width:36%;height:auto;bottom:16px;right:auto}
+  body.review-mode #stage{top:0;left:37%;width:63%;height:100%}
+  #qaAngles{left:39%;right:8px;bottom:15px}
+}
+
 </style></head><body>
 <canvas id="stage" aria-label="Интерактивный WebGL-персонаж HUMAN OS" tabindex="0"></canvas>
 <div class="noise"></div>
@@ -34,6 +74,20 @@ button.active{color:#1a1828;background:linear-gradient(135deg,#ecd8bd,#bc9b8e);b
 <header class="hud"><div><div class="brand">HUMAN <span>OS</span></div><div class="micro">CHARACTER LAB / PAINTERLY 3D</div></div><div class="status"><b id="state">ПОДГОТОВКА</b><div>STYLIZED · REAL-TIME WEBGL</div></div></header>
 <div class="hud side-note">DRAG — ROTATE<br>PINCH — ZOOM<br>LOOK · 360°</div>
 <div id="fps" aria-label="Частота кадров, измеренная в браузере"></div>
+<button id="reviewToggle" type="button" aria-expanded="false" aria-controls="qaReference" title="Сравнение с оригинальным портретом">СРАВНИТЬ ◫</button>
+<aside id="qaReference" aria-label="Утверждённый референс, загрузка только на устройстве" hidden>
+  <div class="qaTitle"><strong>ЭТАЛОН · 2D</strong><button id="qaClose" type="button" aria-label="Закрыть сравнение">×</button></div>
+  <div id="qaImageArea"><img id="qaImage" alt="Пользовательский оригинальный референс персонажа" hidden /><div id="qaEmpty">Добавьте утверждённый оригинал<br>Файл останется на устройстве</div></div>
+  <button id="qaLoad" type="button">ЗАГРУЗИТЬ ЭТАЛОН</button>
+  <div id="qaLabel">Только исходный ракурс 3/4 утверждён; остальные виды требуют проверки.</div>
+</aside>
+<nav id="qaAngles" aria-label="Ракурсы 3D-персонажа" hidden>
+  <button type="button" data-angle="threequarter" class="active">¾</button>
+  <button type="button" data-angle="front">ФАС</button>
+  <button type="button" data-angle="profile">ПРОФИЛЬ</button>
+  <button type="button" data-angle="back">СЗАДИ</button>
+</nav>
+<input id="referenceFile" type="file" accept="image/png,image/jpeg,image/webp" hidden />
 <footer class="hud" aria-label="Управление персонажем">
 <button id="front" class="active">ПОРТРЕТ</button><button id="turn">360°</button><button id="light">СВЕТ</button><button id="full">ВЕСЬ РОСТ</button><button id="importGLB" title="Открыть новую GLB-модель с устройства">GLB ↑</button><button id="exportGLB" title="Только геометрия, пока без скелета">GLB ↓</button>
 </footer><input id="localGLB" type="file" accept=".glb,model/gltf-binary" style="display:none" />

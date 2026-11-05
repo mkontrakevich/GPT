@@ -1,4 +1,4 @@
-import * as T from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+import * as T from 'three';
 
 const $=s=>document.querySelector(s), canvas=$('#stage'), mobile=innerWidth<700;
 let renderer;
@@ -17,7 +17,7 @@ const hemi=new T.HemisphereLight(0xd5dcff,0x302641,2.1);scene.add(hemi);
 const key=new T.DirectionalLight(0xffd3a1,2.6);key.position.set(-3.5,7,5);scene.add(key);
 const rim=new T.DirectionalLight(0xe3a5e0,2.0);rim.position.set(2.5,5,-3.5);scene.add(rim);
 const cool=new T.DirectionalLight(0x889ce6,.65);cool.position.set(-5,2,-4);scene.add(cool);
-const root=new T.Group();scene.add(root);
+const root=new T.Group();root.name='HUMAN_OS_heroine_blockout';root.userData={characterStage:'BLOCKOUT_UNRIGGED',rigged:false,identity:'original-heroine'};scene.add(root);
 const lighting={alternate:false};
 const getMaterial=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.79,metalness:.02,...extra});
 const lineMat=new T.MeshBasicMaterial({color:0xffd8a7});
@@ -417,6 +417,32 @@ $('#light').onclick=()=>{lighting.alternate=!lighting.alternate;
  updateButtons('light')};
 $('#full').onclick=()=>{dist=10.2;azimuth=.12;elev=.06;automatic=false;setCam();updateButtons('full')};
 function updateButtons(which){for(const id of ['front','turn','light','full'])$('#'+id).classList.toggle('active',id===which)}
+// Export existing THREE.Mesh geometry into a genuine (unrigged) GLB for Blender refinement.
+// This does not certify artistic likeness, rigging, animations or production readiness.
+const exportGLBButton=$('#exportGLB');
+if(exportGLBButton)exportGLBButton.onclick=async ()=>{
+  const oldText=exportGLBButton.textContent;
+  exportGLBButton.disabled=true;exportGLBButton.textContent='GLB…';
+  try{
+    const {GLTFExporter}=await import('three/addons/exporters/GLTFExporter.js');
+    root.updateMatrixWorld(true);
+    const bytes=await new GLTFExporter().parseAsync(root,{
+      binary:true,onlyVisible:true,trs:true,maxTextureSize:1024
+    });
+    if(!(bytes instanceof ArrayBuffer)||bytes.byteLength<2048)throw new Error('Empty GLB');
+    const url=URL.createObjectURL(new Blob([bytes],{type:'model/gltf-binary'}));
+    const a=document.createElement('a');
+    a.href=url;a.download='HUMAN_OS_HEROINE_BLOCKOUT_UNRIGGED.glb';
+    document.body.append(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+    $('#state').textContent='GLB: BLOCKOUT';
+  }catch(error){
+    console.error('HUMAN_OS_GLB_EXPORT_ERROR',String(error?.message||error));
+    $('#state').textContent='GLB: ОШИБКА';
+    alert('Экспорт GLB недоступен: '+String(error?.message||error));
+  }finally{exportGLBButton.disabled=false;exportGLBButton.textContent=oldText;}
+};
+
 const clock=new T.Clock();let frames=0,fps=0,prev=performance.now(),acc=0,metricsCount=0;
 let actualTriangles=0,meshCount=0;
 scene.traverse(o=>{if(!o.isMesh)return;meshCount++;const g=o.geometry;const count=g.index?g.index.count/3:g.attributes.position.count/3;actualTriangles+=Math.round(count)});

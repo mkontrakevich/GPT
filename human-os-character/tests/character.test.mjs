@@ -56,3 +56,11 @@ test('local-only new reconstruction import is available on mobile',()=>{
   assert.match(js,/localOnly:true/);
   assert.match(js,/root\.visible=false/);
 });
+
+test('side-by-side character QA stays local and unapproved views are disclosed',()=>{
+ for(const term of ['id="reviewToggle"','id="qaReference"','id="qaImage"','id="referenceFile"','data-angle="profile"','data-angle="back"'])
+  assert.ok(html.includes(term),'missing QA element '+term);
+ for(const term of ['setCompare(','FileReader','readAsDataURL','compareAngles','НЕ ПОДТВЕРЖДЁН','referenceLocalOnly=true'])
+  assert.ok(js.includes(term),'missing QA control '+term);
+ assert.doesNotMatch(js,/fetch\([^)]*reference|localStorage\.setItem|XMLHttpRequest/);
+});

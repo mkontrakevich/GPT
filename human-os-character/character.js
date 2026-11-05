@@ -17,7 +17,7 @@ const hemi=new T.HemisphereLight(0xd5dcff,0x302641,2.1);scene.add(hemi);
 const key=new T.DirectionalLight(0xffd3a1,2.6);key.position.set(-3.5,7,5);scene.add(key);
 const rim=new T.DirectionalLight(0xe3a5e0,2.0);rim.position.set(2.5,5,-3.5);scene.add(rim);
 const cool=new T.DirectionalLight(0x889ce6,.65);cool.position.set(-5,2,-4);scene.add(cool);
-const root=new T.Group();root.name='HUMAN_OS_heroine_blockout';root.userData={characterStage:'BLOCKOUT_UNRIGGED',rigged:false,identity:'original-heroine'};scene.add(root);
+let importedModel=null;const root=new T.Group();root.name='HUMAN_OS_heroine_blockout';root.userData={characterStage:'BLOCKOUT_UNRIGGED',rigged:false,identity:'original-heroine'};scene.add(root);
 const lighting={alternate:false};
 const getMaterial=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.79,metalness:.02,...extra});
 const lineMat=new T.MeshBasicMaterial({color:0xffd8a7});
@@ -419,14 +419,40 @@ $('#full').onclick=()=>{dist=10.2;azimuth=.12;elev=.06;automatic=false;setCam();
 function updateButtons(which){for(const id of ['front','turn','light','full'])$('#'+id).classList.toggle('active',id===which)}
 // Export existing THREE.Mesh geometry into a genuine (unrigged) GLB for Blender refinement.
 // This does not certify artistic likeness, rigging, animations or production readiness.
+
+// Local-only GLB import, including independently generated reconstruction asset.
+// No upload request, browser storage or server-side writes.
+const localGLBInput=$('#localGLB');
+$('#importGLB').onclick=()=>localGLBInput?.click();
+if(localGLBInput)localGLBInput.onchange=async ()=>{
+ const file=localGLBInput.files?.[0];if(!file)return;
+ $('#state').textContent='GLB: ЗАГРУЗКА';
+ try{
+   if(!/\.glb$/i.test(file.name)||file.size>80*1024*1024)throw Error('Ожидается GLB до 80 МБ');
+   const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');
+   const buffer=await file.arrayBuffer();
+   const gltf=await new GLTFLoader().parseAsync(buffer,'');
+   if(!gltf.scene)throw Error('GLB не содержит сцены');
+   if(importedModel)scene.remove(importedModel);
+   importedModel=gltf.scene;scene.add(importedModel);root.visible=false;
+   let tris=0,meshes=0;
+   importedModel.traverse(o=>{if(!o.isMesh)return;meshes++;const g=o.geometry;tris+=Math.round((g.index?.count||g.attributes.position.count)/3)});
+   if(tris<500)throw Error('Недостаточно геометрии для персонажа');
+   const box=new T.Box3().setFromObject(importedModel);
+   $('#state').textContent='GLB · 3D REVIEW';
+   window.__HUMAN_CHARACTER_QA.importedGLB={name:file.name,bytes:file.size,triangles:tris,meshes,rigged:false,screened:false,localOnly:true,height:box.max.y-box.min.y};
+ }catch(error){console.error('HUMAN_OS_GLB_IMPORT_ERROR',String(error?.message||error));$('#state').textContent='GLB: ОШИБКА';alert('Не удалось открыть GLB: '+String(error?.message||error))}
+ localGLBInput.value='';
+};
+
 const exportGLBButton=$('#exportGLB');
 if(exportGLBButton)exportGLBButton.onclick=async ()=>{
   const oldText=exportGLBButton.textContent;
   exportGLBButton.disabled=true;exportGLBButton.textContent='GLB…';
   try{
     const {GLTFExporter}=await import('three/addons/exporters/GLTFExporter.js');
-    root.updateMatrixWorld(true);
-    const bytes=await new GLTFExporter().parseAsync(root,{
+    (importedModel||root).updateMatrixWorld(true);
+    const bytes=await new GLTFExporter().parseAsync(importedModel||root,{
       binary:true,onlyVisible:true,trs:true,maxTextureSize:1024
     });
     if(!(bytes instanceof ArrayBuffer)||bytes.byteLength<2048)throw new Error('Empty GLB');

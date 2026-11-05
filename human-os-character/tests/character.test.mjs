@@ -37,3 +37,13 @@ test('fallback and measurable browser telemetry are present',()=>{
  assert.match(js,/rigged:false/);
  assert.match(js,/triangles:actualTriangles/);
 });
+
+test('exports an explicitly unrigged GLB instead of pretending to deliver the final rig',()=>{
+  assert.match(html,/id="exportGLB"/);
+  assert.match(html,/type="importmap"/);
+  assert.match(js,/GLTFExporter/);
+  assert.match(js,/parseAsync\(root/);
+  assert.match(js,/HUMAN_OS_HEROINE_BLOCKOUT_UNRIGGED\.glb/);
+  assert.match(js,/exportValidatedBytes=bytes\.byteLength/);
+  assert.match(js,/rigged:false/);
+});

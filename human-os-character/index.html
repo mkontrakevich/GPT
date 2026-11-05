@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#12142b">
+<title>HUMAN OS · Painterly Character Lab</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#0e1022;color:#ecedf2}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:radial-gradient(ellipse 75% 70% at 56% 50%,#44415d 0%,#24243f 50%,#101127 100%)}
+#stage{width:100%;height:100%;display:block;touch-action:none;outline:0}
+.hud{position:fixed;z-index:3;pointer-events:none}
+header{top:0;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:calc(24px + env(safe-area-inset-top)) 30px 16px;background:linear-gradient(#101228aa,transparent)}
+.brand{font-size:16px;letter-spacing:.22em;font-weight:800;text-shadow:0 3px 12px #080917}.brand span{color:#edc6a1}.micro{margin-top:7px;font-size:9px;letter-spacing:.24em;color:#b9b6ca}
+.status{font-size:10px;color:#c1bbc9;letter-spacing:.12em;text-align:right;line-height:1.8}.status b{color:#e6caa7;font-weight:700}
+footer{left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);padding:6px;display:flex;gap:5px;align-items:center;border:1px solid #dfc2aa57;background:linear-gradient(135deg,#26253edc,#151528e0);border-radius:18px;box-shadow:0 16px 40px #05061681;backdrop-filter:blur(16px);pointer-events:auto;white-space:nowrap}
+button{font:600 11px system-ui;color:#cec8d3;background:transparent;border:1px solid transparent;letter-spacing:.08em;border-radius:12px;padding:11px 15px;cursor:pointer}
+button:hover,button:focus-visible{color:white;border-color:#debea48a;outline:0}
+button.active{color:#1a1828;background:linear-gradient(135deg,#ecd8bd,#bc9b8e);box-shadow:inset 0 1px #fff9}
+.side-note{top:50%;right:27px;transform:translateY(-50%);font-size:10px;line-height:2;letter-spacing:.13em;color:#c4baca9a;text-align:right}
+#loading{position:fixed;z-index:5;inset:0;display:grid;place-items:center;background:#101226;transition:opacity .5s}
+#loading[hidden]{display:none}
+#loading div{text-align:center;color:#efd0b7;letter-spacing:.2em;font-size:12px}
+#loading .bar{height:2px;width:160px;background:#4d3445;margin:20px auto;position:relative;overflow:hidden}
+#loading .bar:after{content:'';height:100%;width:60px;background:#ebc3a5;display:block;animation:loading 1.2s infinite ease-in-out}@keyframes loading{to{transform:translateX(170px)}}
+#error{display:none;position:fixed;inset:0;align-items:center;justify-content:center;padding:32px;text-align:center;color:#e3d9da;background:linear-gradient(135deg,#1b1832,#2f2a43);z-index:4}
+#fps{position:fixed;bottom:83px;left:18px;font-size:10px;letter-spacing:.07em;color:#bdabba91;z-index:3;pointer-events:none}
+.noise{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath filter='url(%23a)' opacity='.16' d='M0 0h120v120H0z'/%3E%3C/svg%3E")}
+@media(max-width:650px){header{padding:calc(15px + env(safe-area-inset-top)) 14px 10px}.brand{font-size:12px}.micro{font-size:7px;margin-top:5px}.status{font-size:8px}.side-note{display:none}footer{width:calc(100% - 20px);bottom:calc(12px + env(safe-area-inset-bottom));justify-content:space-between;border-radius:14px;padding:4px}button{font-size:9px;padding:12px 9px;flex:1}#fps{bottom:78px;left:12px;font-size:8px}}
+@media(prefers-reduced-motion:reduce){#loading .bar:after{animation:none}}
+#exportGLB{color:#b6dacc;border-color:#9ad9c65c}
+@media(max-width:650px){#exportGLB{padding:12px 5px;min-width:48px}}
+
+/* Character QA mode: 2D original on the left, actual rotating 3D geometry on the right.
+   This is comparison only; 2D reference stays local, unapproved views are marked explicitly. */
+#reviewToggle{position:fixed;z-index:8;right:28px;top:calc(86px + env(safe-area-inset-top));border:1px solid #ddc8bd88;background:#16172cc9;color:#f0ded3;font-size:10px;letter-spacing:.1em;backdrop-filter:blur(12px)}
+#reviewToggle[aria-expanded="true"]{background:#edceac;color:#17152a}
+#qaReference{position:fixed;z-index:5;left:14px;top:calc(93px + env(safe-area-inset-top));width:calc(40% - 25px);bottom:calc(85px + env(safe-area-inset-bottom));padding:11px;background:#171a2ce8;border:1px solid #c7a9a37a;border-radius:13px;box-shadow:0 20px 70px #060615b3;backdrop-filter:blur(12px)}
+#qaReference[hidden],#qaAngles[hidden]{display:none !important}
+#qaReference .qaTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;letter-spacing:.15em;color:#ebd3b5}
+#qaReference .qaTitle button{font-size:23px;padding:0 8px;line-height:1}
+#qaImageArea{height:calc(100% - 115px);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2b2841,#17172b);border-radius:8px;overflow:hidden;margin:7px 0}
+#qaImageArea img{display:block;width:100%;height:100%;object-fit:contain}
+#qaImageArea img[hidden]{display:none}
+#qaEmpty{text-align:center;padding:12px;color:#b7aab9;font-size:11px;line-height:1.8}
+#qaLoad{background:#8c6f73;color:#fff;padding:9px 11px;font-size:9px;width:100%;margin-bottom:6px}
+#qaLabel{color:#c9b9c5;font-size:9px;line-height:1.55}
+#qaAngles{position:fixed;z-index:6;right:6%;bottom:calc(92px + env(safe-area-inset-bottom));display:flex;gap:4px;padding:5px;background:#14162adf;border:1px solid #a891968a;border-radius:12px}
+#qaAngles button{font-size:10px;padding:9px 13px}
+body.review-mode #stage{position:fixed;left:40%;top:0;width:60%;height:100%}
+body.review-mode .side-note{display:none}
+body.review-mode footer{left:70%;max-width:58%;overflow-x:auto;scrollbar-width:none}
+body.review-mode footer button{font-size:9px;padding:9px 8px}
+body.review-mode #fps{left:auto;right:18px}
+@media(max-width:700px){
+  #reviewToggle{right:10px;top:calc(63px + env(safe-area-inset-top));padding:8px 10px;font-size:9px}
+  #qaReference{top:calc(95px + env(safe-area-inset-top));left:8px;right:8px;width:auto;height:calc(42% - 87px);bottom:auto;padding:9px}
+  #qaImageArea{height:calc(100% - 93px);margin:5px 0}
+  #qaLoad{padding:6px;margin-bottom:3px}
+  #qaLabel{font-size:8px}
+  #qaAngles{bottom:calc(68px + env(safe-area-inset-bottom));left:10px;right:10px;justify-content:space-between}
+  #qaAngles button{flex:1;font-size:9px;padding:8px 6px}
+  body.review-mode #stage{left:0;top:43%;width:100%;height:57%}
+  body.review-mode footer{display:none}
+  body.review-mode #fps{display:none}
+}
+@media(max-width:700px) and (orientation:landscape){
+  #qaReference{left:8px;top:calc(60px + env(safe-area-inset-top));width:36%;height:auto;bottom:16px;right:auto}
+  body.review-mode #stage{top:0;left:37%;width:63%;height:100%}
+  #qaAngles{left:39%;right:8px;bottom:15px}
+}
+
+</style></head><body>
+<canvas id="stage" aria-label="Интерактивный WebGL-персонаж HUMAN OS" tabindex="0"></canvas>
+<div class="noise"></div>
+<div id="loading"><div>CHARACTER DNA <div class="bar"></div>WEBGL / INITIALIZING</div></div>
+<div id="error"><div><strong>Трёхмерная сцена недоступна</strong><p>Откройте страницу в Safari или Chrome с поддержкой WebGL.</p></div></div>
+<header class="hud"><div><div class="brand">HUMAN <span>OS</span></div><div class="micro">CHARACTER LAB / PAINTERLY 3D</div></div><div class="status"><b id="state">ПОДГОТОВКА</b><div>STYLIZED · REAL-TIME WEBGL</div></div></header>
+<div class="hud side-note">DRAG — ROTATE<br>PINCH — ZOOM<br>LOOK · 360°</div>
+<div id="fps" aria-label="Частота кадров, измеренная в браузере"></div>
+<button id="reviewToggle" type="button" aria-expanded="false" aria-controls="qaReference" title="Сравнение с оригинальным портретом">СРАВНИТЬ ◫</button>
+<aside id="qaReference" aria-label="Утверждённый референс, загрузка только на устройстве" hidden>
+  <div class="qaTitle"><strong>ЭТАЛОН · 2D</strong><button id="qaClose" type="button" aria-label="Закрыть сравнение">×</button></div>
+  <div id="qaImageArea"><img id="qaImage" alt="Пользовательский оригинальный референс персонажа" hidden /><div id="qaEmpty">Добавьте утверждённый оригинал<br>Файл останется на устройстве</div></div>
+  <button id="qaLoad" type="button">ЗАГРУЗИТЬ ЭТАЛОН</button>
+  <div id="qaLabel">Только исходный ракурс 3/4 утверждён; остальные виды требуют проверки.</div>
+</aside>
+<nav id="qaAngles" aria-label="Ракурсы 3D-персонажа" hidden>
+  <button type="button" data-angle="threequarter" class="active">¾</button>
+  <button type="button" data-angle="front">ФАС</button>
+  <button type="button" data-angle="profile">ПРОФИЛЬ</button>
+  <button type="button" data-angle="back">СЗАДИ</button>
+</nav>
+<input id="referenceFile" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+<footer class="hud" aria-label="Управление персонажем">
+<button id="front" class="active">ПОРТРЕТ</button><button id="turn">360°</button><button id="light">СВЕТ</button><button id="full">ВЕСЬ РОСТ</button><button id="importGLB" title="Открыть новую GLB-модель с устройства">GLB ↑</button><button id="exportGLB" title="Только геометрия, пока без скелета">GLB ↓</button>
+</footer><input id="localGLB" type="file" accept=".glb,model/gltf-binary" style="display:none" />
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+<script type="module" src="/character.js"></script></body></html>

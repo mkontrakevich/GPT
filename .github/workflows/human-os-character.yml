@@ -1,0 +1,22 @@
+name: HUMAN OS - Character WebGL QA
+on:
+  push:
+    branches: ["feat/human-os-character-painterly-webgl"]
+    paths:
+      - 'human-os-character/**'
+      - '.github/workflows/human-os-character.yml'
+  pull_request:
+    paths:
+      - 'human-os-character/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test human-os-character/tests/*.test.mjs

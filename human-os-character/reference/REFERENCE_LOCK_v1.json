@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "character.reference-lock.v1",
+  "projectId": "PERSONAL-OS/HUMAN-OS/CHARACTER-SYSTEM",
+  "characterId": "human-os-primary-heroine",
+  "approvedDirection": "original painterly semi-realistic female heroine, ivory long coat, chestnut wavy hair, neutral taupe trousers, warm gold detailing",
+  "source": {
+    "filename": "футуристическая_героиня_на_светящейся_платформе.png",
+    "sha256": "023f874b0b00049212cc086ac63d2bbdb2196b2d01fbfb57e4144620be4e7974",
+    "width": 941,
+    "height": 1672,
+    "approval": "USER_APPROVED_2D_REFERENCE",
+    "storage": "conversation-generated artifact and delivered ZIP; external Drive archive not verified"
+  },
+  "verifiedViews": {
+    "frontThreeQuarter": "APPROVED_IMAGE",
+    "leftProfile": "NOT_AVAILABLE",
+    "rightProfile": "NOT_AVAILABLE",
+    "back": "NOT_AVAILABLE"
+  },
+  "visualIdentity": {
+    "genderPresentation": "female",
+    "adult": true,
+    "face": "expressive adult anatomy; no doll-like separate eye meshes",
+    "hair": "chestnut sculpted waves with warm copper highlights",
+    "silhouette": "angular coat collar, asymmetrical long tails, relaxed trousers, high boots",
+    "materials": "hand-painted PBR + soft painterly illumination"
+  },
+  "rejectedOutputs": [
+    "unrelated male character sheets generated during exploration; not canonical"
+  ],
+  "releaseGate": {
+    "from": 50,
+    "to": 65,
+    "status": "HOLD",
+    "why": "consistent original multi-view geometry and visual approval unavailable"
+  },
+  "protectMainWorld": true
+}

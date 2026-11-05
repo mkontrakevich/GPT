@@ -1,0 +1,179 @@
+{
+  "manifestVersion": "1.0.0",
+  "projectId": "PERSONAL-OS/HUMAN-OS/CHARACTER-SYSTEM",
+  "characterId": "human-os-primary-hero",
+  "status": "BLOCKOUT_NOT_APPROVED",
+  "currentVerifiedProgressPercent": 50,
+  "approvedConcept": {
+    "subject": "original painterly futuristic heroine",
+    "aesthetic": "cinematic hand-painted semi-realistic 3D",
+    "referenceLocation": "USER_APPROVED_CHAT_ART - requires source archival",
+    "identityLocked": true,
+    "finalWebGLVisualApproval": false
+  },
+  "sourceOfTruth": {
+    "repository": "mkontrakevich/GPT",
+    "branch": "feat/human-os-character-painterly-webgl",
+    "dnaPath": "human-os-character/CHARACTER_DNA.md",
+    "issue": 21
+  },
+  "protectedWorld": {
+    "worker": "human-os-living-world",
+    "visualBaseline": "v0.4 six-island WebGL",
+    "modificationAllowed": false
+  },
+  "characterDefinition": {
+    "bodyProportion": "adult, anatomically coherent, fashion-inspired 7.5–8 heads",
+    "face": "hand-painted stylization over true 3D geometry",
+    "hair": "sculpted chestnut locks with copper highlights",
+    "neutralOutfit": "ivory / taupe long coat, utility trousers, pale high-top boots, subtle warm-gold seam lights"
+  },
+  "assets": {
+    "editableMaster": {
+      "path": "human-os-character/source/character_master.blend",
+      "status": "BLOCKED",
+      "checksum": null
+    },
+    "gameReadyGLB": {
+      "path": "human-os-character/export/character_master.glb",
+      "status": "BLOCKED",
+      "checksum": null
+    },
+    "mobileGLB": {
+      "path": "human-os-character/export/character_mobile.glb",
+      "status": "BLOCKED",
+      "checksum": null
+    },
+    "skeleton": {
+      "status": "BLOCKED",
+      "animationClips": []
+    },
+    "neutralOutfit": {
+      "status": "BLOCKED",
+      "asset": null
+    },
+    "textures": {
+      "status": "BLOCKED",
+      "asset": null
+    },
+    "currentWebGLStudy": {
+      "path": "human-os-character/character.js",
+      "status": "TECHNICAL_PROTOTYPE",
+      "characterRigged": false
+    }
+  },
+  "requiredAnimationStates": [
+    "idle",
+    "turn",
+    "walk"
+  ],
+  "requiredCameraPresets": [
+    "portrait",
+    "full-body",
+    "three-quarter",
+    "orbit",
+    "reset"
+  ],
+  "environmentAdapterVersion": "1.0.0",
+  "environmentFields": [
+    "environmentId",
+    "outfitVariantId",
+    "lightingPreset",
+    "animationSet",
+    "cameraPreset"
+  ],
+  "environments": [
+    {
+      "environmentId": "health",
+      "outfitVariantId": "health-active",
+      "lightingPreset": "clinical-soft",
+      "animationSet": "base",
+      "cameraPreset": "full-body",
+      "status": "PLANNED"
+    },
+    {
+      "environmentId": "relationships",
+      "outfitVariantId": "relationships-casual",
+      "lightingPreset": "warm-cinematic",
+      "animationSet": "base",
+      "cameraPreset": "portrait",
+      "status": "PLANNED"
+    },
+    {
+      "environmentId": "projects",
+      "outfitVariantId": "projects-creative",
+      "lightingPreset": "atelier",
+      "animationSet": "base",
+      "cameraPreset": "three-quarter",
+      "status": "PLANNED"
+    },
+    {
+      "environmentId": "work",
+      "outfitVariantId": "work-formal",
+      "lightingPreset": "architectural-day",
+      "animationSet": "base",
+      "cameraPreset": "full-body",
+      "status": "PLANNED"
+    },
+    {
+      "environmentId": "personal",
+      "outfitVariantId": "personal-relaxed",
+      "lightingPreset": "home-ambient",
+      "animationSet": "base",
+      "cameraPreset": "portrait",
+      "status": "PLANNED"
+    },
+    {
+      "environmentId": "memory",
+      "outfitVariantId": "memory-reflective",
+      "lightingPreset": "archive-warm",
+      "animationSet": "base",
+      "cameraPreset": "three-quarter",
+      "status": "PLANNED"
+    }
+  ],
+  "releaseGates": [
+    {
+      "id": "art-identity",
+      "fromPercent": 50,
+      "toPercent": 65,
+      "status": "HOLD",
+      "evidence": []
+    },
+    {
+      "id": "rigged-asset",
+      "fromPercent": 65,
+      "toPercent": 75,
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    {
+      "id": "motion",
+      "fromPercent": 75,
+      "toPercent": 85,
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    {
+      "id": "wardrobe",
+      "fromPercent": 85,
+      "toPercent": 92,
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    {
+      "id": "qa-integration",
+      "fromPercent": 92,
+      "toPercent": 100,
+      "status": "BLOCKED",
+      "evidence": []
+    }
+  ],
+  "privacy": {
+    "publicDemo": "SYNTHETIC_ONLY",
+    "personalHealthData": "FORBIDDEN",
+    "hrosPrivateData": "FORBIDDEN",
+    "uploadRealPortraits": "NOT_AUTHORIZED"
+  },
+  "releaseNotes": "Changing code or documentation does not increase verified progress. Character 100% does not mean overall Human OS 100%."
+}

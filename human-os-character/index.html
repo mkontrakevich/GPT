@@ -24,6 +24,8 @@ button.active{color:#1a1828;background:linear-gradient(135deg,#ecd8bd,#bc9b8e);b
 .noise{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath filter='url(%23a)' opacity='.16' d='M0 0h120v120H0z'/%3E%3C/svg%3E")}
 @media(max-width:650px){header{padding:calc(15px + env(safe-area-inset-top)) 14px 10px}.brand{font-size:12px}.micro{font-size:7px;margin-top:5px}.status{font-size:8px}.side-note{display:none}footer{width:calc(100% - 20px);bottom:calc(12px + env(safe-area-inset-bottom));justify-content:space-between;border-radius:14px;padding:4px}button{font-size:9px;padding:12px 9px;flex:1}#fps{bottom:78px;left:12px;font-size:8px}}
 @media(prefers-reduced-motion:reduce){#loading .bar:after{animation:none}}
+#exportGLB{color:#b6dacc;border-color:#9ad9c65c}
+@media(max-width:650px){#exportGLB{padding:12px 5px;min-width:48px}}
 </style></head><body>
 <canvas id="stage" aria-label="Интерактивный WebGL-персонаж HUMAN OS" tabindex="0"></canvas>
 <div class="noise"></div>
@@ -33,6 +35,7 @@ button.active{color:#1a1828;background:linear-gradient(135deg,#ecd8bd,#bc9b8e);b
 <div class="hud side-note">DRAG — ROTATE<br>PINCH — ZOOM<br>LOOK · 360°</div>
 <div id="fps" aria-label="Частота кадров, измеренная в браузере"></div>
 <footer class="hud" aria-label="Управление персонажем">
-<button id="front" class="active">ПОРТРЕТ</button><button id="turn">360°</button><button id="light">СВЕТ</button><button id="full">ВЕСЬ РОСТ</button>
+<button id="front" class="active">ПОРТРЕТ</button><button id="turn">360°</button><button id="light">СВЕТ</button><button id="full">ВЕСЬ РОСТ</button><button id="exportGLB" title="Только геометрия, пока без скелета">GLB ↓</button>
 </footer>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 <script type="module" src="/character.js"></script></body></html>

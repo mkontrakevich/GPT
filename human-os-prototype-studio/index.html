@@ -1,0 +1,79 @@
+<!doctype html><html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020"><title>HUMAN OS — Reference Prototype Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#0a1020;--panel:#131c2b;--line:#334454;--muted:#8ea1b2;--text:#f0f2f2;--accent:#a3d8d2;--gold:#d8bb90;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;background:var(--bg);color:var(--text)}
+body{overflow:hidden}.app{height:100dvh;display:grid;grid-template-rows:62px minmax(0,1fr);background:radial-gradient(circle at 66% 35%,#1d2d3a 0%,#0a1020 67%)}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:18px;border-bottom:1px solid #34415188;background:#0d1422d9;z-index:3}
+.brand{font-weight:800;letter-spacing:.16em;font-size:17px;white-space:nowrap}.brand em{color:var(--gold);font-style:normal}.sub{font-size:9px;letter-spacing:.17em;color:var(--muted);margin-top:4px}
+.pill{border:1px solid #7daaaa66;border-radius:30px;padding:7px 10px;color:#b9d6d5;font-size:10px;letter-spacing:.09em;white-space:nowrap}
+.workspace{display:grid;grid-template-columns:minmax(250px,30fr) minmax(340px,48fr) minmax(220px,22fr);min-height:0;overflow:hidden}
+section{min-width:0;min-height:0;position:relative} .refcol{border-right:1px solid #344151aa;background:#10192a;display:flex;flex-direction:column}.scenecol{background:radial-gradient(ellipse at 50% 40%,#314356 0%,#172438 53%,#0c1325 100%);overflow:hidden}.controls{border-left:1px solid #344151aa;background:#111b2b;overflow-y:auto;padding:15px 14px 28px}
+.blockhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 15px 11px;font-size:11px;letter-spacing:.15em;font-weight:800;color:#cbd7dc}.muted{color:var(--muted);font-size:11px;line-height:1.5}
+#refWrap{position:relative;flex:1;min-height:0;margin:0 10px 10px;background:#0c1524;border:1px solid #355066;border-radius:12px;overflow:hidden}
+#refCanvas{position:absolute;width:100%;height:100%;touch-action:none;cursor:crosshair}#refOverlay{pointer-events:none;position:absolute;bottom:8px;left:10px;right:10px;text-align:center;color:#b3cbd0;font-size:9px;letter-spacing:.07em}
+#view{display:block;width:100%;height:100%;touch-action:none;outline:0}
+#ghost{display:none;position:absolute;pointer-events:none;inset:0;width:100%;height:100%;object-fit:contain;opacity:.27;mix-blend-mode:screen}body.ghost #ghost{display:block}
+.scenebar{position:absolute;left:15px;right:15px;top:13px;display:flex;align-items:center;justify-content:space-between;z-index:2;gap:7px;pointer-events:none}
+.scenebar>*{pointer-events:auto}.views{display:flex;gap:3px;background:#0a1320b5;border:1px solid #51708075;padding:4px;border-radius:11px;backdrop-filter:blur(12px)}
+button,.upload{cursor:pointer;font:600 10px system-ui;letter-spacing:.04em;color:#d3dce0;background:#203247;border:1px solid #50657770;border-radius:8px;padding:10px 10px}
+button:hover,.upload:hover{background:#30475b}button.active{background:#b1d2ca;color:#10202a;border-color:#c9e1d8}
+button:disabled{opacity:.48;cursor:default}
+#camStat{border:1px solid #5e778078;border-radius:9px;background:#101a2c9c;padding:8px 9px;color:#c6d5db;font-size:9px;letter-spacing:.09em}
+.sceneFoot{position:absolute;bottom:12px;left:14px;right:14px;display:flex;justify-content:space-between;gap:8px;align-items:center;pointer-events:none;font-size:10px;color:#8fa8b7}
+.sceneFoot>*{pointer-events:auto}
+.controlTitle{color:#e7e8e8;font-size:12px;letter-spacing:.08em;font-weight:800;margin:9px 0 5px}
+.groupset{padding-bottom:13px;margin-bottom:12px;border-bottom:1px solid #34485d8a}.sliderRow{margin:10px 0 12px}
+.sliderRow label{display:flex;justify-content:space-between;color:#bacbd4;font-size:11px;margin-bottom:6px}.sliderRow output{color:#e8d5ba;font-size:11px;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:#abd4ca;cursor:pointer;height:22px}#refFile,#jsonFile{display:none}
+.btngrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.btngrid button{min-height:36px}.wide{width:100%;margin-top:6px}.controls .muted{font-size:10px}
+.badge{font-size:9px;letter-spacing:.04em;color:#d7bd94}
+input[type=checkbox]{accent-color:#a2d4ca}.check{display:flex;gap:7px;color:#c4d0d7;margin:9px 0;align-items:center;font-size:11px}
+#status{position:fixed;z-index:9;bottom:10px;left:50%;transform:translateX(-50%);border:1px solid #638f8e99;border-radius:10px;padding:10px 16px;background:#122335e8;box-shadow:0 10px 35px #020812aa;color:#dfefe7;font-size:11px;max-width:92%;pointer-events:none}
+#status:empty{display:none}.step{font-size:10px;color:#c1a781;letter-spacing:.13em;margin-top:6px}
+#modal{position:fixed;z-index:10;inset:0;display:none;place-items:center;background:#070d18d9;padding:20px}
+#modal.show{display:grid}.modalCard{width:min(500px,100%);background:#172437;border:1px solid #72969588;border-radius:15px;padding:23px;line-height:1.6}.modalCard h3{margin:0 0 9px;font-size:17px}.modalCard p{color:#bdd0d8}
+@media(max-width:950px){.workspace{grid-template-columns:38fr 62fr;grid-template-rows:minmax(0,1fr) 195px}.controls{grid-column:1 / 3;grid-row:2;border-top:1px solid #344151;border-left:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;overflow-x:auto}.controls .groupset{border:0;margin:0}.refcol{grid-column:1}.scenecol{grid-column:2}}
+@media(max-width:650px){body{overflow:hidden}.app{grid-template-rows:51px minmax(0,1fr)}header{padding:0 10px}.brand{font-size:13px}.sub{font-size:7px}.pill{font-size:8px;padding:6px}
+.workspace{display:grid;grid-template-columns:39% 61%;grid-template-rows:minmax(0,1fr) 212px}
+.refcol{grid-column:1;grid-row:1}.scenecol{grid-column:2;grid-row:1}.controls{grid-column:1/3;grid-row:2;grid-template-columns:repeat(3,230px);overflow:auto;gap:6px;padding:8px 10px;scroll-snap-type:x mandatory}
+.controls .groupset{scroll-snap-align:start}.blockhead{padding:9px 7px;font-size:9px;letter-spacing:.06em}.blockhead button{padding:5px 6px;font-size:8px}
+#refWrap{margin:0 3px 6px;border-radius:7px}.scenebar{left:4px;right:4px;top:7px;display:block}.views{gap:1px;padding:2px}.views button{padding:6px 4px;font-size:8px;flex:1}#camStat{font-size:8px;padding:4px 7px;display:none}
+.sceneFoot{bottom:5px;left:5px;right:5px;font-size:8px}.sceneFoot span:last-child{display:none}
+#refOverlay{font-size:8px;left:4px;right:4px}.controls .controlTitle{margin:4px 0}
+}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head><body><div class="app">
+<header><div><div class="brand">HUMAN <em>OS</em> <span style="color:#9dabb6;font-weight:400;font-size:10px">/ PROTOTYPE STUDIO</span></div><div class="sub">REFERENCE → POSE → PROPORTIONS → CAMERA → EXPORT</div></div><span class="pill">WEBGL · БЕЗ BLENDER · LOCAL FIRST</span></header>
+<main class="workspace">
+<section class="refcol"><div class="blockhead"><span>01 / РЕФЕРЕНС</span><button id="loadRef" type="button">+ ИЗОБРАЖЕНИЕ</button></div>
+<div id="refWrap"><canvas id="refCanvas" aria-label="Редактор контрольных точек на референсе"></canvas><div id="refOverlay">Загрузите утверждённый референс. Точки перетаскиваются.</div></div><input id="refFile" type="file" accept="image/png,image/jpeg,image/webp"></section>
+<section class="scenecol"><canvas id="view" aria-label="Вращаемый трехмерный прототип персонажа WebGL"></canvas><img id="ghost" alt="" aria-hidden="true">
+<div class="scenebar"><div class="views" id="viewButtons"><button data-view="front">ФАС</button><button data-view="threequarter" class="active">¾</button><button data-view="side">ПРОФИЛЬ</button><button data-view="back">СЗАДИ</button></div><div id="camStat">35 MM · PERSPECTIVE</div></div>
+<div class="sceneFoot"><span id="meshStat">МАНЕКЕН · РЕДАКТИРУЕМАЯ ПОЗА</span><span>DRAG / ROTATE · PINCH / ZOOM</span></div></section>
+<aside class="controls">
+<div class="groupset"><div class="controlTitle">02 / ПРОПОРЦИИ</div><div class="muted">Сначала настройте силуэт, затем детали лица и одежды.</div>
+<div class="sliderRow"><label for="headScale">Размер головы <output id="headScaleVal"></output></label><input id="headScale" type="range" min=".75" max="1.2" step=".01" value=".93"></div>
+<div class="sliderRow"><label for="shoulderScale">Ширина плеч <output id="shoulderScaleVal"></output></label><input id="shoulderScale" type="range" min=".75" max="1.35" step=".01" value="1"></div>
+<div class="sliderRow"><label for="hipScale">Ширина бёдер <output id="hipScaleVal"></output></label><input id="hipScale" type="range" min=".75" max="1.35" step=".01" value="1"></div>
+<div class="sliderRow"><label for="torsoScale">Длина корпуса <output id="torsoScaleVal"></output></label><input id="torsoScale" type="range" min=".75" max="1.25" step=".01" value="1"></div></div>
+<div class="groupset"><div class="controlTitle">03 / КАДР</div>
+<div class="sliderRow"><label for="focal">Объектив <output id="focalVal"></output></label><input id="focal" type="range" min="28" max="85" step="1" value="52"></div>
+<div class="sliderRow"><label for="overlay">Наложение <output id="overlayVal"></output></label><input id="overlay" type="range" min="0" max="80" step="5" value="0"></div>
+<label class="check"><input type="checkbox" id="ghostToggle"> Референс поверх 3D</label>
+<label class="check"><input type="checkbox" id="wireToggle"> Показать каркас</label>
+<div class="btngrid"><button id="resetPose">СБРОС ПОЗЫ</button><button id="resetCamera">СБРОС КАМЕРЫ</button></div>
+</div>
+<div class="groupset"><div class="controlTitle">04 / СОХРАНЕНИЕ</div>
+<div class="muted">Параметры и снимок остаются на устройстве. Ничего не отправляется в облачное хранилище.</div>
+<div class="btngrid"><button id="saveJSON">JSON ↓</button><button id="loadJSON">JSON ↑</button><button id="savePNG">КАДР PNG ↓</button><button id="saveGLB">GLB ↓</button></div>
+<input type="file" id="jsonFile" accept=".json,application/json">
+<div class="step">СТАТУС: ПРОТОТИП, НЕ ГОТОВЫЙ ПЕРСОНАЖ</div>
+<button id="help" class="wide">КАК РАБОТАТЬ</button>
+</div></aside>
+</main></div>
+<div id="status" aria-live="polite"></div><div id="modal"><div class="modalCard"><h3>Character Prototype Studio</h3><p>Загрузите живописный референс слева. Перетаскивайте контрольные точки на голове, плечах, локтях, кистях, бёдрах, коленях и лодыжках. Манекен обновляется в WebGL. Настройте пропорции и объектив, сохраните JSON для повторного открытия, PNG кадра или GLB геометрии.</p><p>Редактор задаёт позу и пропорции; он не восстанавливает уникальное лицо, волосы и одежду автоматически. Личные изображения не уходят на сервер. Профиль и вид сзади остаются художественной реконструкцией.</p><button id="closeHelp" class="wide">ПОНЯТНО</button></div></div>
+<script type="module" src="/studio.js"></script>
+</body></html>

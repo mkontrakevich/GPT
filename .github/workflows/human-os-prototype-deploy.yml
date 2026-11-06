@@ -1,0 +1,29 @@
+name: Human OS Prototype Studio — Cloudflare Deploy
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-and-deploy:
+    if: github.ref == 'refs/heads/feat/human-os-reference-blockout-studio'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run prototype studio QA
+        run: node --test human-os-prototype-studio/tests/*.test.mjs
+      - name: Require configured deployment credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::Cloudflare API token not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::Cloudflare account ID not configured"; exit 1; }
+      - name: Prepare static assets
+        run: |
+          mkdir -p human-os-prototype-studio/dist
+          cp human-os-prototype-studio/index.html human-os-prototype-studio/studio.js human-os-prototype-studio/rig.js human-os-prototype-studio/dist/
+      - name: Deploy versioned assets to Cloudflare
+        run: npx --yes wrangler@4 deploy --config human-os-prototype-studio/wrangler.jsonc

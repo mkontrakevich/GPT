@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#141626">
+<title>HUMAN OS — Reference-to-3D Builder</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#e6e6eb;background:#0c0e1c;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}button,input{font:inherit}button{cursor:pointer;border:1px solid #3d4056;background:#202334;color:#d5d4df;padding:8px 11px;border-radius:9px;font-size:11px;font-weight:650}button:hover,button:focus-visible{border-color:#b5a3b5;outline:none}button.on,button.primary{background:#e2d4c8;color:#241e28;border-color:#e2d4c8}button:disabled{opacity:.5;cursor:not-allowed}
+.app{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:#101221}
+header{min-height:62px;display:flex;justify-content:space-between;align-items:center;padding:12px 22px;gap:15px;border-bottom:1px solid #3a3b4d;background:linear-gradient(90deg,#1b1a2d,#111422)}
+.brand{letter-spacing:.17em;font-size:15px;font-weight:800}.brand span{color:#dfbead}.eyebrow{font-size:9px;letter-spacing:.16em;color:#a4a2b4;margin-top:5px}
+.pill{font-size:9px;letter-spacing:.12em;border:1px solid #756a7a;border-radius:20px;padding:7px 11px;color:#e2c9b5}
+.workspace{min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#34354a}.panel{min-height:0;position:relative;overflow:hidden;display:flex;flex-direction:column;background:#17192b}
+.panelHead{height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#181929;z-index:2;border-bottom:1px solid #39394b}
+.panelHead strong{font-size:10px;letter-spacing:.16em;color:#e9d7c9}.panelHead span{font-size:9px;color:#a5a3b5;letter-spacing:.07em}
+.stage{position:relative;flex:1;min-height:0;overflow:hidden;background:radial-gradient(ellipse at 45% 38%,#2c2a42,#181a2d 64%,#111324);touch-action:none}
+.photoStage{background:linear-gradient(145deg,#353044,#171827)}#referenceImage{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;pointer-events:none;opacity:.88}
+#markers{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.empty{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;width:80%;max-width:350px;pointer-events:none}
+.empty .circle{font-size:30px;width:76px;height:76px;display:grid;place-items:center;margin:0 auto 20px;border-radius:22px;border:1px solid #77718b;background:#342e49}
+.empty h2{font-size:20px;font-weight:500;margin:0 0 9px}.empty p{color:#aaa4b8;font-size:11px;line-height:1.8}
+.mini{position:absolute;z-index:3;bottom:11px;left:11px;right:11px;display:flex;gap:8px;align-items:center;justify-content:space-between;pointer-events:none}
+.mini span{padding:7px 11px;background:#141729d8;border:1px solid #5a546b8a;border-radius:6px;font-size:9px;color:#c3b8c6;max-width:90%}
+#three{width:100%;height:100%;display:block;outline:none;touch-action:none}
+#webglError{display:none;position:absolute;inset:0;align-items:center;justify-content:center;padding:25px;text-align:center;background:#252437;color:#e9dcd8;font-size:13px;z-index:2}
+.overlayInfo{position:absolute;top:12px;right:12px;background:#1b1d2ec9;border:1px solid #73677777;padding:7px 9px;border-radius:7px;font-size:9px;color:#c4b9bd;pointer-events:none}
+.bottomActions{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:12px 18px;background:#181a2b;border-top:1px solid #38394d}
+.group{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.group label{font-size:10px;color:#b6b2c0;white-space:nowrap}
+#opacity{width:77px}input[type=range]{accent-color:#d8bcae}
+.sep{height:25px;width:1px;background:#494758;margin:0 3px}
+.note{color:#9f9caa;font-size:10px;line-height:1.5;flex:1;min-width:140px}
+.actions{display:flex;align-items:center;gap:6px;margin-left:auto}
+.mobileTabs{display:none}.loadInput{display:none}
+.toast{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);background:#191e31eb;border:1px solid #8b7c86;border-radius:8px;font-size:11px;padding:9px 12px;pointer-events:none;max-width:84vw;z-index:9;text-align:center;display:none}
+.controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.stat{font-size:9px;color:#ab9fb0;white-space:nowrap}
+@media(max-width:1100px){.bottomActions{gap:10px;padding:10px 11px}.actions{margin-left:0}.note{display:none}}
+@media(max-width:700px){
+ header{height:55px;min-height:55px;padding:10px 12px}.brand{font-size:12px}.eyebrow{font-size:8px}.pill{font-size:8px;padding:6px 8px}
+ .app{grid-template-rows:55px 38px minmax(0,1fr) auto}
+ .mobileTabs{display:flex;background:#1b1b2d;padding:3px 8px;gap:8px;border-bottom:1px solid #444054}
+ .mobileTabs button{flex:1;padding:7px}
+ .workspace{display:block;position:relative}
+ .panel{position:absolute;inset:0}
+ body[data-view=ref] .panel3d{display:none}
+ body[data-view=model] .panelRef{display:none}
+ .panelHead{height:36px;flex-basis:36px;padding:0 10px}
+ .empty h2{font-size:18px}
+ .bottomActions{display:grid;grid-template-columns:1fr;row-gap:9px;padding:9px 11px calc(11px + env(safe-area-inset-bottom))}
+ .group{gap:5px}.group button,.actions button{font-size:10px;padding:8px}
+ .sep{display:none}.stat{font-size:8px}.controls{justify-content:space-between}
+ .actions{justify-content:space-between}
+ .actions button{flex:1}
+}
+</style>
+</head><body data-view="model">
+<div class="app">
+<header><div><div class="brand">HUMAN <span>OS</span> / CHARACTER BUILDER</div><div class="eyebrow">REFERENCE → POSE → 3D · БЕЗ BLENDER</div></div><div class="pill">LOCAL-FIRST · WEBGL</div></header>
+<nav class="mobileTabs" aria-label="Рабочие области"><button id="tabRef">РЕФЕРЕНС</button><button id="tabModel" class="on">3D ПРОТОТИП</button></nav>
+<main class="workspace">
+<section class="panel panelRef">
+<div class="panelHead"><strong>01 / РЕФЕРЕНС</strong><span>ПЕРЕТАСКИВАЙ ТОЧКИ СУСТАВОВ</span></div>
+<div class="stage photoStage" id="refStage">
+<img id="referenceImage" alt="Локально загруженный референс" hidden>
+<div id="placeholder" class="empty"><div class="circle">◇</div><h2>Добавь исходное изображение</h2><p>Изображение остаётся в браузере. Затем можно определить позу автоматически или подстроить маркеры вручную.</p></div>
+<canvas id="markers" aria-label="Интерактивные маркеры суставов поверх референса"></canvas>
+<div class="mini"><span id="refInfo">Референс не загружен</span></div>
+</div>
+</section>
+<section class="panel panel3d">
+<div class="panelHead"><strong>02 / 3D БОЛВАНКА</strong><span>НЕ ФИНАЛЬНЫЙ ПЕРСОНАЖ</span></div>
+<div class="stage"><canvas id="three" aria-label="Объёмная регулируемая фигура WebGL"></canvas>
+<div class="overlayInfo" id="engine">ИНИЦИАЛИЗАЦИЯ WEBGL</div>
+<div id="webglError">3D недоступно. Редактор 2D-маркеров и JSON-проекта остаётся доступен.</div>
+</div>
+</section>
+</main>
+<div class="bottomActions">
+<div class="controls">
+<div class="group"><button class="primary" id="load">+ РЕФЕРЕНС</button><button id="detect" title="Экспериментальное локальное распознавание позы" disabled>АВТОПОЗА</button></div>
+<div class="group"><label for="opacity">ПРОЗРАЧНОСТЬ</label><input id="opacity" type="range" min="20" max="100" value="88"></div>
+<div class="group"><button id="poseA" class="on">A-ПОЗА</button><button id="poseT">T-ПОЗА</button><button id="poseHero">ЖЕСТ ГЕРОИНИ</button></div>
+</div>
+<div class="sep"></div>
+<div class="controls">
+<div class="group"><label for="headSize">ГОЛОВА</label><input id="headSize" type="range" min="75" max="135" value="100"><span id="headVal" class="stat">100%</span></div>
+<div class="group"><label for="shoulderSize">ПЛЕЧИ</label><input id="shoulderSize" type="range" min="75" max="135" value="100"><span id="shoulderVal" class="stat">100%</span></div>
+<div class="group"><label for="bodyMass">ОБЪЁМ</label><input id="bodyMass" type="range" min="70" max="140" value="100"><span id="bodyVal" class="stat">100%</span></div>
+</div>
+<div class="sep"></div>
+<div class="group" id="views"><button data-camera="front" class="on">ФАС</button><button data-camera="threequarter">¾</button><button data-camera="side">ПРОФИЛЬ</button><button data-camera="back">СЗАДИ</button></div>
+<div class="actions"><button id="saveJSON">ПРОЕКТ JSON ↓</button><button id="loadJSON">ОТКРЫТЬ</button><button class="primary" id="saveGLB">GLB ↓</button></div>
+<input class="loadInput" id="imageFile" type="file" accept="image/png,image/jpeg,image/webp">
+<input class="loadInput" id="projectFile" type="file" accept="application/json,.json">
+</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+<script type="module" src="/builder.js"></script>
+</body></html>

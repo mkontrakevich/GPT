@@ -52,7 +52,7 @@ test('reference uploads never embedded in JSON project and can be restored with 
 });
 test('mobile tabs preserve editor access without blocking stage',()=>{
  assert.match(html,/data-view="model"/);
- assert.match(html,/#tabRef/);
+ assert.match(html,/id="tabRef"/);
  assert.match(html,/body\[data-view=ref\] \.panel3d\{display:none\}/);
  assert.match(html,/body\[data-view=model\] \.panelRef\{display:none\}/);
 });

@@ -244,3 +244,33 @@ if(webglReady){
  loop();
 }
 syncParams();setView(innerWidth<700?'model':'ref');
+
+
+// BUILDER_SELF_TEST: opt-in, synthetic-only, safe for Cloudflare Browser Rendering.
+// Never reads, exports or submits a reference image. Exposes pass/fail through DOM.
+if(new URLSearchParams(location.search).has('qa')){
+ (async()=>{
+  const tests={webgl:!!webglReady,landmarks:keyNames.length===13,json:false,glb:false,presets:false,detail:''};
+  try{
+   const before=JSON.stringify(projectJSON());
+   setPreset('T');
+   tests.presets=state.pose.leftWrist[1]===.30;
+   setPreset('A');
+   const project=projectJSON();
+   tests.json=project.schemaVersion==='hgos.pose-prototype.v1' && project.sourceRef.embeddedImage===false;
+   if(webglReady){
+    const {GLTFExporter}=await import('three/addons/exporters/GLTFExporter.js');
+    actor.updateMatrixWorld(true);
+    const bytes=await new GLTFExporter().parseAsync(actor,{binary:true,trs:true,onlyVisible:true,maxTextureSize:1024});
+    tests.glb=bytes instanceof ArrayBuffer&&bytes.byteLength>1500;
+    tests.glbBytes=bytes.byteLength;
+   }
+  }catch(error){tests.detail=String(error?.message||error).slice(0,180);}
+  tests.pass=tests.webgl&&tests.landmarks&&tests.json&&tests.glb&&tests.presets;
+  window.__BUILDER_QA.selfTest=tests;
+  document.documentElement.dataset.builderSelfTest=tests.pass?'PASS':'FAIL';
+  document.documentElement.dataset.builderGlbBytes=String(tests.glbBytes||0);
+  document.documentElement.dataset.builderSelfTestDetail=tests.detail;
+  $('#engine').textContent=tests.pass?'WEBGL · SELF TEST PASS':'WEBGL · SELF TEST FAIL';
+ })();
+}

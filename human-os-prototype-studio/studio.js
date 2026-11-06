@@ -48,7 +48,7 @@ ref.addEventListener('pointerdown',e=>{
  if(d>Math.max(20,ref.clientWidth*.055))return;
  drag=best;ref.setPointerCapture(e.pointerId);drawRef();
 });
-ref.addEventListener('pointermove',e=>{if(!drag)return;const q=normPoint(e);state.anchors[drag]={x:q.nx,y:q.ny};drawRef();rig?.update(state,aspect)});
+ref.addEventListener('pointermove',e=>{if(!drag)return;const q=normPoint(e);state.anchors[drag]={x:q.nx,y:q.ny};drawRef();rig?.update(state,aspect);if(window.__STUDIO_QA){window.__STUDIO_QA.lastEditedPoint=drag;window.__STUDIO_QA.editCount=(window.__STUDIO_QA.editCount||0)+1}});
 for(const ev of ['pointerup','pointercancel'])ref.addEventListener(ev,()=>{drag=null;drawRef()});
 function loadImage(file){
  if(!file||!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>20*1024*1024)return notify('Нужен PNG/JPEG/WebP до 20 МБ');
@@ -75,7 +75,7 @@ function syncUI(){
 function cameraUpdate(){
  if(!camera)return;const c=state.camera,fov=T.MathUtils.radToDeg(2*Math.atan(24/(2*c.focal)));
  camera.fov=fov;camera.updateProjectionMatrix();
- const distance=5.35/(2*Math.tan(T.MathUtils.degToRad(fov)/2))*c.zoom;
+ const distance=6.50/(2*Math.tan(T.MathUtils.degToRad(fov)/2))*c.zoom;
  const center=new T.Vector3(0,2.28,0);
  camera.position.set(Math.sin(c.yaw)*Math.cos(c.pitch)*distance,center.y+Math.sin(c.pitch)*distance,Math.cos(c.yaw)*Math.cos(c.pitch)*distance);
  camera.lookAt(center);$('#camStat').textContent=Math.round(c.focal)+' MM · PERSPECTIVE';

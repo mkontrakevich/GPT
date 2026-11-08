@@ -1,0 +1,45 @@
+name: HUMAN OS - Pose AI Studio QA
+on:
+  push:
+    branches: ["feat/human-os-prototype-pose-ai-v2"]
+    paths:
+      - "human-os-prototype-studio/**"
+      - ".github/workflows/human-os-prototype-pose-ai.yml"
+  pull_request:
+    paths:
+      - "human-os-prototype-studio/**"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate legacy and AI-assisted editor contracts
+        run: node --test human-os-prototype-studio/tests/*.test.mjs
+  deploy-preview:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/human-os-prototype-pose-ai-v2'
+    needs: quality
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::Missing Cloudflare credential"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::Missing Cloudflare account ID"; exit 1; }
+      - name: Stage static assets
+        run: |
+          mkdir -p human-os-prototype-studio/dist
+          cp human-os-prototype-studio/index.html human-os-prototype-studio/studio.js human-os-prototype-studio/rig.js human-os-prototype-studio/pose.js human-os-prototype-studio/dist/
+      - name: Publish isolated preview
+        run: npx --yes wrangler@4 deploy --config human-os-prototype-studio/wrangler.v2.jsonc

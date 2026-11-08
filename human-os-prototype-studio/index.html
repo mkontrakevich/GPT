@@ -63,6 +63,7 @@ input[type=checkbox]{accent-color:#a2d4ca}.check{display:flex;gap:7px;color:#c4d
 #poseDecision .refActions button{margin-top:3px}
 .controls{grid-template-columns:repeat(4,230px)}
 }
+@media(max-width:650px){.scenebar .views{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;min-width:0}.scenebar .views button{min-width:0;padding:6px 2px;font-size:8px;white-space:nowrap}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 </head><body><div class="app">
@@ -71,7 +72,7 @@ input[type=checkbox]{accent-color:#a2d4ca}.check{display:flex;gap:7px;color:#c4d
 <section class="refcol"><div class="blockhead"><span>01 / РЕФЕРЕНС</span><div class="refActions"><button id="autoPose" type="button" title="Вычислить позу на устройстве">АВТО-ПОЗА</button><button id="loadRef" type="button">+ ФОТО</button></div></div>
 <div id="refWrap"><canvas id="refCanvas" aria-label="Редактор контрольных точек на референсе"></canvas><div id="refOverlay">Загрузите утверждённый референс. Точки перетаскиваются.</div></div><div id="poseDecision" hidden><span id="poseStatus">Поза распознана — проверьте точки</span><div class="refActions"><button id="acceptPose" type="button">ПРИНЯТЬ</button><button id="discardPose" type="button">ОТКЛОНИТЬ</button></div></div><input id="refFile" type="file" accept="image/png,image/jpeg,image/webp"></section>
 <section class="scenecol"><canvas id="view" aria-label="Вращаемый трехмерный прототип персонажа WebGL"></canvas><img id="ghost" alt="" aria-hidden="true">
-<div class="scenebar"><div class="views" id="viewButtons"><button data-view="front">ФАС</button><button data-view="threequarter" class="active">¾</button><button data-view="side">ПРОФИЛЬ</button><button data-view="back">СЗАДИ</button></div><div id="camStat">35 MM · PERSPECTIVE</div></div>
+<div class="scenebar"><div class="views" id="viewButtons"><button data-view="front">ФАС</button><button data-view="threequarter" class="active">¾</button><button data-view="side">БОК</button><button data-view="back">ТЫЛ</button></div><div id="camStat">35 MM · PERSPECTIVE</div></div>
 <div class="sceneFoot"><span id="meshStat">МАНЕКЕН · РЕДАКТИРУЕМАЯ ПОЗА</span><span>DRAG / ROTATE · PINCH / ZOOM</span></div></section>
 <aside class="controls">
 <div class="groupset"><div class="controlTitle">02 / ПРОПОРЦИИ</div><div class="muted">Сначала настройте силуэт, затем детали лица и одежды.</div>

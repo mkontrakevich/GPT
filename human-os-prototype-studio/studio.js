@@ -148,7 +148,9 @@ function syncUI(){
 function cameraUpdate(){
  if(!camera)return;const c=state.camera,fov=T.MathUtils.radToDeg(2*Math.atan(24/(2*c.focal)));
  camera.fov=fov;camera.updateProjectionMatrix();
- const distance=6.50/(2*Math.tan(T.MathUtils.degToRad(fov)/2))*c.zoom;
+ // Fit the full body and extended arms in narrow iPhone side-by-side viewport.
+ const span=Math.max(6.50,3.8/Math.max(.28,camera.aspect));
+ const distance=span/(2*Math.tan(T.MathUtils.degToRad(fov)/2))*c.zoom;
  const center=new T.Vector3(0,2.28,0);
  camera.position.set(Math.sin(c.yaw)*Math.cos(c.pitch)*distance,center.y+Math.sin(c.pitch)*distance,Math.cos(c.yaw)*Math.cos(c.pitch)*distance);
  camera.lookAt(center);$('#camStat').textContent=Math.round(c.focal)+' MM · PERSPECTIVE';

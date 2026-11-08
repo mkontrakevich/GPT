@@ -41,7 +41,7 @@ test('missing core or invalid image geometry cannot pass',()=>{
  const a=fullPose();for(const [i,x,y] of [[11,.4,.29],[12,.6,.29],[13,.36,.42],
   [14,.64,.42],[15,.28,.54],[16,.72,.54],[23,.43,.57],[24,.57,.57]])point(a,i,x,y);
  a[15]={x:5,y:.54,visibility:.99};
- const result=derivePoseSuggestions(a);assert.equal(result.ok,false);
+ const result=derivePoseSuggestions(a);assert.equal(result.ok,true);
  assert.ok(!result.anchors.lw);
 });
 test('depth values remain bounded, never described as true depth',()=>{

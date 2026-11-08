@@ -17,6 +17,27 @@ let photo=null,photoUrl=null,aspect=.667,imageRect={x:0,y:0,w:1,h:1},drag=null,r
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const compact={head:'Голова',neck:'Шея',ls:'Л. плечо',rs:'П. плечо',le:'Л. локоть',re:'П. локоть',lw:'Л. кисть',rw:'П. кисть',lh:'Л. бедро',rh:'П. бедро',lk:'Л. колено',rk:'П. колено',la:'Л. стопа',ra:'П. стопа'};
 const links=[['head','neck'],['neck','ls'],['neck','rs'],['ls','le'],['le','lw'],['rs','re'],['re','rw'],['neck','lh'],['neck','rh'],['lh','rh'],['lh','lk'],['lk','la'],['rh','rk'],['rk','ra']];
+// Guided entry makes the purpose explicit: align pose and camera, not generate likeness.
+function showStep(step){
+ const strip=$('#guideStrip'),dock=$('#dockPose');
+ if(step==='no-reference'){dock.disabled=true;strip.textContent='Шаг 1/3 · Выбери изображение персонажа';return}
+ dock.disabled=false;
+ if(step==='suggestion'){strip.textContent='Шаг 2/3 · Проверь золотые точки, затем нажми ПРИНЯТЬ';return}
+ if(step==='edited'){strip.textContent='Шаг 3/3 · Проверь силуэт, вращай 3D и сохрани результат';return}
+ strip.textContent='Шаг 2/3 · Определи позу, затем поправь суставы вручную';
+}
+$('#welcomePick').addEventListener('click',()=>$('#refFile').click());
+$('#dockChoose').addEventListener('click',()=>$('#refFile').click());
+$('#dockPose').addEventListener('click',()=>$('#autoPose').click());
+$('#advancedToggle').addEventListener('click',()=>{
+ const open=document.body.classList.toggle('advanced-open');
+ $('#advancedToggle').setAttribute('aria-expanded',String(open));
+ $('#advancedToggle').classList.toggle('active',open);
+ $('#advancedToggle').textContent=open?'3 · Скрыть':'3 · Настройки';
+ requestAnimationFrame(()=>{resize();setTimeout(resize,180)});
+});
+showStep('no-reference');
+
 function notify(msg){$('#status').textContent=msg;clearTimeout(notify.timer);notify.timer=setTimeout(()=>{$('#status').textContent=''},3500)}
 function save(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}
 function contain(w,h,ratio){let dw=w,dh=w/ratio;if(dh>h){dh=h;dw=h*ratio}return {x:(w-dw)/2,y:(h-dh)/2,w:dw,h:dh}}
@@ -59,7 +80,7 @@ ref.addEventListener('pointerdown',e=>{
  if(d>Math.max(20,ref.clientWidth*.055))return;
  drag=best;$('#depthJoint').value=best;syncDepthControl();ref.setPointerCapture(e.pointerId);drawRef();
 });
-ref.addEventListener('pointermove',e=>{if(!drag)return;const q=normPoint(e);state.anchors[drag]={x:q.nx,y:q.ny};drawRef();rig?.update(state,aspect);if(window.__STUDIO_QA){window.__STUDIO_QA.lastEditedPoint=drag;window.__STUDIO_QA.editCount=(window.__STUDIO_QA.editCount||0)+1}});
+ref.addEventListener('pointermove',e=>{if(!drag)return;const q=normPoint(e);state.anchors[drag]={x:q.nx,y:q.ny};drawRef();rig?.update(state,aspect);showStep('edited');if(window.__STUDIO_QA){window.__STUDIO_QA.lastEditedPoint=drag;window.__STUDIO_QA.editCount=(window.__STUDIO_QA.editCount||0)+1}});
 for(const ev of ['pointerup','pointercancel'])ref.addEventListener(ev,()=>{drag=null;drawRef()});
 function loadImage(file){
  if(!file||!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>20*1024*1024)return notify('Нужен PNG/JPEG/WebP до 20 МБ');
@@ -67,6 +88,7 @@ function loadImage(file){
  image.onload=()=>{
   if(photoUrl)URL.revokeObjectURL(photoUrl);
   photoUrl=url;photo=image;aspect=image.naturalWidth/image.naturalHeight;$('#ghost').src=url;
+  $('#welcome').hidden=true;document.body.classList.add('has-reference');showStep('ready');
   clearPoseSuggestion();
   $('#refOverlay').textContent='Перетаскивайте точки на референсе';
   drawRef();rig?.update(state,aspect);notify('Изображение загружено локально');
@@ -98,6 +120,7 @@ $('#autoPose').onclick=async()=>{
   window.__STUDIO_QA.poseSuggestedScore=Number((result.score||0).toFixed(3));
   if(!result.ok){notify(result.reason);$('#poseStatus').textContent=result.reason;return}
   posePreview=result;
+  showStep('suggestion');
   $('#poseDecision').hidden=false;
   const percent=Math.round(result.score*100);
   $('#poseStatus').textContent='Предложено '+result.used+' из 14 точек · уверенность ≈'+percent+'%';
@@ -114,11 +137,12 @@ $('#acceptPose').onclick=()=>{
  for(const [k,p] of Object.entries(posePreview.anchors))state.anchors[k]={x:p.x,y:p.y};
  for(const [k,v] of Object.entries(posePreview.depth))state.depth[k]=clamp(v,-1,1);
  window.__STUDIO_QA.poseAccepted=true;window.__STUDIO_QA.poseAppliedCount=posePreview.used;
+ showStep('edited');
  posePreview=null;$('#poseDecision').hidden=true;
  syncDepthControl();drawRef();rig?.update(state,aspect);
  notify('Подсказанные суставы применены. Проверьте и исправьте вручную.');
 };
-$('#discardPose').onclick=()=>{clearPoseSuggestion();notify('Автоматические подсказки отклонены. Ручная поза сохранена.')};
+$('#discardPose').onclick=()=>{clearPoseSuggestion();showStep('ready');notify('Автоматические подсказки отклонены. Ручная поза сохранена.')};
 $('#depthJoint').onchange=syncDepthControl;
 $('#depth').oninput=e=>{
  const key=$('#depthJoint').value;
@@ -200,7 +224,7 @@ for(const k of ['headScale','shoulderScale','hipScale','torsoScale','focal','ove
 };
 $('#ghostToggle').onchange=e=>{if(e.target.checked&&state.overlay===0)state.overlay=35;$('#ghost').style.opacity=String(state.overlay/100);document.body.classList.toggle('ghost',e.target.checked&&!!photo);syncUI()};
 $('#wireToggle').onchange=e=>{state.wireframe=e.target.checked;rig?.setWireframe(state.wireframe)};
-$('#resetPose').onclick=()=>{state.anchors=fresh();state.proportions={headScale:.93,shoulderScale:1,hipScale:1,torsoScale:1};state.depth=Object.fromEntries(keys.map(k=>[k,0]));clearPoseSuggestion();syncUI();drawRef();rig?.update(state,aspect);notify('Поза сброшена')};
+$('#resetPose').onclick=()=>{state.anchors=fresh();state.proportions={headScale:.93,shoulderScale:1,hipScale:1,torsoScale:1};state.depth=Object.fromEntries(keys.map(k=>[k,0]));clearPoseSuggestion();showStep(photo?'ready':'no-reference');syncUI();drawRef();rig?.update(state,aspect);notify('Поза сброшена')};
 $('#resetCamera').onclick=()=>{state.camera.zoom=1;preset('threequarter')};
 $('#saveJSON').onclick=()=>{
  const payload={schema:state.schema,anchors:state.anchors,depth:state.depth,proportions:state.proportions,camera:state.camera,reference:{filename:photo?.src?'local image (not included)':null,width:photo?.naturalWidth||0,height:photo?.naturalHeight||0},notice:'This is unrigged pose geometry, not a finished identity.'};

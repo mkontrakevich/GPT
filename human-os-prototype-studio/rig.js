@@ -40,6 +40,11 @@ export function createRig(T,scene){
   for(const k of ['lh','rh'])p[k].z=-.04;
   for(const k of ['lk','rk'])p[k].z=.07;
   for(const k of ['la','ra'])p[k].z=.11;
+  // Depth offsets are deliberately user-editable relative values, not calibrated 3D scans.
+  for(const [key,point] of Object.entries(p)){
+   const offset=s.depth?.[key];
+   if(Number.isFinite(offset))point.z+=Math.max(-1,Math.min(1,offset));
+  }
   return p;
  }
  function update(s,aspect=.667){

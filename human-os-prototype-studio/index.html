@@ -43,15 +43,36 @@ input[type=checkbox]{accent-color:#a2d4ca}.check{display:flex;gap:7px;color:#c4d
 .sceneFoot{bottom:5px;left:5px;right:5px;font-size:8px}.sceneFoot span:last-child{display:none}
 #refOverlay{font-size:8px;left:4px;right:4px}.controls .controlTitle{margin:4px 0}
 }
+
+.refActions{display:flex;gap:6px;align-items:center}
+.refActions button{padding:8px 8px;font-size:9px}
+#autoPose{background:#2d4e57;border-color:#70bdb4;color:#c8eee6}
+#autoPose[disabled]{opacity:.45}
+#poseDecision{margin:0 10px 9px;border:1px solid #8a9c6b80;background:#182c2d;border-radius:10px;padding:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+#poseDecision[hidden]{display:none}
+#poseStatus{font-size:10px;color:#d9e2c3;line-height:1.4;max-width:55%}
+#acceptPose{background:#a9d3c6;color:#12262e}
+#depthJoint{width:100%;border:1px solid #62777e88;background:#1a2e3c;color:#e7f0ef;padding:10px;border-radius:8px;margin:7px 0}
+.depthLabel{font-size:11px;color:#bfd2d5}
+@media(max-width:950px){.controls{grid-template-columns:repeat(4,minmax(230px,1fr))}}
+@media(max-width:650px){
+.refActions{gap:3px}
+.refActions button{padding:6px 5px;font-size:7px;letter-spacing:0}
+#poseDecision{margin:0 3px 5px;padding:4px 6px;display:block}
+#poseStatus{font-size:8px}
+#poseDecision .refActions button{margin-top:3px}
+.controls{grid-template-columns:repeat(4,230px)}
+}
+@media(max-width:650px){.scenebar .views{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;min-width:0}.scenebar .views button{min-width:0;padding:6px 2px;font-size:8px;white-space:nowrap}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 </head><body><div class="app">
-<header><div><div class="brand">HUMAN <em>OS</em> <span style="color:#9dabb6;font-weight:400;font-size:10px">/ PROTOTYPE STUDIO</span></div><div class="sub">REFERENCE → POSE → PROPORTIONS → CAMERA → EXPORT</div></div><span class="pill">WEBGL · БЕЗ BLENDER · LOCAL FIRST</span></header>
+<header><div><div class="brand">HUMAN <em>OS</em> <span style="color:#9dabb6;font-weight:400;font-size:10px">/ PROTOTYPE STUDIO</span></div><div class="sub">REFERENCE → POSE → PROPORTIONS → CAMERA → EXPORT</div></div><span class="pill">WEBGL · POSE AI · БЕЗ BLENDER</span></header>
 <main class="workspace">
-<section class="refcol"><div class="blockhead"><span>01 / РЕФЕРЕНС</span><button id="loadRef" type="button">+ ИЗОБРАЖЕНИЕ</button></div>
-<div id="refWrap"><canvas id="refCanvas" aria-label="Редактор контрольных точек на референсе"></canvas><div id="refOverlay">Загрузите утверждённый референс. Точки перетаскиваются.</div></div><input id="refFile" type="file" accept="image/png,image/jpeg,image/webp"></section>
+<section class="refcol"><div class="blockhead"><span>01 / РЕФЕРЕНС</span><div class="refActions"><button id="autoPose" type="button" title="Вычислить позу на устройстве">АВТО-ПОЗА</button><button id="loadRef" type="button">+ ФОТО</button></div></div>
+<div id="refWrap"><canvas id="refCanvas" aria-label="Редактор контрольных точек на референсе"></canvas><div id="refOverlay">Загрузите утверждённый референс. Точки перетаскиваются.</div></div><div id="poseDecision" hidden><span id="poseStatus">Поза распознана — проверьте точки</span><div class="refActions"><button id="acceptPose" type="button">ПРИНЯТЬ</button><button id="discardPose" type="button">ОТКЛОНИТЬ</button></div></div><input id="refFile" type="file" accept="image/png,image/jpeg,image/webp"></section>
 <section class="scenecol"><canvas id="view" aria-label="Вращаемый трехмерный прототип персонажа WebGL"></canvas><img id="ghost" alt="" aria-hidden="true">
-<div class="scenebar"><div class="views" id="viewButtons"><button data-view="front">ФАС</button><button data-view="threequarter" class="active">¾</button><button data-view="side">ПРОФИЛЬ</button><button data-view="back">СЗАДИ</button></div><div id="camStat">35 MM · PERSPECTIVE</div></div>
+<div class="scenebar"><div class="views" id="viewButtons"><button data-view="front">ФАС</button><button data-view="threequarter" class="active">¾</button><button data-view="side">БОК</button><button data-view="back">ТЫЛ</button></div><div id="camStat">35 MM · PERSPECTIVE</div></div>
 <div class="sceneFoot"><span id="meshStat">МАНЕКЕН · РЕДАКТИРУЕМАЯ ПОЗА</span><span>DRAG / ROTATE · PINCH / ZOOM</span></div></section>
 <aside class="controls">
 <div class="groupset"><div class="controlTitle">02 / ПРОПОРЦИИ</div><div class="muted">Сначала настройте силуэт, затем детали лица и одежды.</div>
@@ -66,7 +87,20 @@ input[type=checkbox]{accent-color:#a2d4ca}.check{display:flex;gap:7px;color:#c4d
 <label class="check"><input type="checkbox" id="wireToggle"> Показать каркас</label>
 <div class="btngrid"><button id="resetPose">СБРОС ПОЗЫ</button><button id="resetCamera">СБРОС КАМЕРЫ</button></div>
 </div>
-<div class="groupset"><div class="controlTitle">04 / СОХРАНЕНИЕ</div>
+<div class="groupset"><div class="controlTitle">04 / ГЛУБИНА И ПЕРСПЕКТИВА</div><div class="muted">2D-референс не определяет точную глубину. Меняйте отдельные суставы для правдоподобной 3D-позы.</div>
+<label class="depthLabel" for="depthJoint">Контрольная точка</label><select id="depthJoint">
+<option value="head">Голова</option><option value="neck">Шея</option>
+<option value="lw">Левая кисть</option><option value="rw">Правая кисть</option>
+<option value="le">Левый локоть</option><option value="re">Правый локоть</option>
+<option value="ls">Левое плечо</option><option value="rs">Правое плечо</option>
+<option value="lh">Левое бедро</option><option value="rh">Правое бедро</option>
+<option value="lk">Левое колено</option><option value="rk">Правое колено</option>
+<option value="la">Левая лодыжка</option><option value="ra">Правая лодыжка</option>
+</select>
+<div class="sliderRow"><label for="depth">Глубина точки <output id="depthVal">0.00</output></label><input type="range" id="depth" min="-1" max="1" step=".02" value="0"></div>
+<div class="muted">Положительное значение — ближе к камере. Данные ИИ приблизительные и требуют проверки в профиль.</div>
+<div class="btngrid"><button id="resetDepth">СБРОС ГЛУБИНЫ</button><button id="poseCamera">ПОДОБРАТЬ КАДР</button></div></div>
+<div class="groupset"><div class="controlTitle">05 / СОХРАНЕНИЕ</div>
 <div class="muted">Параметры и снимок остаются на устройстве. Ничего не отправляется в облачное хранилище.</div>
 <div class="btngrid"><button id="saveJSON">JSON ↓</button><button id="loadJSON">JSON ↑</button><button id="savePNG">КАДР PNG ↓</button><button id="saveGLB">GLB ↓</button></div>
 <input type="file" id="jsonFile" accept=".json,application/json">

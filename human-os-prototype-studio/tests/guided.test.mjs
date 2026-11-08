@@ -29,7 +29,7 @@ test('UI explicitly distinguishes a 3D blockout from finished face and costume',
  assert.match(html,/изображение остаётся на устройстве/i);
  assert.match(html,/id="advancedToggle"/);
  assert.match(html,/body:not\(\.advanced-open\) \.controls\{display:none\}/);
- assert.match(script,/classList\.toggle\('advanced-open'\)/);
+ assert.match(script,/function setAdvanced/);
 });
 test('guided sequence retains user control over detection and correction',()=>{
  for(const s of ["showStep('no-reference')","showStep('ready')","showStep('suggestion')","showStep('edited')","$('#autoPose').click()","$('#refFile').click()"])

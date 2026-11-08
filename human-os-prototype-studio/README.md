@@ -43,3 +43,16 @@ Browser: pinned Three.js 0.180.0, parameterized joint rig, local file object URL
 - [ ] Camera geometry match calibration / full pose depth editing and semantic anatomy constraints.
 - [ ] Artist-reviewed face/head/hair/coat shape matching; genuine production topology, UV, rig, then section-specific wardrobe.
 - [ ] Reference on-screen visual approval; no Character System progress >50% merely for tools.
+
+## v0.2.3 — Optional AI pose proposals + depth editing (2026-11-09)
+
+**Staging URL:** https://human-os-prototype-studio-v2.kontrakevich.workers.dev/ . Stable v0.1 stays separately available and was not overwritten.
+
+- Click **АВТО-ПОЗА** only after selecting the reference locally. Browser downloads pinned `@mediapipe/tasks-vision@1.2.2` JS/WASM and Google's Pose Landmarker Lite model. Pose inference uses the local HTML image; the raw reference is never transmitted to the Worker. MediaPipe may send its own usage metrics as described by Google; no personal data service is integrated.
+- MediaPipe proposes up to **14** 2D body controls and approximate depths; per-point confidence and visibility are validated. Partial/occluded points are left unchanged. The gold candidates do **not** replace current pose until user clicks **ПРИНЯТЬ**; **ОТКЛОНИТЬ** discards them.
+- New **ГЛУБИНА И ПЕРСПЕКТИВА** panel selects each joint, adjusts Z relative to camera, resets estimated depth and standardizes focal length. JSON includes depth edits and older v0.1 JSON is backward-compatible.
+- iPhone split view camera margin expanded for outstretched arms; the four shot buttons fit on the mobile panel.
+- Cloudflare browser QA: WebGL active at 390×844 and 1280×800, 31 meshes; changing left-hand depth updates the real 3D rig. Model initialization/detection completed on a synthetic blank image (0 landmarks, expected). No confirmed true-positive on the painterly heroine yet.
+- GitHub CI PASS: [AI QA #42531384248](https://github.com/mkontrakevich/GPT/actions/runs/42531384248), [legacy QA #42531384266](https://github.com/mkontrakevich/GPT/actions/runs/42531384266).
+- Remaining risks: stylized illustration may confuse the pose model; camera calibration from one still is not unique, the avatar is an unrigged blockout rather than the visually approved mature heroine; real iPhone Safari/photo picker/download, model performance and GLB import not yet independently verified.
+- Avoid implying that Google pose landmarks provide exact anatomy or face, hair, costume or 3D scan. **Overall Character System remains 50% — Gate A HOLD**.

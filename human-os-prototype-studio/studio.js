@@ -26,16 +26,37 @@ function showStep(step){
  if(step==='edited'){strip.textContent='Шаг 3/3 · Проверь силуэт, вращай 3D и сохрани результат';return}
  strip.textContent='Шаг 2/3 · Определи позу, затем поправь суставы вручную';
 }
+// Single-column mobile stage: entire viewport belongs either to reference or to true 3D.
+function setMobileStage(stage){
+ const view3d=stage==='3d';
+ document.body.classList.toggle('mobile-3d',view3d);
+ for(const [id,active] of [['mobileRef',!view3d],['mobile3D',view3d]]){
+  const btn=$('#'+id);btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active));
+ }
+ if(window.__STUDIO_QA)window.__STUDIO_QA.mobileStage=stage;
+ requestAnimationFrame(()=>{resize();setTimeout(resize,170)});
+}
+function setAdvanced(open){
+ document.body.classList.toggle('advanced-open',!!open);
+ const button=$('#advancedToggle');
+ button.setAttribute('aria-expanded',String(!!open));
+ button.classList.toggle('active',!!open);
+ button.textContent=open?'3 · Скрыть':'3 · Настройки';
+ if(window.__STUDIO_QA)window.__STUDIO_QA.advancedOpen=!!open;
+ requestAnimationFrame(()=>{resize();setTimeout(resize,170)});
+}
+$('#mobileRef').onclick=()=>{setAdvanced(false);setMobileStage('ref')};
+$('#mobile3D').onclick=()=>{
+ if(!photo)return notify('Сначала выбери изображение');
+ setAdvanced(false);setMobileStage('3d');
+};
+$('#advancedBackdrop').onclick=()=>setAdvanced(false);
+window.addEventListener('keydown',e=>{if(e.key==='Escape')setAdvanced(false)});
+setMobileStage('ref');
 $('#welcomePick').addEventListener('click',()=>$('#refFile').click());
 $('#dockChoose').addEventListener('click',()=>$('#refFile').click());
-$('#dockPose').addEventListener('click',()=>$('#autoPose').click());
-$('#advancedToggle').addEventListener('click',()=>{
- const open=document.body.classList.toggle('advanced-open');
- $('#advancedToggle').setAttribute('aria-expanded',String(open));
- $('#advancedToggle').classList.toggle('active',open);
- $('#advancedToggle').textContent=open?'3 · Скрыть':'3 · Настройки';
- requestAnimationFrame(()=>{resize();setTimeout(resize,180)});
-});
+$('#dockPose').addEventListener('click',()=>{setAdvanced(false);setMobileStage('ref');$('#autoPose').click()});
+$('#advancedToggle').addEventListener('click',()=>setAdvanced(!document.body.classList.contains('advanced-open')));
 showStep('no-reference');
 
 function notify(msg){$('#status').textContent=msg;clearTimeout(notify.timer);notify.timer=setTimeout(()=>{$('#status').textContent=''},3500)}
@@ -89,6 +110,7 @@ function loadImage(file){
   if(photoUrl)URL.revokeObjectURL(photoUrl);
   photoUrl=url;photo=image;aspect=image.naturalWidth/image.naturalHeight;$('#ghost').src=url;
   $('#welcome').hidden=true;document.body.classList.add('has-reference');showStep('ready');
+  $('#mobile3D').disabled=false;setMobileStage('ref');
   clearPoseSuggestion();
   $('#refOverlay').textContent='Перетаскивайте точки на референсе';
   drawRef();rig?.update(state,aspect);notify('Изображение загружено локально');
@@ -138,6 +160,7 @@ $('#acceptPose').onclick=()=>{
  for(const [k,v] of Object.entries(posePreview.depth))state.depth[k]=clamp(v,-1,1);
  window.__STUDIO_QA.poseAccepted=true;window.__STUDIO_QA.poseAppliedCount=posePreview.used;
  showStep('edited');
+ if(matchMedia('(max-width:700px)').matches)setMobileStage('3d');
  posePreview=null;$('#poseDecision').hidden=true;
  syncDepthControl();drawRef();rig?.update(state,aspect);
  notify('Подсказанные суставы применены. Проверьте и исправьте вручную.');
@@ -254,4 +277,4 @@ $('#saveGLB').onclick=async()=>{
 $('#help').onclick=()=>$('#modal').classList.add('show');$('#closeHelp').onclick=()=>$('#modal').classList.remove('show');
 window.addEventListener('resize',resize);
 const observer=new ResizeObserver(resize);observer.observe(view);observer.observe(ref);
-syncUI();drawRef();init();notify('Готово. Загрузите утверждённый референс.');
+syncUI();drawRef();init();setMobileStage('ref');notify('Готово. Загрузите утверждённый референс.');

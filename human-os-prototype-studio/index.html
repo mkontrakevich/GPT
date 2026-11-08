@@ -64,16 +64,81 @@ input[type=checkbox]{accent-color:#a2d4ca}.check{display:flex;gap:7px;color:#c4d
 .controls{grid-template-columns:repeat(4,230px)}
 }
 @media(max-width:650px){.scenebar .views{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;min-width:0}.scenebar .views button{min-width:0;padding:6px 2px;font-size:8px;white-space:nowrap}}
+
+/* v0.3 character-first onboarding: photo → pose → inspect. Advanced controls are opt-in */
+body:not(.advanced-open) .controls{display:none}
+body:not(.advanced-open) .workspace{grid-template-columns:minmax(250px,40%) minmax(0,60%);grid-template-rows:minmax(0,1fr);padding-bottom:76px}
+body:not(.advanced-open) .refcol{grid-column:1;grid-row:1}
+body:not(.advanced-open) .scenecol{grid-column:2;grid-row:1}
+body.advanced-open .workspace{padding-bottom:76px}
+#simpleDock{position:fixed;z-index:9;left:50%;bottom:calc(13px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:6px;padding:6px;min-width:330px;width:min(600px,calc(100% - 25px));border:1px solid #97bcb477;border-radius:15px;background:#101d2aed;box-shadow:0 17px 40px #050a18b0;backdrop-filter:blur(18px)}
+#simpleDock button{flex:1;min-width:0;padding:13px 8px;font-size:11px;letter-spacing:0;white-space:nowrap}
+#simpleDock .primary{background:#cadfcd;color:#142329;border-color:#d9ece1}
+#simpleDock .primary:disabled{background:#273f44;color:#8aa6a7;border-color:#49636b}
+#simpleDock .active{background:#2d5558;color:#e3f3e9;border-color:#92cabf}
+#welcome{position:fixed;z-index:11;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at 50% 40%,#30444c 0%,#111d2c 55%,#090e1a 100%)}
+#welcome[hidden]{display:none}
+.welcomePanel{max-width:550px;width:100%;padding:clamp(27px,5vw,54px);border:1px solid #c2d0ba65;background:linear-gradient(135deg,#213344ef,#101927f0);box-shadow:0 28px 75px #040912b3;position:relative}
+.welcomePanel:after{content:'';position:absolute;inset:12px;border:1px solid #cfb18b28;pointer-events:none}
+.welcomeEyebrow{font-size:10px;color:#d4b990;letter-spacing:.21em;margin-bottom:28px}
+.welcomePanel h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(31px,7vw,53px);font-weight:400;line-height:1.09;letter-spacing:-.035em;margin:0 0 23px}
+.welcomePanel p{font-size:14px;line-height:1.7;color:#bdcdd0;max-width:395px;margin:0 0 23px}
+.welcomePanel .welcomeImportant{font-size:12px;color:#d9c3aa;margin-bottom:24px}
+#welcomePick{background:#c9e1d5;color:#102028;border-color:#d4e8e0;font-size:13px;width:100%;padding:16px 20px;position:relative;z-index:1}
+.welcomeFoot{font-size:10px;color:#8da6af;letter-spacing:.08em;margin-top:18px}
+#guideStrip{display:none;position:fixed;z-index:7;left:50%;bottom:calc(91px + env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);padding:9px 14px;border:1px solid #628a8980;background:#121d2fdb;backdrop-filter:blur(10px);font-size:11px;color:#d6e3df;text-align:center;border-radius:8px;pointer-events:none}
+body.has-reference #guideStrip{display:block}
+body.has-reference .refcol .blockhead{background:#1b3034}
+body.advanced-open #guideStrip{display:none}
+#advancedToggle[aria-expanded="true"]{background:#527477;color:#fff}
+@media(min-width:951px){body.advanced-open .workspace{grid-template-columns:minmax(250px,30fr) minmax(340px,48fr) minmax(220px,22fr)}}
+@media(max-width:950px){
+ body.advanced-open .workspace{grid-template-columns:40% 60%;grid-template-rows:minmax(0,1fr);padding-bottom:76px}
+ body.advanced-open .controls{position:fixed;z-index:8;bottom:calc(89px + env(safe-area-inset-bottom));left:12px;right:12px;height:min(55dvh,520px);border:1px solid #648b8b80;box-shadow:0 12px 60px #000d;display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));overflow:auto;scroll-snap-type:x mandatory;background:#131e2df5;border-radius:13px}
+ body.advanced-open .controls .groupset{scroll-snap-align:start}
+}
+@media(max-width:650px){
+ body:not(.advanced-open) .workspace,body.advanced-open .workspace{grid-template-columns:40% 60%;grid-template-rows:minmax(0,1fr);padding-bottom:73px}
+ body:not(.advanced-open) .refcol,body.advanced-open .refcol{grid-column:1;grid-row:1}
+ body:not(.advanced-open) .scenecol,body.advanced-open .scenecol{grid-column:2;grid-row:1}
+ .refcol .refActions{display:none}
+ .refcol .blockhead{justify-content:center;font-size:10px;min-height:43px}
+ .scenecol .sceneFoot{display:none}
+ #simpleDock{width:calc(100% - 12px);bottom:calc(5px + env(safe-area-inset-bottom));padding:5px;border-radius:12px;gap:4px}
+ #simpleDock button{font-size:10px;padding:12px 4px}
+ #guideStrip{bottom:calc(73px + env(safe-area-inset-bottom));font-size:9px;padding:7px 10px;max-width:calc(100% - 16px)}
+ body.advanced-open .controls{left:5px;right:5px;height:min(57dvh,510px);bottom:calc(69px + env(safe-area-inset-bottom));padding:8px;gap:8px;grid-template-columns:repeat(4,220px)}
+ .welcomePanel{padding:36px 25px}.welcomePanel h1{font-size:37px}.welcomePanel p{font-size:13px}
+ header .sub{font-size:7px;letter-spacing:.08em}
+}
+
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
-</head><body><div class="app">
+</head><body>
+<div id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+ <div class="welcomePanel">
+  <div class="welcomeEyebrow">HUMAN OS / CHARACTER FIRST</div>
+  <h1 id="welcomeTitle">Из изображения —<br>в 3D-позу.</h1>
+  <p>Загрузи утверждённый образ героини. Система предложит положение суставов, а ты сможешь проверить силуэт и кадр.</p>
+  <p class="welcomeImportant">Это инструмент построения 3D-основы, <strong>не генератор готового лица и одежды.</strong></p>
+  <button id="welcomePick" type="button">ВЫБРАТЬ РЕФЕРЕНС</button>
+  <div class="welcomeFoot">БЕЗ BLENDER · ИЗОБРАЖЕНИЕ ОСТАЁТСЯ НА УСТРОЙСТВЕ</div>
+ </div>
+</div>
+<div id="guideStrip" role="status" aria-live="polite">Шаг 2/3 · Определи позу — затем проверь суставы</div>
+<div id="simpleDock" role="toolbar" aria-label="Три шага создания 3D-прототипа">
+ <button id="dockChoose" type="button">1 · Изображение</button>
+ <button id="dockPose" class="primary" type="button" disabled>2 · Определить позу</button>
+ <button id="advancedToggle" type="button" aria-expanded="false">3 · Настройки</button>
+</div>
+<div class="app">
 <header><div><div class="brand">HUMAN <em>OS</em> <span style="color:#9dabb6;font-weight:400;font-size:10px">/ PROTOTYPE STUDIO</span></div><div class="sub">REFERENCE → POSE → PROPORTIONS → CAMERA → EXPORT</div></div><span class="pill">WEBGL · POSE AI · БЕЗ BLENDER</span></header>
 <main class="workspace">
 <section class="refcol"><div class="blockhead"><span>01 / РЕФЕРЕНС</span><div class="refActions"><button id="autoPose" type="button" title="Вычислить позу на устройстве">АВТО-ПОЗА</button><button id="loadRef" type="button">+ ФОТО</button></div></div>
 <div id="refWrap"><canvas id="refCanvas" aria-label="Редактор контрольных точек на референсе"></canvas><div id="refOverlay">Загрузите утверждённый референс. Точки перетаскиваются.</div></div><div id="poseDecision" hidden><span id="poseStatus">Поза распознана — проверьте точки</span><div class="refActions"><button id="acceptPose" type="button">ПРИНЯТЬ</button><button id="discardPose" type="button">ОТКЛОНИТЬ</button></div></div><input id="refFile" type="file" accept="image/png,image/jpeg,image/webp"></section>
 <section class="scenecol"><canvas id="view" aria-label="Вращаемый трехмерный прототип персонажа WebGL"></canvas><img id="ghost" alt="" aria-hidden="true">
 <div class="scenebar"><div class="views" id="viewButtons"><button data-view="front">ФАС</button><button data-view="threequarter" class="active">¾</button><button data-view="side">БОК</button><button data-view="back">ТЫЛ</button></div><div id="camStat">35 MM · PERSPECTIVE</div></div>
-<div class="sceneFoot"><span id="meshStat">МАНЕКЕН · РЕДАКТИРУЕМАЯ ПОЗА</span><span>DRAG / ROTATE · PINCH / ZOOM</span></div></section>
+<div class="sceneFoot"><span id="meshStat">3D ЧЕРНОВИК ПОЗЫ · НЕ ГОТОВЫЙ ПЕРСОНАЖ</span><span>DRAG / ROTATE · PINCH / ZOOM</span></div></section>
 <aside class="controls">
 <div class="groupset"><div class="controlTitle">02 / ПРОПОРЦИИ</div><div class="muted">Сначала настройте силуэт, затем детали лица и одежды.</div>
 <div class="sliderRow"><label for="headScale">Размер головы <output id="headScaleVal"></output></label><input id="headScale" type="range" min=".75" max="1.2" step=".01" value=".93"></div>

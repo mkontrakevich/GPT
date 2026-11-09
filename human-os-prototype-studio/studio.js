@@ -2,7 +2,7 @@ import * as T from 'three';
 import {GLTFExporter} from 'three/addons/exporters/GLTFExporter.js';
 import {createRig} from './rig.js';
 import {analyzeReferenceImage,POSE_MODEL_INFO} from './pose.js';
-import {lookupApprovedReference,completeDetectedPose} from './reference-poses.js';
+import {lookupApprovedReference,matchApprovedImageVisual,completeDetectedPose} from './reference-poses.js';
 
 const $=s=>document.querySelector(s),ref=$('#refCanvas'),view=$('#view');
 const keys=['head','neck','ls','rs','le','re','lw','rw','lh','rh','lk','rk','la','ra'];
@@ -147,12 +147,15 @@ function applyAutoplacedJoints(result,token){
  }
  notify(result.source==='approved-manual-annotation'
   ?'14 суставов сопоставлены с утверждённой героиней.'
-  :'Поза построена автоматически; некоторые точки приблизительны.');
+  :result.source==='approved-visual-match'
+   ?'Героиня опознана по изображению. 14 суставов выставлены автоматически.'
+   :'Поза построена автоматически; некоторые точки приблизительны.');
 }
 async function autoplaceAfterUpload(file,image,token){
  try{
   let result=await lookupApprovedReference(file);
   if(token!==autoPoseSequence)return;
+  if(!result)result=matchApprovedImageVisual(image);
   if(!result){
    const detection=await analyzeReferenceImage(image);
    if(token!==autoPoseSequence)return;

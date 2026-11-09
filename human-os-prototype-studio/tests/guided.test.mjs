@@ -32,7 +32,7 @@ test('UI explicitly distinguishes a 3D blockout from finished face and costume',
  assert.match(script,/function setAdvanced/);
 });
 test('guided sequence retains user control over detection and correction',()=>{
- for(const s of ["showStep('no-reference')","showStep('ready')","showStep('suggestion')","showStep('edited')","$('#autoPose').click()","$('#refFile').click()"])
+ for(const s of ["showStep('no-reference')","showStep('ready')","showStep('suggestion')","showStep('edited')","autoplaceAfterUpload(file,image,token)","$('#refFile').click()"])
   assert.ok(script.includes(s),s);
  assert.match(script,/poseAccepted=true/);
  assert.match(script,/state\.depth/);

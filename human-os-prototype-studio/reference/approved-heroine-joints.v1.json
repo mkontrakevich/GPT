@@ -1,0 +1,81 @@
+{
+  "schema": "human-os.reference-joints.v1",
+  "projectId": "PERSONAL-OS/HUMAN-OS/CHARACTER-SYSTEM",
+  "sourceSha256": "023f874b0b00049212cc086ac63d2bbdb2196b2d01fbfb57e4144620be4e7974",
+  "sourceDimensions": {
+    "width": 941,
+    "height": 1672
+  },
+  "identity": "approved-original-heroine",
+  "status": "AUTHORED_REFERENCE_POSE_NOT_PRODUCTION_RIG",
+  "method": "art-directed 2D anatomical annotation",
+  "coordinateSystem": "top-left origin; normalized x,y in 0..1",
+  "approximateJoints": [
+    "re",
+    "rw",
+    "lh",
+    "rh",
+    "lk",
+    "rk",
+    "la",
+    "ra"
+  ],
+  "joints": {
+    "head": {
+      "x": 0.493092,
+      "y": 0.086124
+    },
+    "neck": {
+      "x": 0.488842,
+      "y": 0.147129
+    },
+    "ls": {
+      "x": 0.364506,
+      "y": 0.179426
+    },
+    "rs": {
+      "x": 0.603613,
+      "y": 0.180622
+    },
+    "le": {
+      "x": 0.314559,
+      "y": 0.267943
+    },
+    "re": {
+      "x": 0.666312,
+      "y": 0.279306
+    },
+    "lw": {
+      "x": 0.231668,
+      "y": 0.251196
+    },
+    "rw": {
+      "x": 0.656748,
+      "y": 0.353469
+    },
+    "lh": {
+      "x": 0.435707,
+      "y": 0.337919
+    },
+    "rh": {
+      "x": 0.589798,
+      "y": 0.340909
+    },
+    "lk": {
+      "x": 0.368757,
+      "y": 0.533493
+    },
+    "rk": {
+      "x": 0.523911,
+      "y": 0.543062
+    },
+    "la": {
+      "x": 0.284803,
+      "y": 0.77811
+    },
+    "ra": {
+      "x": 0.499469,
+      "y": 0.778708
+    }
+  }
+}

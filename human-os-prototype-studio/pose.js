@@ -23,7 +23,14 @@ export function derivePoseSuggestions(landmarks,worldLandmarks=[],threshold=.55)
   const nums=indices.map(xyz).filter(Number.isFinite);
   if(nums.length===indices.length)depth[key]=clamp(nums.reduce((a,b)=>a+b,0)/nums.length,-.65,.65);
  };
- for(const [name,index] of Object.entries(pairs))set(name,get(index),[index]);
+ // MediaPipe "left/right" means the subject's anatomy. Our editor uses image-left / image-right.
+ // Keep screen-space aliases stable regardless of whether the subject faces the camera.
+ const flip=!!(get(11)&&get(12)&&get(11).x>get(12).x);
+ const mirror={11:12,12:11,13:14,14:13,15:16,16:15,23:24,24:23,25:26,26:25,27:28,28:27};
+ for(const [name,index] of Object.entries(pairs)){
+  const actual=flip?mirror[index]:index;
+  set(name,get(actual),[actual]);
+ }
  const leftS=get(11),rightS=get(12);
  if(leftS&&rightS){
   const sh=midpoint(leftS,rightS),span=Math.hypot(leftS.x-rightS.x,leftS.y-rightS.y);

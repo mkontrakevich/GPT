@@ -226,6 +226,16 @@ body.advanced-open #guideStrip{display:none}
  body.advanced-open .controls{bottom:55px;height:min(76dvh,380px)}
 }
 
+/* v0.4: the user's reference must stay visually unobstructed. */
+body.pose-ready #refOverlay,body.pose-ready #guideStrip{display:none!important}
+body.pose-ready #dockPose:not(.active){background:#233842;color:#c4d5ce;border-color:#50716d}
+body.pose-ready #dockPose.active{background:#c3dcd3;color:#172831}
+@media(max-width:700px){
+  body.pose-ready .refcol .blockhead{display:none!important}
+  body.pose-ready #refWrap{inset:0}
+  body.pose-ready .scenecol .scenebar{top:70px}
+}
+
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 </head><body>
@@ -243,7 +253,7 @@ body.advanced-open #guideStrip{display:none}
 <button id="advancedBackdrop" type="button" aria-label="Закрыть настройки"></button>
 <div id="simpleDock" role="toolbar" aria-label="Три шага создания 3D-прототипа">
  <button id="dockChoose" type="button">1 · Изображение</button>
- <button id="dockPose" class="primary" type="button" disabled>2 · Определить позу</button>
+ <button id="dockPose" class="primary" type="button" disabled aria-pressed="false">2 · Суставы</button>
  <button id="advancedToggle" type="button" aria-expanded="false">3 · Настройки</button>
 </div>
 <div class="app">

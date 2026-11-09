@@ -1,0 +1,23 @@
+name: HUMAN OS — Automatic Skeleton QA
+on:
+  push:
+    branches: ["feat/human-os-auto-joints-v4"]
+    paths:
+      - "human-os-prototype-studio/**"
+      - ".github/workflows/human-os-auto-joints.yml"
+  pull_request:
+    paths:
+      - "human-os-prototype-studio/**"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pose-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate canonical skeleton, MediaPipe mapping, exports and mobile UI
+        run: node --test human-os-prototype-studio/tests/*.test.mjs

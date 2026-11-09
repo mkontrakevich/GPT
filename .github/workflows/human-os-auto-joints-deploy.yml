@@ -1,0 +1,28 @@
+name: HUMAN OS Auto Skeleton — Cloudflare Preview Deploy
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality-and-deploy:
+    if: github.ref == 'refs/heads/feat/human-os-auto-joints-v4'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test human-os-prototype-studio/tests/*.test.mjs
+      - name: Require configured credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::Missing Cloudflare credential"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::Missing Cloudflare account ID"; exit 1; }
+      - name: Prepare static assets
+        run: |
+          mkdir -p human-os-prototype-studio/dist
+          cp human-os-prototype-studio/index.html human-os-prototype-studio/studio.js human-os-prototype-studio/rig.js human-os-prototype-studio/pose.js human-os-prototype-studio/reference-poses.js human-os-prototype-studio/dist/
+      - name: Publish isolated preview
+        run: npx --yes wrangler@4 deploy --config human-os-prototype-studio/wrangler.auto-joints.jsonc

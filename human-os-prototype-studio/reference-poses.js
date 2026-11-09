@@ -26,6 +26,47 @@ export async function sha256OfBlob(file){
  const digest=await subtle.digest('SHA-256',raw);
  return [...new Uint8Array(digest)].map(v=>v.toString(16).padStart(2,'0')).join('');
 }
+// Re-encoded/resized copies of the exact approved image may have different byte
+// hashes. A strict visual check protects the curated pose from unrelated images.
+// This is only an identity matching heuristic, not an anatomical pose detector.
+export const APPROVED_HEROINE_DHASH='0f0f0f277b735929';
+export function hammingDistanceHex(a,b){
+ if(!/^[0-9a-f]{16}$/i.test(a)||!/^[0-9a-f]{16}$/i.test(b))return 64;
+ let x=BigInt('0x'+a)^BigInt('0x'+b),n=0;
+ while(x){n++;x&=x-1n}
+ return n;
+}
+export function imageDHash(image){
+ if(!image?.naturalWidth||!image?.naturalHeight||typeof document==='undefined')return null;
+ const canvas=document.createElement('canvas');canvas.width=9;canvas.height=8;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});
+ if(!ctx)return null;
+ ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(image,0,0,9,8);
+ const data=ctx.getImageData(0,0,9,8).data;
+ let bits=0n;
+ const lum=i=>.2126*data[i]+.7152*data[i+1]+.0722*data[i+2];
+ for(let y=0;y<8;y++)for(let x=0;x<8;x++){
+  const i=4*(y*9+x),j=4*(y*9+x+1);
+  bits=(bits<<1n)|(lum(i)>lum(j)?1n:0n);
+ }
+ return bits.toString(16).padStart(16,'0');
+}
+export function matchApprovedImageVisual(image){
+ const originalAspect=APPROVED_HEROINE.width/APPROVED_HEROINE.height;
+ const aspect=image?.naturalWidth/image?.naturalHeight;
+ if(!Number.isFinite(aspect)||Math.abs(aspect-originalAspect)>originalAspect*.018)return null;
+ const fingerprint=imageDHash(image);
+ if(!fingerprint||hammingDistanceHex(fingerprint,APPROVED_HEROINE_DHASH)>6)return null;
+ return {
+  ok:true,
+  anchors:Object.fromEntries(Object.entries(APPROVED_HEROINE.anchors).map(([k,p])=>[k,{...p}])),
+  depth:{},source:'approved-visual-match',confidence:.92,
+  used:SKELETON_KEYS.length,estimated:[...APPROVED_HEROINE.approximate],
+  sourceHash:null,
+  reason:'Пересохранённый оригинал распознан по визуальному отпечатку; контроль суставов рекомендован'
+ };
+}
+
 export async function lookupApprovedReference(file){
  if(!file||file.size>22*1024*1024)return null;
  const sha=await sha256OfBlob(file);

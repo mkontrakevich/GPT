@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {APPROVED_HEROINE,SKELETON_KEYS,sha256OfBlob,lookupApprovedReference,completeDetectedPose} from '../reference-poses.js';
+import {APPROVED_HEROINE,SKELETON_KEYS,sha256OfBlob,lookupApprovedReference,completeDetectedPose,hammingDistanceHex,APPROVED_HEROINE_DHASH} from '../reference-poses.js';
 import {derivePoseSuggestions} from '../pose.js';
 
 const canonical=JSON.parse(readFileSync(new URL('../reference/approved-heroine-joints.v1.json',import.meta.url),'utf8'));
@@ -66,4 +66,12 @@ test('upload immediately triggers local identity match or automatic pose, never 
  assert.match(script,/\$\('#mobile3D'\)\.disabled=true/);
  assert.match(html,/body\.pose-ready #refOverlay,body\.pose-ready #guideStrip/);
  assert.match(html,/id="dockPose".*aria-pressed="false"/);
+});
+
+test('resaved reference recognition is strict and cannot match unrelated images by filename',()=>{
+ assert.equal(APPROVED_HEROINE_DHASH,'0f0f0f277b735929');
+ assert.equal(hammingDistanceHex(APPROVED_HEROINE_DHASH,APPROVED_HEROINE_DHASH),0);
+ assert.equal(hammingDistanceHex(APPROVED_HEROINE_DHASH,'ffffffffffffffff')>6,true);
+ assert.equal(hammingDistanceHex('invalid','ffffffffffffffff'),64);
+ assert.match(script,/matchApprovedImageVisual\(image\)/);
 });

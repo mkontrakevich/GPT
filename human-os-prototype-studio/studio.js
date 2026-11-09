@@ -16,6 +16,7 @@ const fresh=()=>Object.fromEntries(keys.map(k=>[k,{x:defaults[k][0],y:defaults[k
 const state={schema:'human-os.blockout.v1',anchors:fresh(),proportions:{headScale:.93,shoulderScale:1,hipScale:1,torsoScale:1},camera:{view:'threequarter',yaw:-.36,pitch:.05,zoom:1,focal:52},overlay:0,wireframe:false,depth:Object.fromEntries(keys.map(k=>[k,0]))};
 let photo=null,photoUrl=null,aspect=.667,imageRect={x:0,y:0,w:1,h:1},drag=null,renderer,scene,camera,rig,last={x:0,y:0},touches=new Map(),posePreview=null,poseBusy=false;
 let autoPoseSequence=0,autoPoseReady=false,skeletonVisible=false,autoPoseMethod='none';
+let baselineAnchors=null,baselineDepth=null;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const compact={head:'Голова',neck:'Шея',ls:'Л. плечо',rs:'П. плечо',le:'Л. локоть',re:'П. локоть',lw:'Л. кисть',rw:'П. кисть',lh:'Л. бедро',rh:'П. бедро',lk:'Л. колено',rk:'П. колено',la:'Л. стопа',ra:'П. стопа'};
 const links=[['head','neck'],['neck','ls'],['neck','rs'],['ls','le'],['le','lw'],['rs','re'],['re','rw'],['neck','lh'],['neck','rh'],['lh','rh'],['lh','lk'],['lk','la'],['rh','rk'],['rk','ra']];
@@ -24,6 +25,7 @@ function showStep(step){
  const strip=$('#guideStrip'),dock=$('#dockPose');
  if(step==='no-reference'){dock.disabled=true;strip.textContent='Шаг 1/3 · Выбери изображение персонажа';return}
  if(step==='detecting'){dock.disabled=true;strip.textContent='Система определяет суставы на изображении…';return}
+ if(step==='no-pose'){dock.disabled=true;strip.textContent='Не удалось уверенно определить позу';return}
  dock.disabled=false;
  if(step==='suggestion'){strip.textContent='Шаг 2/3 · Проверь золотые точки, затем нажми ПРИНЯТЬ';return}
  if(step==='edited'){strip.textContent='Шаг 3/3 · Проверь силуэт, вращай 3D и сохрани результат';return}
@@ -127,7 +129,10 @@ function applyAutoplacedJoints(result,token){
  state.anchors=Object.fromEntries(Object.entries(result.anchors).map(([k,p])=>[k,{x:p.x,y:p.y}]));
  state.depth=Object.fromEntries(keys.map(k=>[k,Number.isFinite(result.depth?.[k])?clamp(result.depth[k],-1,1):0]));
  autoPoseReady=true;autoPoseMethod=result.source;
+ baselineAnchors=Object.fromEntries(Object.entries(state.anchors).map(([k,p])=>[k,{...p}]));
+ baselineDepth={...state.depth};
  skeletonVisible=false;posePreview=null;
+ document.body.classList.add('pose-ready');$('#mobile3D').disabled=false;
  $('#poseDecision').hidden=true;
  const btn=$('#dockPose');btn.disabled=false;btn.textContent='2 · Суставы';
  btn.classList.remove('active');btn.setAttribute('aria-pressed','false');
@@ -160,6 +165,7 @@ async function autoplaceAfterUpload(file,image,token){
  }catch(err){
   if(token!==autoPoseSequence)return;
   autoPoseReady=false;skeletonVisible=false;
+  document.body.classList.remove('pose-ready');$('#mobile3D').disabled=true;
   $('#dockPose').disabled=true;$('#dockPose').textContent='2 · Нет позы';
   $('#refOverlay').textContent='Поза не определена. Попробуй другое изображение или ручную разметку в настройках.';
   showStep('no-pose');drawRef();
@@ -178,8 +184,10 @@ function loadImage(file){
   photoUrl=url;photo=image;aspect=image.naturalWidth/image.naturalHeight;$('#ghost').src=url;
   state.anchors=fresh();state.depth=Object.fromEntries(keys.map(k=>[k,0]));
   autoPoseReady=false;skeletonVisible=false;autoPoseMethod='none';posePreview=null;
+  baselineAnchors=null;baselineDepth=null;
+  document.body.classList.remove('pose-ready');
   $('#welcome').hidden=true;document.body.classList.add('has-reference');showStep('detecting');
-  $('#mobile3D').disabled=false;setMobileStage('ref');
+  $('#mobile3D').disabled=true;setMobileStage('ref');
   $('#poseDecision').hidden=true;
   $('#dockPose').textContent='2 · Ищем суставы';
   $('#dockPose').setAttribute('aria-pressed','false');
@@ -232,6 +240,11 @@ $('#acceptPose').onclick=()=>{
  for(const [k,p] of Object.entries(posePreview.anchors))state.anchors[k]={x:p.x,y:p.y};
  for(const [k,v] of Object.entries(posePreview.depth))state.depth[k]=clamp(v,-1,1);
  window.__STUDIO_QA.poseAccepted=true;window.__STUDIO_QA.poseAppliedCount=posePreview.used;
+ autoPoseReady=true;autoPoseMethod='manual-mediapipe-accept';
+ baselineAnchors=Object.fromEntries(Object.entries(state.anchors).map(([k,p])=>[k,{...p}]));
+ baselineDepth={...state.depth};
+ document.body.classList.add('pose-ready');$('#mobile3D').disabled=false;
+ $('#dockPose').disabled=false;$('#dockPose').textContent='2 · Суставы';
  showStep('edited');
  if(matchMedia('(max-width:700px)').matches)setMobileStage('3d');
  posePreview=null;$('#poseDecision').hidden=true;
@@ -320,7 +333,7 @@ for(const k of ['headScale','shoulderScale','hipScale','torsoScale','focal','ove
 };
 $('#ghostToggle').onchange=e=>{if(e.target.checked&&state.overlay===0)state.overlay=35;$('#ghost').style.opacity=String(state.overlay/100);document.body.classList.toggle('ghost',e.target.checked&&!!photo);syncUI()};
 $('#wireToggle').onchange=e=>{state.wireframe=e.target.checked;rig?.setWireframe(state.wireframe)};
-$('#resetPose').onclick=()=>{state.anchors=fresh();state.proportions={headScale:.93,shoulderScale:1,hipScale:1,torsoScale:1};state.depth=Object.fromEntries(keys.map(k=>[k,0]));clearPoseSuggestion();showStep(photo?'ready':'no-reference');syncUI();drawRef();rig?.update(state,aspect);notify('Поза сброшена')};
+$('#resetPose').onclick=()=>{state.anchors=baselineAnchors?Object.fromEntries(Object.entries(baselineAnchors).map(([k,p])=>[k,{...p}])):fresh();state.proportions={headScale:.93,shoulderScale:1,hipScale:1,torsoScale:1};state.depth=baselineDepth?{...baselineDepth}:Object.fromEntries(keys.map(k=>[k,0]));clearPoseSuggestion();showStep(autoPoseReady?'ready':'no-reference');syncUI();drawRef();rig?.update(state,aspect);notify(autoPoseReady?'Возвращена автоматически определённая поза':'Поза сброшена')};
 $('#resetCamera').onclick=()=>{state.camera.zoom=1;preset('threequarter')};
 $('#saveJSON').onclick=()=>{
  const payload={schema:state.schema,anchors:state.anchors,depth:state.depth,poseSource:autoPoseMethod,poseAutoApplied:autoPoseReady,proportions:state.proportions,camera:state.camera,reference:{filename:photo?.src?'local image (not included)':null,width:photo?.naturalWidth||0,height:photo?.naturalHeight||0},notice:'This is unrigged pose geometry, not a finished identity.'};
@@ -334,8 +347,11 @@ $('#jsonFile').onchange=async e=>{
   const a={};for(const k of keys){const p=d.anchors?.[k];if(!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))throw Error('Нет точки '+k);a[k]={x:clamp(p.x,0,1),y:clamp(p.y,0,1)}}
   state.anchors=a;
   autoPoseReady=true;autoPoseMethod='imported-json';skeletonVisible=false;
+  document.body.classList.add('pose-ready');$('#mobile3D').disabled=false;
   $('#dockPose').disabled=false;$('#dockPose').textContent='2 · Суставы';
   state.depth=Object.fromEntries(keys.map(k=>[k,Number.isFinite(d.depth?.[k])?clamp(d.depth[k],-1,1):0]));
+  baselineAnchors=Object.fromEntries(Object.entries(state.anchors).map(([k,p])=>[k,{...p}]));
+  baselineDepth={...state.depth};
   clearPoseSuggestion();
   for(const [k,m] of Object.entries({headScale:[.75,1.2],shoulderScale:[.75,1.35],hipScale:[.75,1.35],torsoScale:[.75,1.25]})){const v=d.proportions?.[k];if(Number.isFinite(v))state.proportions[k]=clamp(v,...m)}
   for(const [k,m] of Object.entries({yaw:[-30,30],pitch:[-.4,.5],zoom:[.55,2.4],focal:[28,85]})){const v=d.camera?.[k];if(Number.isFinite(v))state.camera[k]=clamp(v,...m)}
